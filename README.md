@@ -1,4 +1,4 @@
-# aoc2021-rust
-Repo for my Advent of Code 2021 solutions - playing with some Rust
+# aoc-rust
+Repo for my Rust-based Advent of Code solutions (2021, 2022)
 
 See https://adventofcode.com

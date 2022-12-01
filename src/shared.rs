@@ -2,9 +2,13 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-pub fn read_file(f: &str) -> String {
+const RESOURCE_PREFIX: &str = "resource/";
+
+/// Read resource file as String.
+pub fn read_resource(f: &str) -> String {
     // Create a path to the desired file
-    let path = Path::new(f);
+    let full_loc = String::from(format!("{}{}", RESOURCE_PREFIX, f));
+    let path = Path::new(&full_loc);
     let display = path.display();
 
     // Open the path in read-only mode, returns `io::Result<File>`
@@ -21,4 +25,18 @@ pub fn read_file(f: &str) -> String {
     }
 
     s
+}
+
+/// Split string on newlines. This will remove empty lines!
+pub fn split_lines(content: &String) -> Vec<&str> {
+    content
+        .split('\n')
+        .map(|x| x.trim())
+        .filter(|x| x.len() > 0)
+        .collect()
+}
+
+/// Split string on newlines, preserving any empty lines.
+pub fn split_lines_preserve_empty(content: &String) -> Vec<&str> {
+    content.split('\n').map(|x| x.trim()).collect()
 }
