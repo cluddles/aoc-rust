@@ -4,38 +4,35 @@ use aoc::shared;
 /// A Bingo board
 #[derive(Debug, Clone)]
 struct Board {
-    /// 2D array, structured by row; access via grid\[y]\[x]
-    grid: [[i32; 5]; 5],
+    /// 2D array (ish), structured by row; access via grid\[y]\[x].
+    ///
+    /// Marked numbers will be replaced with -1.
+    grid: Vec<Vec<i32>>,
 }
 
-/// State, consisting of CallList and Boards
+/// State, consisting of a Vec of numbers being called, and some Boards
 #[derive(Debug, Clone)]
 struct State {
+    /// Numbers to call, popping from the end
     calls: Vec<u32>,
+    /// Boards participating
     boards: Vec<Board>,
 }
 
-/// Parse line of text of form "12 34 56 78 90" into size-5 array
-fn parse_board_row(line: &str) -> [i32; 5] {
-    let mut result = [0; 5];
-    let vals: Vec<i32> = line
-        .split(' ')
+/// Parse line of text of form "12 34 56 78 90" into Vec
+fn parse_board_row(line: &str) -> Vec<i32> {
+    // Filter any length 0 strings to cope with double spaces
+    line.split(' ')
         .filter(|x| x.len() > 0)
         .map(|x| x.parse::<i32>().unwrap())
-        .collect();
-    for i in 0..5 {
-        result[i] = vals[i];
-    }
-    result
+        .collect()
 }
 
 /// Parse 5 lines
 fn parse_board(lines: &[&str]) -> Board {
-    let mut grid = [[0; 5]; 5];
-    for i in 0..5 {
-        grid[i] = parse_board_row(lines[i]);
+    Board {
+        grid: (0..5).map(|i| parse_board_row(lines[i])).collect(),
     }
-    Board { grid }
 }
 
 /// Parse input from text. First line is call list, then some number of boards
@@ -57,7 +54,8 @@ fn parse_input(content: &String) -> State {
     State { calls, boards }
 }
 
-fn proc_board(call: u32, board: &mut Board) {
+/// Apply call to a specific board
+fn apply_call_board(call: u32, board: &mut Board) {
     for i in 0..5 {
         for j in 0..5 {
             if board.grid[i][j] == call as i32 {
@@ -67,69 +65,51 @@ fn proc_board(call: u32, board: &mut Board) {
     }
 }
 
-fn proc_call(call: u32, state: &mut State) {
+/// Apply call to all boards in state
+fn apply_call(call: u32, state: &mut State) {
     for i in 0..state.boards.len() {
-        proc_board(call, &mut state.boards[i]);
+        apply_call_board(call, &mut state.boards[i]);
     }
 }
 
-fn is_winner_row(board: &Board, y: usize) -> bool {
-    for i in 0..5 {
-        if board.grid[y][i] != -1 {
-            return false;
-        }
-    }
-    true
+fn is_row_marked(board: &Board, y: usize) -> bool {
+    !(0..5).any(|i| board.grid[y][i] != -1)
 }
 
-fn is_winner_col(board: &Board, x: usize) -> bool {
-    for i in 0..5 {
-        if board.grid[i][x] != -1 {
-            return false;
-        }
-    }
-    true
+fn is_col_marked(board: &Board, x: usize) -> bool {
+    !(0..5).any(|i| board.grid[i][x] != -1)
 }
 
 fn is_winner(board: &Board) -> bool {
-    for i in 0..5 {
-        if is_winner_row(board, i) || is_winner_col(board, i) {
-            return true;
-        }
-    }
-    false
+    (0..5).any(|i| is_row_marked(board, i) || is_col_marked(board, i))
 }
 
+/// Indexes of all boards that have won
 fn find_winners(state: &State) -> Vec<usize> {
-    let mut result = Vec::new();
-    for i in 0..state.boards.len() {
-        if is_winner(&state.boards[i]) {
-            result.push(i);
-        }
-    }
-    return result;
+    state
+        .boards
+        .iter()
+        .enumerate()
+        .filter(|(_, val)| is_winner(val))
+        .map(|(i, _)| i)
+        .collect()
 }
 
+/// Calculate board score, the sum of all unmarked numbers time the last call.
 fn calculate_score(call: u32, board: &Board) -> u32 {
-    let mut score = 0;
-    for i in 0..5 {
-        for j in 0..5 {
-            if board.grid[i][j] != -1 {
-                score += board.grid[i][j];
-            }
-        }
-    }
-    score as u32 * call
+    board
+        .grid
+        .iter()
+        .flat_map(|i| i.iter())
+        .filter(|i| **i != -1)
+        .sum::<i32>() as u32 * call
 }
 
+/// Pop the next number to call from the end of the list
 fn pop_call(state: &mut State) -> u32 {
     match state.calls.pop() {
         Some(v) => v,
-        None => panic!(
-            "Out of calls! {} boards remaining: {:?}",
-            state.boards.len(),
-            state.boards
-        ),
+        None => panic!("Out of calls! {:?}", state),
     }
 }
 
@@ -138,9 +118,8 @@ fn part1(input: &State) -> u32 {
     let mut state = input.clone();
     loop {
         let call = pop_call(&mut state);
-        proc_call(call, &mut state);
-        let winners = find_winners(&state);
-        match winners.first() {
+        apply_call(call, &mut state);
+        match find_winners(&state).first() {
             Some(&v) => return calculate_score(call, &state.boards[v]),
             None => {}
         }
@@ -152,11 +131,11 @@ fn part2(input: &State) -> u32 {
     let mut state = input.clone();
     loop {
         let call = pop_call(&mut state);
-        proc_call(call, &mut state);
-        let winners = find_winners(&state);
-        for i in (0..winners.len()).rev() {
+        apply_call(call, &mut state);
+        // Iterate backwards over winners to avoid indexes getting out of whack
+        for (_, &winner) in find_winners(&state).iter().rev().enumerate() {
             if state.boards.len() > 1 {
-                state.boards.remove(winners[i]);
+                state.boards.remove(winner);
             } else {
                 return calculate_score(call, &state.boards.pop().unwrap());
             }
