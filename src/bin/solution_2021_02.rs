@@ -65,17 +65,17 @@ fn main() {
 mod tests {
     use super::*;
 
+    fn gen_test_instructions() -> Vec<Instruction> {
+        generate_instructions(&shared::read_resource("2021/02/input.test"))
+    }
+
     #[test]
     fn test_part1() {
-        let content = shared::read_resource("2021/02/input.test");
-        let instructions = generate_instructions(&content);
-        assert_eq!(part1(&instructions), 150);
+        assert_eq!(part1(&gen_test_instructions()), 150);
     }
 
     #[test]
     fn test_part2() {
-        let content = shared::read_resource("2021/02/input.test");
-        let instructions = generate_instructions(&content);
-        assert_eq!(part2(&instructions), 900);
+        assert_eq!(part2(&gen_test_instructions()), 900);
     }
 }

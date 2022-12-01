@@ -44,17 +44,17 @@ fn main() {
 mod tests {
     use super::*;
 
+    fn gen_test_sonar() -> Vec<u32> {
+        return generate_sonar(&shared::read_resource("2021/01/input.test"));
+    }
+
     #[test]
     fn test_part1() {
-        let content = shared::read_resource("2021/01/input.test");
-        let sonar = generate_sonar(&content);
-        assert_eq!(part1(&sonar), 7);
+        assert_eq!(part1(&gen_test_sonar()), 7);
     }
 
     #[test]
     fn test_part2() {
-        let content = shared::read_resource("2021/01/input.test");
-        let sonar = generate_sonar(&content);
-        assert_eq!(part2(&sonar), 5);
+        assert_eq!(part2(&gen_test_sonar()), 5);
     }
 }
