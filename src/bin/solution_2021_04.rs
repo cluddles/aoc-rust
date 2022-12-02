@@ -23,7 +23,7 @@ struct State {
 fn parse_board_row(line: &str) -> Vec<i32> {
     // Filter any length 0 strings to cope with double spaces
     line.split(' ')
-        .filter(|x| x.len() > 0)
+        .filter(|x| !x.is_empty())
         .map(|x| x.parse::<i32>().unwrap())
         .collect()
 }
@@ -36,9 +36,9 @@ fn parse_board(lines: &[&str]) -> Board {
 }
 
 /// Parse input from text. First line is call list, then some number of boards
-fn parse_input(content: &String) -> State {
+fn parse_input(content: &str) -> State {
     // Don't forget that this scrubs any empty lines...
-    let lines = shared::split_lines(&content);
+    let lines = shared::split_lines(content);
     // Calls - reverse so we can pop from the end
     let calls = lines[0]
         .split(',')
@@ -119,9 +119,9 @@ fn part1(input: &State) -> u32 {
     loop {
         let call = pop_call(&mut state);
         apply_call(call, &mut state);
-        match find_winners(&state).first() {
-            Some(&v) => return calculate_score(call, &state.boards[v]),
-            None => {}
+        // Same as matching on find_winners(&state).first()
+        if let Some(&v) = find_winners(&state).first() {
+            return calculate_score(call, &state.boards[v])
         }
     }
 }
@@ -154,7 +154,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> State {
-        return parse_input(&shared::read_resource("2021/04/input.test"));
+        parse_input(&shared::read_resource("2021/04/input.test"))
     }
 
     #[test]

@@ -1,7 +1,7 @@
 extern crate aoc;
 use aoc::shared;
 
-fn generate_sonar(content: &String) -> Vec<u32> {
+fn generate_sonar(content: &str) -> Vec<u32> {
     content
         .split('\n')
         .map(|x| x.trim().parse::<u32>().unwrap())
@@ -45,7 +45,7 @@ mod tests {
     use super::*;
 
     fn gen_test_sonar() -> Vec<u32> {
-        return generate_sonar(&shared::read_resource("2021/01/input.test"));
+        generate_sonar(&shared::read_resource("2021/01/input.test"))
     }
 
     #[test]

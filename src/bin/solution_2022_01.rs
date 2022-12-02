@@ -19,7 +19,7 @@ fn gen_elf() -> Elf {
 }
 
 /// Given input text, create corresponding elves
-fn gen_elves(content: &String) -> Vec<Elf> {
+fn gen_elves(content: &str) -> Vec<Elf> {
     let lines = shared::split_lines_keep_empty(content);
     let mut result: Vec<Elf> = Vec::new();
     let mut elf = gen_elf();
@@ -43,12 +43,12 @@ fn gen_elves(content: &String) -> Vec<Elf> {
 }
 
 /// Find max total value
-fn part1(elves: &Vec<Elf>) -> u32 {
+fn part1(elves: &[Elf]) -> u32 {
     elves.iter().map(|x| x.total).max().unwrap()
 }
 
 /// Find sum of 3 max total values
-fn part2(elves: &Vec<Elf>) -> u32 {
+fn part2(elves: &[Elf]) -> u32 {
     let mut max_first = elves.to_vec();
     max_first.sort_by(|a, b| b.total.cmp(&a.total));
     max_first.iter().take(3).map(|x| x.total).sum()
@@ -66,7 +66,7 @@ mod tests {
     use super::*;
 
     fn gen_test_elves() -> Vec<Elf> {
-        return gen_elves(&shared::read_res_day(DAY, "input.test"));
+        gen_elves(&shared::read_res_day(DAY, "input.test"))
     }
 
     #[test]

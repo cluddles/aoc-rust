@@ -73,7 +73,7 @@ fn parse_choice(choice: char) -> Choice {
         'A' | 'X' => Choice::Rock,
         'B' | 'Y' => Choice::Paper,
         'C' | 'Z' => Choice::Scissors,
-        _ => panic!("Unrecognised choice: {}", choice)
+        _ => panic!("Unrecognised choice: {}", choice),
     }
 }
 
@@ -83,18 +83,21 @@ fn parse_outcome(outcome: char) -> Outcome {
         'X' => Outcome::Lose,
         'Y' => Outcome::Draw,
         'Z' => Outcome::Win,
-        _ => panic!("Unrecognised outcome: {}", outcome)
+        _ => panic!("Unrecognised outcome: {}", outcome),
     }
 }
 
 /// Parse strategy for a round from a line of text
 fn parse_strategy(line: &str) -> Strategy {
-    let parts: Vec<char> = line.split(" ").map(|x| x.chars().next().unwrap()).collect();
-    Strategy { opp: parts[0], strat: parts[1] }
+    let parts: Vec<char> = line.split(' ').map(|x| x.chars().next().unwrap()).collect();
+    Strategy {
+        opp: parts[0],
+        strat: parts[1],
+    }
 }
 
 /// Parse complete strategy guide
-fn parse_strategy_guide(content: &String) -> Vec<Strategy> {
+fn parse_strategy_guide(content: &str) -> Vec<Strategy> {
     let lines = shared::split_lines(content);
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
@@ -112,7 +115,7 @@ fn outcome(opp: &Choice, mine: &Choice) -> Outcome {
 /// Score part 1: X,Y,Z map directly to our choices
 fn score_part1(round: &Strategy) -> u32 {
     let (opp, mine) = (parse_choice(round.opp), parse_choice(round.strat));
-    outcome(&opp, &mine).score() + &mine.score()
+    outcome(&opp, &mine).score() + mine.score()
 }
 
 /// Given opponent choice and our desired outcome, what choice should we make?
@@ -129,15 +132,15 @@ fn score_part2(round: &Strategy) -> u32 {
     let opp = parse_choice(round.opp);
     let target_outcome = parse_outcome(round.strat);
     let mine = choice_for_outcome(&opp, &target_outcome);
-    outcome(&opp, &mine).score() + &mine.score()
+    outcome(&opp, &mine).score() + mine.score()
 }
 
-fn part1(moves: &Vec<Strategy>) -> u32 {
-    moves.iter().map(|x| score_part1(&x)).sum()
+fn part1(moves: &[Strategy]) -> u32 {
+    moves.iter().map(score_part1).sum()
 }
 
-fn part2(moves: &Vec<Strategy>) -> u32 {
-    moves.iter().map(|x| score_part2(&x)).sum()
+fn part2(moves: &[Strategy]) -> u32 {
+    moves.iter().map(score_part2).sum()
 }
 
 fn main() {
@@ -152,7 +155,7 @@ mod tests {
     use super::*;
 
     fn gen_test_moves() -> Vec<Strategy> {
-        return parse_strategy_guide(&shared::read_res_day(DAY, "input.test"));
+        parse_strategy_guide(&shared::read_res_day(DAY, "input.test"))
     }
 
     #[test]

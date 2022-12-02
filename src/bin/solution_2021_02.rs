@@ -9,14 +9,14 @@ struct Instruction {
 /// Parse a single instruction from a line of text
 fn parse_instruction(line: &str) -> Instruction {
     let parts: Vec<&str> = line.trim().split(' ').collect();
-    return Instruction {
+    Instruction {
         name: parts[0].to_string(),
         amount: parts[1].parse().unwrap(),
-    };
+    }
 }
 
 /// Convert input text to Vec of instructions
-fn generate_instructions(content: &String) -> Vec<Instruction> {
+fn generate_instructions(content: &str) -> Vec<Instruction> {
     content.split('\n').map(parse_instruction).collect()
 }
 

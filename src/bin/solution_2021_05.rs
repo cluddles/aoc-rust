@@ -1,7 +1,7 @@
 extern crate aoc;
 
-use hashbrown::HashMap;
 use aoc::shared;
+use hashbrown::HashMap;
 
 /// Line, consisting of start and end position (inclusive)
 struct Line {
@@ -18,12 +18,12 @@ struct Pos {
 
 /// 2D grid to track number of lines per point
 struct Grid {
-    map: HashMap<Pos, i32>
+    map: HashMap<Pos, i32>,
 }
 
 fn parse_pos(pos: &str) -> Pos {
-    let coords: Vec<&str> = pos.split(",").collect();
-    Pos{
+    let coords: Vec<&str> = pos.split(',').collect();
+    Pos {
         x: coords[0].parse::<i32>().unwrap(),
         y: coords[1].parse::<i32>().unwrap(),
     }
@@ -31,10 +31,13 @@ fn parse_pos(pos: &str) -> Pos {
 
 fn parse_line(line: &str) -> Line {
     let points: Vec<&str> = line.split(" -> ").collect();
-    Line { start: parse_pos(points[0]), end: parse_pos(points[1]) }
+    Line {
+        start: parse_pos(points[0]),
+        end: parse_pos(points[1]),
+    }
 }
 
-fn parse_lines(content: &String) -> Vec<Line> {
+fn parse_lines(content: &str) -> Vec<Line> {
     let lines = shared::split_lines(content);
     lines.iter().map(|x| parse_line(x)).collect()
 }
@@ -67,8 +70,10 @@ fn draw_line(grid: &mut Grid, line: &Line) {
     }
 }
 
-fn draw_all(lines: &Vec<Line>, inc_diagonals: bool) -> u32 {
-    let mut grid = Grid { map: HashMap::new() };
+fn draw_all(lines: &[Line], inc_diagonals: bool) -> u32 {
+    let mut grid = Grid {
+        map: HashMap::new(),
+    };
     for line in lines.iter() {
         if !is_diagonal(line) || inc_diagonals {
             draw_line(&mut grid, line);
@@ -77,12 +82,11 @@ fn draw_all(lines: &Vec<Line>, inc_diagonals: bool) -> u32 {
     grid.map.values().filter(|x| **x > 1).count() as u32
 }
 
-
-fn part1(lines: &Vec<Line>) -> u32 {
+fn part1(lines: &[Line]) -> u32 {
     draw_all(lines, false)
 }
 
-fn part2(lines: &Vec<Line>) -> u32 {
+fn part2(lines: &[Line]) -> u32 {
     draw_all(lines, true)
 }
 
@@ -97,7 +101,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> Vec<Line> {
-        return parse_lines(&shared::read_resource("2021/05/input.test"));
+        parse_lines(&shared::read_resource("2021/05/input.test"))
     }
 
     #[test]

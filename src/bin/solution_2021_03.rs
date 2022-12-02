@@ -28,7 +28,7 @@ fn common_binary(lines: &Vec<&str>, most_common: bool) -> String {
     let mut result = String::new();
     // .first().unwrap() is a thing, but might as well just use [0]
     for i in 0..lines[0].len() {
-        result.push(common_bit(&lines, i, most_common));
+        result.push(common_bit(lines, i, most_common));
     }
     if !most_common {
         result = inv_binary(&result);
@@ -38,7 +38,7 @@ fn common_binary(lines: &Vec<&str>, most_common: bool) -> String {
 
 /// Converts binary string to int value
 fn binary_to_int(s: &str) -> usize {
-    usize::from_str_radix(&s, 2).unwrap()
+    usize::from_str_radix(s, 2).unwrap()
 }
 
 /// Filters lines down to single line matching criteria
@@ -47,10 +47,7 @@ fn filter_binary(lines: &Vec<&str>, most_common: bool) -> String {
     let mut working: Vec<&str> = lines.to_owned();
     for i in 0..line_len {
         let ch = common_bit(&working, i, most_common);
-        working = working
-            .into_iter()
-            .filter(|l| l.chars().nth(i).unwrap() == ch)
-            .collect();
+        working.retain(|l| l.chars().nth(i).unwrap() == ch);
         if working.len() == 1 {
             break;
         }
@@ -58,14 +55,14 @@ fn filter_binary(lines: &Vec<&str>, most_common: bool) -> String {
     working.first().unwrap().to_string()
 }
 
-fn part1(content: &String) -> usize {
-    let lines = shared::split_lines(&content);
+fn part1(content: &str) -> usize {
+    let lines = shared::split_lines(content);
     let gamma = common_binary(&lines, true);
     binary_to_int(&gamma) * binary_to_int(&inv_binary(&gamma))
 }
 
-fn part2(content: &String) -> usize {
-    let lines = shared::split_lines(&content);
+fn part2(content: &str) -> usize {
+    let lines = shared::split_lines(content);
     let oxy_bin = filter_binary(&lines, true);
     let co2_bin = filter_binary(&lines, false);
     binary_to_int(&oxy_bin) * binary_to_int(&co2_bin)
