@@ -7,7 +7,7 @@ const RESOURCE_PREFIX: &str = "resource/";
 /// Read resource file as String.
 pub fn read_resource(f: &str) -> String {
     // Create a path to the desired file
-    let full_loc = String::from(format!("{}{}", RESOURCE_PREFIX, f));
+    let full_loc = format!("{}{}", RESOURCE_PREFIX, f);
     let path = Path::new(&full_loc);
     let display = path.display();
 
@@ -27,6 +27,11 @@ pub fn read_resource(f: &str) -> String {
     s
 }
 
+/// Convenience function to read resource for a particular day.
+pub fn read_res_day(day: &str, filename: &str) -> String {
+    read_resource(&format!("{}/{}", day, filename))
+}
+
 /// Split string on newlines. This will remove empty lines!
 pub fn split_lines(content: &String) -> Vec<&str> {
     content
@@ -37,6 +42,6 @@ pub fn split_lines(content: &String) -> Vec<&str> {
 }
 
 /// Split string on newlines, preserving any empty lines.
-pub fn split_lines_preserve_empty(content: &String) -> Vec<&str> {
+pub fn split_lines_keep_empty(content: &String) -> Vec<&str> {
     content.split('\n').map(|x| x.trim()).collect()
 }

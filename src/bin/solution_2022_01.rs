@@ -2,6 +2,8 @@ extern crate aoc;
 
 use aoc::shared;
 
+const DAY: &str = "2022/01";
+
 #[derive(Debug, Clone)]
 struct Elf {
     carried: Vec<u32>,
@@ -18,17 +20,17 @@ fn gen_elf() -> Elf {
 
 /// Given input text, create corresponding elves
 fn gen_elves(content: &String) -> Vec<Elf> {
-    let lines = shared::split_lines_preserve_empty(content);
+    let lines = shared::split_lines_keep_empty(content);
     let mut result: Vec<Elf> = Vec::new();
     let mut elf = gen_elf();
-    for i in 1..lines.len() {
-        if lines[i].chars().count() == 0 {
+    for l in lines {
+        if l.chars().count() == 0 {
             // Empty line - commit the current elf, start a new one
             result.push(elf);
             elf = gen_elf();
         } else {
             // Update current elf
-            let val = lines[i].trim().parse::<u32>().unwrap();
+            let val = l.trim().parse::<u32>().unwrap();
             elf.carried.push(val);
             elf.total += val;
         }
@@ -53,7 +55,7 @@ fn part2(elves: &Vec<Elf>) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_resource("2022/01/input");
+    let content = shared::read_res_day(DAY, "input");
     let elves = gen_elves(&content);
     println!("Part 1: {}", part1(&elves));
     println!("Part 2: {}", part2(&elves));
@@ -64,7 +66,7 @@ mod tests {
     use super::*;
 
     fn gen_test_elves() -> Vec<Elf> {
-        return gen_elves(&shared::read_resource("2022/01/input.test"));
+        return gen_elves(&shared::read_res_day(DAY, "input.test"));
     }
 
     #[test]
