@@ -89,7 +89,7 @@ fn parse_outcome(outcome: char) -> Outcome {
 
 /// Parse strategy for a round from a line of text
 fn parse_strategy(line: &str) -> Strategy {
-    let parts: Vec<char> = line.split(' ').map(|x| x.chars().next().unwrap()).collect();
+    let parts: Vec<char> = shared::tokenize(line, ' ');
     Strategy {
         opp: parts[0],
         strat: parts[1],
@@ -98,7 +98,7 @@ fn parse_strategy(line: &str) -> Strategy {
 
 /// Parse complete strategy guide
 fn parse_strategy_guide(content: &str) -> Vec<Strategy> {
-    let lines = shared::split_lines(content);
+    let lines = shared::split_lines(content, false);
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
 

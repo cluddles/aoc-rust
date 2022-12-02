@@ -12,13 +12,7 @@ struct State {
 
 /// Read input as a simple list of first ticks
 fn parse_input(content: &str) -> Vec<u32> {
-    let lines = shared::split_lines(content);
-    lines
-        .first()
-        .unwrap()
-        .split(',')
-        .map(|x| x.trim().parse::<u32>().unwrap())
-        .collect()
+    shared::tokenize_first_line(content, ',')
 }
 
 /// Run a single tick on the supplied state

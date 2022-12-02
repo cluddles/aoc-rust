@@ -2,10 +2,7 @@ extern crate aoc;
 use aoc::shared;
 
 fn generate_sonar(content: &str) -> Vec<u32> {
-    content
-        .split('\n')
-        .map(|x| x.trim().parse::<u32>().unwrap())
-        .collect()
+    shared::tokenize(content, '\n')
 }
 
 /// How many values that are greater than previous value?

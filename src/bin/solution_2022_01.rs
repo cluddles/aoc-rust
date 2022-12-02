@@ -20,7 +20,7 @@ fn gen_elf() -> Elf {
 
 /// Given input text, create corresponding elves
 fn gen_elves(content: &str) -> Vec<Elf> {
-    let lines = shared::split_lines_keep_empty(content);
+    let lines = shared::split_lines(content, true);
     let mut result: Vec<Elf> = Vec::new();
     let mut elf = gen_elf();
     for l in lines {

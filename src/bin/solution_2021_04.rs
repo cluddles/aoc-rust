@@ -21,11 +21,7 @@ struct State {
 
 /// Parse line of text of form "12 34 56 78 90" into Vec
 fn parse_board_row(line: &str) -> Vec<i32> {
-    // Filter any length 0 strings to cope with double spaces
-    line.split(' ')
-        .filter(|x| !x.is_empty())
-        .map(|x| x.parse::<i32>().unwrap())
-        .collect()
+    shared::tokenize(line, ' ')
 }
 
 /// Parse 5 lines
@@ -38,7 +34,7 @@ fn parse_board(lines: &[&str]) -> Board {
 /// Parse input from text. First line is call list, then some number of boards
 fn parse_input(content: &str) -> State {
     // Don't forget that this scrubs any empty lines...
-    let lines = shared::split_lines(content);
+    let lines = shared::split_lines(content, false);
     // Calls - reverse so we can pop from the end
     let calls = lines[0]
         .split(',')

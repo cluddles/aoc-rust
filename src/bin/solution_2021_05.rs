@@ -22,10 +22,10 @@ struct Grid {
 }
 
 fn parse_pos(pos: &str) -> Pos {
-    let coords: Vec<&str> = pos.split(',').collect();
+    let coords: Vec<i32> = shared::tokenize(pos, ',');
     Pos {
-        x: coords[0].parse::<i32>().unwrap(),
-        y: coords[1].parse::<i32>().unwrap(),
+        x: coords[0],
+        y: coords[1],
     }
 }
 
@@ -38,7 +38,7 @@ fn parse_line(line: &str) -> Line {
 }
 
 fn parse_lines(content: &str) -> Vec<Line> {
-    let lines = shared::split_lines(content);
+    let lines = shared::split_lines(content, false);
     lines.iter().map(|x| parse_line(x)).collect()
 }
 
