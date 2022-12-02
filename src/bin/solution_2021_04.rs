@@ -133,7 +133,7 @@ fn part2(input: &State) -> u32 {
         let call = pop_call(&mut state);
         apply_call(call, &mut state);
         // Iterate backwards over winners to avoid indexes getting out of whack
-        for (_, &winner) in find_winners(&state).iter().rev().enumerate() {
+        for &winner in find_winners(&state).iter().rev() {
             if state.boards.len() > 1 {
                 state.boards.remove(winner);
             } else {
