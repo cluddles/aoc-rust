@@ -34,8 +34,8 @@ fn dup(val: &[&str]) -> u8 {
 /// Convert char to priority value
 fn priority(val: u8) -> u8 {
     match val {
-        65u8..=90u8 => val - 64u8 + 26u8,
-        97u8..=122u8 => val - 96u8,
+        b'A'..=b'Z' => val - b'A' + 27,
+        b'a'..=b'z' => val - b'a' + 1,
         _ => panic!(),
     }
 }
