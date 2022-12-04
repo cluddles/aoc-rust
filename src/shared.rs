@@ -63,3 +63,40 @@ pub fn tokenize<T: FromStr>(text: &str, delim: char) -> Vec<T> {
 pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Vec<T> {
     tokenize(split_lines(content, true).first().unwrap(), delim)
 }
+
+/// Basic 2d point
+pub struct Point2<T> {
+    pub x: T,
+    pub y: T,
+}
+
+/// Basic 2d grid
+pub struct Grid<T> {
+    dim: Point2<usize>,
+    vals: Vec<Vec<T>>,
+}
+
+impl<T> Grid<T> {
+    /// Create 2d grid
+    pub fn new(vals: Vec<Vec<T>>) -> Grid<T> {
+        Grid {
+            dim: Point2 {
+                x: vals[0].len(),
+                y: vals.len(),
+            },
+            vals,
+        }
+    }
+    /// Get single value from grid
+    pub fn get(&self, x: usize, y: usize) -> &T {
+        &self.vals[y][x]
+    }
+    /// Set single value in grid
+    pub fn set(&mut self, x: usize, y: usize, val: T) {
+        self.vals[y][x] = val;
+    }
+    /// Get grid dimensions
+    pub fn dim(&self) -> &Point2<usize> {
+        &self.dim
+    }
+}

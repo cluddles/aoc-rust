@@ -14,7 +14,10 @@ struct SecRange {
 /// Convert "xxx-yyy" into SecRange
 fn parse_sec_range(sec: &str) -> SecRange {
     let parts: Vec<&str> = sec.split('-').collect();
-    SecRange { from: parts[0].parse().unwrap(), to: parts[1].parse().unwrap() }
+    SecRange {
+        from: parts[0].parse().unwrap(),
+        to: parts[1].parse().unwrap(),
+    }
 }
 
 /// Convert "a-b,c-d" into a pair of SecRanges
@@ -40,12 +43,15 @@ fn overlaps(a: &SecRange, b: &SecRange) -> bool {
 
 /// Count pairs where either range contains the other.
 fn part1(input: &[(SecRange, SecRange)]) -> u32 {
-    input.iter().filter(|(a,b)| contains(a, b) || contains(b, a)).count() as u32
+    input
+        .iter()
+        .filter(|(a, b)| contains(a, b) || contains(b, a))
+        .count() as u32
 }
 
 /// Count pairs where ranges overlap.
 fn part2(input: &[(SecRange, SecRange)]) -> u32 {
-    input.iter().filter(|(a,b)| overlaps(a, b)).count() as u32
+    input.iter().filter(|(a, b)| overlaps(a, b)).count() as u32
 }
 
 fn main() {

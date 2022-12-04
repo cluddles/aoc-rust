@@ -22,7 +22,7 @@ fn part1(input: &[&str]) -> u32 {
 fn parse_patterns(text: &str) -> Vec<String> {
     text.split(' ').map(|x| {
         let mut c: Vec<char> = x.chars().collect();
-        c.sort();
+        c.sort_unstable();
         c.iter().collect()
     }).collect()
 }

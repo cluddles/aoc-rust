@@ -31,7 +31,7 @@ fn score_fac(state: &[u32], pos: u32) -> u32 {
 /// Calculate the median of the given Vec
 fn median(input: &[u32]) -> u32 {
     let mut state = input.to_owned();
-    state.sort();
+    state.sort_unstable();
     state[state.len() / 2]
 }
 
