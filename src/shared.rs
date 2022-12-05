@@ -33,12 +33,22 @@ pub fn read_res_day(day: &str, filename: &str) -> String {
 }
 
 /// Split string on newlines, optionally keeping empty lines.
-pub fn split_lines(content: &str, keep_empty: bool) -> Vec<&str> {
+fn split_lines_ext(content: &str, keep_empty: bool) -> Vec<&str> {
     content
         .split('\n')
         .map(|x| x.trim())
         .filter(|x| keep_empty || !x.is_empty())
         .collect()
+}
+
+/// Split string on newlines, discarding empty lines.
+pub fn split_lines(content: &str) -> Vec<&str> {
+    split_lines_ext(content, false)
+}
+
+/// Split string on newlines, keeping empty lines.
+pub fn split_lines_keep_empty(content: &str) -> Vec<&str> {
+    split_lines_ext(content, true)
 }
 
 /// Parse a value, panicking on error (without relying on Debug)
@@ -61,7 +71,7 @@ pub fn tokenize<T: FromStr>(text: &str, delim: char) -> Vec<T> {
 
 /// Split the first line of given text, converting tokens with parse()
 pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Vec<T> {
-    tokenize(split_lines(content, true).first().unwrap(), delim)
+    tokenize(split_lines(content).first().unwrap(), delim)
 }
 
 /// Basic 2d point

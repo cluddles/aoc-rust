@@ -38,7 +38,7 @@ fn parse_line(line: &str) -> Line {
 }
 
 fn parse_lines(content: &str) -> Vec<Line> {
-    let lines = shared::split_lines(content, false);
+    let lines = shared::split_lines(content);
     lines.iter().map(|x| parse_line(x)).collect()
 }
 

@@ -6,7 +6,7 @@ const DAY: &str = "2022/03";
 
 /// Split each line into 2 compartments
 fn parse_compartments(content: &str) -> Vec<Vec<&str>> {
-    shared::split_lines(content, false)
+    shared::split_lines(content)
         .iter()
         .map(|x| x.split_at(x.len() / 2))
         .map(|x| vec![x.0, x.1])
@@ -15,7 +15,7 @@ fn parse_compartments(content: &str) -> Vec<Vec<&str>> {
 
 /// Split by groups of 3 lines
 fn parse_elf_groups(content: &str) -> Vec<Vec<&str>> {
-    let lines = shared::split_lines(content, false);
+    let lines = shared::split_lines(content);
     let mut result = Vec::new();
     for i in (0..lines.len()).step_by(3) {
         result.push(vec![lines[i], lines[i + 1], lines[i + 2]]);

@@ -98,7 +98,7 @@ fn parse_strategy(line: &str) -> Strategy {
 
 /// Parse complete strategy guide
 fn parse_strategy_guide(content: &str) -> Vec<Strategy> {
-    let lines = shared::split_lines(content, false);
+    let lines = shared::split_lines(content);
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
 

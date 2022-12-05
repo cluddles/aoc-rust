@@ -6,7 +6,7 @@ use aoc::shared::{Grid, Point2};
 const DAY: &str = "2021/09";
 
 fn parse_heightmap(content: &str) -> Grid<u8> {
-    let lines = shared::split_lines(content, false);
+    let lines = shared::split_lines(content);
     Grid::new(
         lines
             .iter()

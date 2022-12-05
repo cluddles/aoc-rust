@@ -22,7 +22,7 @@ fn parse_sec_range(sec: &str) -> SecRange {
 
 /// Convert "a-b,c-d" into a pair of SecRanges
 fn parse_sec_range_pairs(content: &str) -> Vec<(SecRange, SecRange)> {
-    let lines = shared::split_lines(content, false);
+    let lines = shared::split_lines(content);
     let mut result = Vec::new();
     for line in lines {
         let parts: Vec<&str> = line.split(',').collect();

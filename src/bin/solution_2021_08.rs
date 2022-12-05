@@ -5,7 +5,7 @@ use aoc::shared;
 const DAY: &str = "2021/08";
 
 fn parse_input(content: &str) -> Vec<&str> {
-    shared::split_lines(content, false)
+    shared::split_lines(content)
 }
 
 /// Count digits with 2, 3, 4 and 7 segments

@@ -34,7 +34,7 @@ fn parse_board(lines: &[&str]) -> Board {
 /// Parse input from text. First line is call list, then some number of boards
 fn parse_input(content: &str) -> State {
     // Don't forget that this scrubs any empty lines...
-    let lines = shared::split_lines(content, false);
+    let lines = shared::split_lines(content);
     // Calls - reverse so we can pop from the end
     let calls = lines[0]
         .split(',')
