@@ -10,7 +10,7 @@ fn parse_input(content: &str) -> Vec<u32> {
 
 /// Calculate distance between two points
 fn dist(a: u32, b: u32) -> u32 {
-    num::abs(a as i32 - b as i32).unsigned_abs()
+    (a as i32 - b as i32).unsigned_abs()
 }
 
 /// Linear score, where each point of distance costs a flat 1

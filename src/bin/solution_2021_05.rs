@@ -1,7 +1,7 @@
 extern crate aoc;
 
+use std::collections::HashMap;
 use aoc::shared;
-use hashbrown::HashMap;
 
 /// Line, consisting of start and end position (inclusive)
 struct Line {
@@ -44,8 +44,8 @@ fn parse_lines(content: &str) -> Vec<Line> {
 
 /// Yield all points along line
 fn line_points(line: &Line) -> Vec<Pos> {
-    let dx = num::signum(line.end.x - line.start.x);
-    let dy = num::signum(line.end.y - line.start.y);
+    let dx = (line.end.x - line.start.x).signum();
+    let dy = (line.end.y - line.start.y).signum();
     let mut x = line.start.x;
     let mut y = line.start.y;
     let mut result = Vec::new();
