@@ -36,7 +36,6 @@ pub fn read_res_day(day: &str, filename: &str) -> String {
 fn split_lines_ext(content: &str, keep_empty: bool) -> Vec<&str> {
     content
         .split('\n')
-        .map(|x| x.trim())
         .filter(|x| keep_empty || !x.is_empty())
         .collect()
 }
