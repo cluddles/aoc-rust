@@ -14,19 +14,15 @@ struct Move {
 /// Parse the crate block of the input, including the final line with column indexes
 fn parse_crates(content: &str) -> Vec<Vec<u8>> {
     let lines = shared::split_lines(content);
-    let cols = lines[lines.len() - 1]
-        .split(' ')
-        .last()
-        .unwrap()
-        .parse::<usize>()
-        .unwrap();
+    // Get number of columns from the last line
+    let cols = lines.last().unwrap().split_whitespace().count();
     let mut result = vec![Vec::new(); cols];
-    for i in (0..lines.len() - 1).rev() {
-        let line: Vec<char> = lines[i].chars().collect();
-        for j in 0..((line.len() + 1) / 4) {
-            let c = line[(j * 4) + 1];
+    // Iterate backwards over lines (except the last)
+    for line in lines.iter().rev().skip(1) {
+        // [A] [B] [C] etc: meaningful chars are 1, 5, 9, ...
+        for (i, c) in line.chars().skip(1).step_by(4).enumerate() {
             if c != ' ' {
-                result[j].push(c as u8)
+                result[i].push(c as u8)
             }
         }
     }
@@ -35,12 +31,11 @@ fn parse_crates(content: &str) -> Vec<Vec<u8>> {
 
 /// Parse a single move: "move 1 from 1 to 2"
 fn parse_move(line: &str) -> Move {
-    let parts: Vec<&str> = line.split(' ').collect();
+    let parts: Vec<&str> = line.split_whitespace().collect();
     Move {
         quantity: parts[1].parse().unwrap(),
-        // Apply the index-1 correction here to avoid having to do it everywhere later
-        from: parts[3].parse::<usize>().unwrap() - 1,
-        to: parts[5].parse::<usize>().unwrap() - 1,
+        from: parts[3].parse().unwrap(),
+        to: parts[5].parse().unwrap(),
     }
 }
 
@@ -60,10 +55,7 @@ fn parse_input(content: &str) -> (Vec<Vec<u8>>, Vec<Move>) {
 
 /// Summarise the result, by taking the top crate from each stack
 fn summarise(crates: &[Vec<u8>]) -> String {
-    crates
-        .iter()
-        .map(|x| *x.iter().rev().next().unwrap() as char)
-        .collect()
+    crates.iter().map(|x| *x.last().unwrap() as char).collect()
 }
 
 /// Pop/push crates individually
@@ -73,8 +65,8 @@ fn part1(crates: &[Vec<u8>], moves: &Vec<Move>) -> String {
     let mut state = crates.to_owned();
     for m in moves {
         (0..m.quantity).for_each(|_| {
-            let popped = state[m.from].pop().unwrap();
-            state[m.to].push(popped);
+            let popped = state[m.from - 1].pop().unwrap();
+            state[m.to - 1].push(popped);
         });
     }
     summarise(&state)
@@ -85,8 +77,8 @@ fn part2(crates: &[Vec<u8>], moves: &[Move]) -> String {
     let mut state = crates.to_owned();
     for m in moves {
         let mut popped = Vec::new();
-        (0..m.quantity).for_each(|_| popped.push(state[m.from].pop().unwrap()));
-        popped.iter().rev().for_each(|&p| state[m.to].push(p));
+        (0..m.quantity).for_each(|_| popped.push(state[m.from - 1].pop().unwrap()));
+        popped.iter().rev().for_each(|&p| state[m.to - 1].push(p));
     }
     summarise(&state)
 }
