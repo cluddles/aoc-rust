@@ -46,7 +46,7 @@ fn sum_priority(input: &[Vec<&str>]) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_res_day(DAY, "input");
+    let content = shared::input_as_str(DAY, "input");
     println!("Part 1: {}", sum_priority(&parse_compartments(&content)));
     println!("Part 2: {}", sum_priority(&parse_elf_groups(&content)));
 }
@@ -57,13 +57,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = shared::read_res_day(DAY, "input.test");
+        let content = shared::input_as_str(DAY, "input.test");
         assert_eq!(sum_priority(&parse_compartments(&content)), 157);
     }
 
     #[test]
     fn test_part2() {
-        let content = shared::read_res_day(DAY, "input.test");
+        let content = shared::input_as_str(DAY, "input.test");
         assert_eq!(sum_priority(&parse_elf_groups(&content)), 70);
     }
 }

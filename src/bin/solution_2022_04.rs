@@ -55,7 +55,7 @@ fn part2(input: &[(SecRange, SecRange)]) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_res_day(DAY, "input");
+    let content = shared::input_as_str(DAY, "input");
     let input = parse_sec_range_pairs(&content);
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
@@ -66,7 +66,7 @@ mod tests {
     use super::*;
 
     fn gen_input() -> Vec<(SecRange, SecRange)> {
-        parse_sec_range_pairs(&shared::read_res_day(DAY, "input.test"))
+        parse_sec_range_pairs(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]

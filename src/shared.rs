@@ -1,39 +1,14 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::Path;
 use std::str::FromStr;
 
 const RESOURCE_PREFIX: &str = "resource/";
 
-/// Read resource file as String.
-pub fn read_resource(f: &str) -> String {
-    // Create a path to the desired file
-    let full_loc = format!("{}{}", RESOURCE_PREFIX, f);
-    let path = Path::new(&full_loc);
-    let display = path.display();
-
-    // Open the path in read-only mode, returns `io::Result<File>`
-    let mut file = match File::open(path) {
-        Err(why) => panic!("couldn't open {}: {}", display, why),
-        Ok(file) => file,
-    };
-
-    // Read the file contents into a string, returns `io::Result<usize>`
-    let mut s = String::new();
-    if let Err(why) = file.read_to_string(&mut s) {
-        panic!("couldn't read {}: {}", display, why)
-    }
-
-    s
-}
-
 /// Convenience function to read resource for a particular day.
-pub fn read_res_day(day: &str, filename: &str) -> String {
+pub fn input_as_str(day: &str, filename: &str) -> String {
     std::fs::read_to_string(&format!("{}{}/{}", RESOURCE_PREFIX, day, filename)).unwrap()
 }
 
 /// Convenience function to read resource for a particular day, as Vec of u8.
-pub fn read_res_day_u8(day: &str, filename: &str) -> Vec<u8> {
+pub fn input_as_u8(day: &str, filename: &str) -> Vec<u8> {
     std::fs::read(&format!("{}{}/{}", RESOURCE_PREFIX, day, filename)).unwrap()
 }
 

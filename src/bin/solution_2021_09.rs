@@ -75,7 +75,7 @@ fn part2(heights: &Grid<u8>) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_res_day(DAY, "input");
+    let content = shared::input_as_str(DAY, "input");
     let heightmap = parse_heightmap(&content);
     println!("Part 1: {}", part1(&heightmap));
     println!("Part 2: {}", part2(&heightmap));
@@ -87,13 +87,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = parse_heightmap(&shared::read_res_day(DAY, "input.test"));
+        let input = parse_heightmap(&shared::input_as_str(DAY, "input.test"));
         assert_eq!(part1(&input), 15);
     }
 
     #[test]
     fn test_part2() {
-        let input = parse_heightmap(&shared::read_res_day(DAY, "input.test"));
+        let input = parse_heightmap(&shared::input_as_str(DAY, "input.test"));
         assert_eq!(part2(&input), 1134);
     }
 }

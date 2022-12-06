@@ -144,7 +144,7 @@ fn part2(moves: &[Strategy]) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_res_day(DAY, "input");
+    let content = shared::input_as_str(DAY, "input");
     let rounds = parse_strategy_guide(&content);
     println!("Part 1: {}", part1(&rounds));
     println!("Part 2: {}", part2(&rounds));
@@ -155,7 +155,7 @@ mod tests {
     use super::*;
 
     fn gen_test_moves() -> Vec<Strategy> {
-        parse_strategy_guide(&shared::read_res_day(DAY, "input.test"))
+        parse_strategy_guide(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]

@@ -1,6 +1,8 @@
 extern crate aoc;
 use aoc::shared;
 
+const DAY: &str = "2021/01";
+
 fn generate_sonar(content: &str) -> Vec<u32> {
     shared::tokenize(content, '\n')
 }
@@ -31,7 +33,7 @@ fn part2(sonar: &Vec<u32>) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_resource("2021/01/input");
+    let content = shared::input_as_str(DAY, "input");
     let sonar = generate_sonar(&content);
     println!("Part 1: {}", part1(&sonar));
     println!("Part 2: {}", part2(&sonar));
@@ -42,7 +44,7 @@ mod tests {
     use super::*;
 
     fn gen_test_sonar() -> Vec<u32> {
-        generate_sonar(&shared::read_resource("2021/01/input.test"))
+        generate_sonar(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]

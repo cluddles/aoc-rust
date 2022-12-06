@@ -30,7 +30,7 @@ fn part2(text: &[u8]) -> usize {
 }
 
 fn main() {
-    let input = shared::read_res_day_u8(DAY, "input");
+    let input = shared::input_as_u8(DAY, "input");
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }

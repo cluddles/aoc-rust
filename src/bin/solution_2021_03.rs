@@ -1,6 +1,8 @@
 extern crate aoc;
 use aoc::shared;
 
+const DAY: &str = "2021/03";
+
 /// Find most/least common bit value at given position
 fn common_bit(lines: &Vec<&str>, pos: usize, most_common: bool) -> char {
     let count = lines
@@ -69,7 +71,7 @@ fn part2(content: &str) -> usize {
 }
 
 fn main() {
-    let content = shared::read_resource("2021/03/input");
+    let content = shared::input_as_str(DAY, "input");
     println!("Part 1: {}", part1(&content));
     println!("Part 2: {}", part2(&content));
 }
@@ -80,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = shared::read_resource("2021/03/input.test");
+        let content = shared::input_as_str(DAY, "input.test");
         let lines = shared::split_lines(&content);
         let most_common = common_binary(&lines, true);
         assert_eq!(most_common, "10110");
@@ -90,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let content = shared::read_resource("2021/03/input.test");
+        let content = shared::input_as_str(DAY, "input.test");
         let lines = shared::split_lines(&content);
         let oxy_bin = filter_binary(&lines, true);
         let co2_bin = filter_binary(&lines, false);

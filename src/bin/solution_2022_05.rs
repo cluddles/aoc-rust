@@ -84,7 +84,7 @@ fn part2(crates: &[Vec<u8>], moves: &[Move]) -> String {
 }
 
 fn main() {
-    let content = shared::read_res_day(DAY, "input");
+    let content = shared::input_as_str(DAY, "input");
     let (crates, moves) = parse_input(&content);
     println!("Part 1: {}", part1(&crates, &moves));
     println!("Part 2: {}", part2(&crates, &moves));
@@ -95,7 +95,7 @@ mod tests {
     use super::*;
 
     fn gen_input() -> (Vec<Vec<u8>>, Vec<Move>) {
-        parse_input(&shared::read_res_day(DAY, "input.test"))
+        parse_input(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]

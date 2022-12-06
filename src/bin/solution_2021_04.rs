@@ -1,6 +1,8 @@
 extern crate aoc;
 use aoc::shared;
 
+const DAY: &str = "2021/04";
+
 /// A Bingo board
 #[derive(Debug, Clone)]
 struct Board {
@@ -140,7 +142,7 @@ fn part2(input: &State) -> u32 {
 }
 
 fn main() {
-    let input = parse_input(&shared::read_resource("2021/04/input"));
+    let input = parse_input(&shared::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
@@ -150,7 +152,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> State {
-        parse_input(&shared::read_resource("2021/04/input.test"))
+        parse_input(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]

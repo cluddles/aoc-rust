@@ -123,7 +123,7 @@ fn part2(input: &[&str]) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_res_day(DAY, "input");
+    let content = shared::input_as_str(DAY, "input");
     let input = parse_input(&content);
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
@@ -135,13 +135,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = shared::read_res_day(DAY, "input.test");
+        let content = shared::input_as_str(DAY, "input.test");
         assert_eq!(part1(&parse_input(&content)), 26);
     }
 
     #[test]
     fn test_part2() {
-        let content = shared::read_res_day(DAY, "input.test");
+        let content = shared::input_as_str(DAY, "input.test");
         assert_eq!(part2(&parse_input(&content)), 61229);
     }
 }

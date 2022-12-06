@@ -1,6 +1,8 @@
 extern crate aoc;
 use aoc::shared;
 
+const DAY: &str = "2021/02";
+
 struct Instruction {
     name: String,
     amount: u32,
@@ -55,7 +57,7 @@ fn part2(instructions: &Vec<Instruction>) -> u32 {
 }
 
 fn main() {
-    let content = shared::read_resource("2021/02/input");
+    let content = shared::input_as_str(DAY, "input");
     let instructions = generate_instructions(&content);
     println!("Part 1: {}", part1(&instructions));
     println!("Part 2: {}", part2(&instructions));
@@ -66,7 +68,7 @@ mod tests {
     use super::*;
 
     fn gen_test_instructions() -> Vec<Instruction> {
-        generate_instructions(&shared::read_resource("2021/02/input.test"))
+        generate_instructions(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]

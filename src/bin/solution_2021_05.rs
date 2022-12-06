@@ -3,6 +3,8 @@ extern crate aoc;
 use std::collections::HashMap;
 use aoc::shared;
 
+const DAY: &str = "2021/05";
+
 /// Line, consisting of start and end position (inclusive)
 struct Line {
     start: Pos,
@@ -91,7 +93,7 @@ fn part2(lines: &[Line]) -> u32 {
 }
 
 fn main() {
-    let lines = parse_lines(&shared::read_resource("2021/05/input"));
+    let lines = parse_lines(&shared::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&lines));
     println!("Part 2: {}", part2(&lines));
 }
@@ -101,7 +103,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> Vec<Line> {
-        parse_lines(&shared::read_resource("2021/05/input.test"))
+        parse_lines(&shared::input_as_str(DAY, "input.test"))
     }
 
     #[test]
