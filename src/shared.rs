@@ -29,7 +29,12 @@ pub fn read_resource(f: &str) -> String {
 
 /// Convenience function to read resource for a particular day.
 pub fn read_res_day(day: &str, filename: &str) -> String {
-    read_resource(&format!("{}/{}", day, filename))
+    std::fs::read_to_string(&format!("{}{}/{}", RESOURCE_PREFIX, day, filename)).unwrap()
+}
+
+/// Convenience function to read resource for a particular day, as Vec of u8.
+pub fn read_res_day_u8(day: &str, filename: &str) -> Vec<u8> {
+    std::fs::read(&format!("{}{}/{}", RESOURCE_PREFIX, day, filename)).unwrap()
 }
 
 /// Split string on newlines, optionally keeping empty lines.
