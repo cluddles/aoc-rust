@@ -64,12 +64,14 @@ pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Vec<T> {
 }
 
 /// Basic 2d point
-pub struct Point2<T> {
+#[derive(Debug, Copy, Clone)]
+pub struct Point2<T: Copy + Clone> {
     pub x: T,
     pub y: T,
 }
 
 /// Basic 2d grid
+#[derive(Debug, Clone)]
 pub struct Grid<T: Clone> {
     dim: Point2<usize>,
     vals: Vec<T>,
@@ -116,4 +118,5 @@ impl<T: Clone> Grid<T> {
     pub fn dim(&self) -> &Point2<usize> {
         &self.dim
     }
+
 }
