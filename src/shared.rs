@@ -80,30 +80,49 @@ pub struct Point2<T> {
 }
 
 /// Basic 2d grid
-pub struct Grid<T> {
+pub struct Grid<T: Clone> {
     dim: Point2<usize>,
-    vals: Vec<Vec<T>>,
+    vals: Vec<T>,
 }
 
-impl<T> Grid<T> {
-    /// Create 2d grid
-    pub fn new(vals: Vec<Vec<T>>) -> Grid<T> {
+impl<T: Clone> Grid<T> {
+
+    /// Create grid filled with val
+    pub fn new(val: T, x: usize, y: usize) -> Grid<T> {
         Grid {
-            dim: Point2 {
-                x: vals[0].len(),
-                y: vals.len(),
-            },
-            vals,
+            dim: Point2 { x, y },
+            vals: vec![val; x * y],
         }
     }
+
+    /// Create grid, copying values from source
+    pub fn from_2d(source: &Vec<Vec<T>>) -> Grid<T> {
+        let dim = Point2 {
+            x: source[0].len(),
+            y: source.len(),
+        };
+        let vals = source
+            .iter()
+            .flat_map(|x| {
+                if x.len() != dim.x {
+                    panic!("row lengths vary")
+                }
+                x.to_vec()
+            })
+            .collect();
+        Grid { vals, dim }
+    }
+
     /// Get single value from grid
     pub fn get(&self, x: usize, y: usize) -> &T {
-        &self.vals[y][x]
+        &self.vals[y * self.dim.x + x]
     }
+
     /// Set single value in grid
     pub fn set(&mut self, x: usize, y: usize, val: T) {
-        self.vals[y][x] = val;
+        self.vals[y * self.dim.x + x] = val;
     }
+
     /// Get grid dimensions
     pub fn dim(&self) -> &Point2<usize> {
         &self.dim

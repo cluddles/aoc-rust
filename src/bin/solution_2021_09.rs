@@ -7,8 +7,8 @@ const DAY: &str = "2021/09";
 
 fn parse_heightmap(content: &str) -> Grid<u8> {
     let lines = shared::split_lines(content);
-    Grid::new(
-        lines
+    Grid::from_2d(
+        &lines
             .iter()
             .map(|x| x.chars().map(|c| c as u8 - b'0').collect())
             .collect(),
@@ -65,7 +65,7 @@ fn basin_iter(heights: &Grid<u8>, basins: &mut Grid<u8>, x: usize, y: usize) -> 
 
 /// Product of largest three basin sizes
 fn part2(heights: &Grid<u8>) -> u32 {
-    let mut basins = Grid::new(vec![vec![0; heights.dim().x]; heights.dim().y]);
+    let mut basins = Grid::new(0, heights.dim().x, heights.dim().y);
     let mut basin_sizes: Vec<u32> = lowpoints(heights)
         .iter()
         .map(|x| basin_iter(heights, &mut basins, x.x, x.y))
