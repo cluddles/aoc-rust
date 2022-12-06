@@ -39,26 +39,22 @@ fn main() {
 mod tests {
     use super::*;
 
-    fn str_to_u8(text: &str) -> Vec<u8> {
-        text.chars().map(|x| x as u8).collect()
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&str_to_u8("mjqjpqmgbljsphdztnvjfqwrcgsmlb")), 7);
-        assert_eq!(part1(&str_to_u8("bvwbjplbgvbhsrlpgdmjqwftvncz")), 5);
-        assert_eq!(part1(&str_to_u8("nppdvjthqldpwncqszvftbrmjlhg")), 6);
-        assert_eq!(part1(&str_to_u8("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg")), 10);
-        assert_eq!(part1(&str_to_u8("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")), 11);
+        assert_eq!(part1(&shared::str_to_u8("mjqjpqmgbljsphdztnvjfqwrcgsmlb")), 7);
+        assert_eq!(part1(&shared::str_to_u8("bvwbjplbgvbhsrlpgdmjqwftvncz")), 5);
+        assert_eq!(part1(&shared::str_to_u8("nppdvjthqldpwncqszvftbrmjlhg")), 6);
+        assert_eq!(part1(&shared::str_to_u8("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg")), 10);
+        assert_eq!(part1(&shared::str_to_u8("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")), 11);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&str_to_u8("mjqjpqmgbljsphdztnvjfqwrcgsmlb")), 19);
-        assert_eq!(part2(&str_to_u8("bvwbjplbgvbhsrlpgdmjqwftvncz")), 23);
-        assert_eq!(part2(&str_to_u8("nppdvjthqldpwncqszvftbrmjlhg")), 23);
-        assert_eq!(part2(&str_to_u8("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg")), 29);
-        assert_eq!(part2(&str_to_u8("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")), 26);
+        assert_eq!(part2(&shared::str_to_u8("mjqjpqmgbljsphdztnvjfqwrcgsmlb")), 19);
+        assert_eq!(part2(&shared::str_to_u8("bvwbjplbgvbhsrlpgdmjqwftvncz")), 23);
+        assert_eq!(part2(&shared::str_to_u8("nppdvjthqldpwncqszvftbrmjlhg")), 23);
+        assert_eq!(part2(&shared::str_to_u8("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg")), 29);
+        assert_eq!(part2(&shared::str_to_u8("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")), 26);
     }
 
 }

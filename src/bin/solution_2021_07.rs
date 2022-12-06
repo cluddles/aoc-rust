@@ -20,7 +20,7 @@ fn score_linear(state: &[u32], pos: u32) -> u32 {
 
 /// Calculate factorial
 fn fac(x: u32) -> u32 {
-    (1..=x).sum()
+    (x * (x + 1)) / 2
 }
 
 /// Factorial score, where each point of distance costs 1 more than the previous

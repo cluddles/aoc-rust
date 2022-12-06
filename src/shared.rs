@@ -12,6 +12,16 @@ pub fn input_as_u8(day: &str, filename: &str) -> Vec<u8> {
     std::fs::read(&format!("{}{}/{}", RESOURCE_PREFIX, day, filename)).unwrap()
 }
 
+/// Convert string to Vec of u8
+pub fn str_to_u8(text: &str) -> Vec<u8> {
+    text.chars().map(|x| x as u8).collect()
+}
+
+/// Convert Vec of u8 to string
+pub fn u8_to_str(input: &[u8]) -> String {
+    input.iter().map(|&x| x as char).collect()
+}
+
 /// Split string on newlines, optionally keeping empty lines.
 fn split_lines_ext(content: &str, keep_empty: bool) -> Vec<&str> {
     content
@@ -66,7 +76,6 @@ pub struct Grid<T: Clone> {
 }
 
 impl<T: Clone> Grid<T> {
-
     /// Create grid filled with val
     pub fn new(val: T, x: usize, y: usize) -> Grid<T> {
         Grid {
