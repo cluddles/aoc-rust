@@ -5,6 +5,8 @@ use aoc::shared;
 
 const DAY: &str = "2021/12";
 
+// Potential improvement: stop using strings everywhere; cave lookup by usize or something?
+
 /// Contains all permitted node -> node moves
 struct Rulebook {
     connections: HashMap<String, Vec<String>>

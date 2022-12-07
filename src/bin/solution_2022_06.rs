@@ -2,7 +2,7 @@ extern crate aoc;
 
 use aoc::shared;
 
-const DAY: &str = "2022/05";
+const DAY: &str = "2022/06";
 
 /// True if the given slice contains any duplicate values
 fn contains_duplicates(text: &[u8]) -> bool {
