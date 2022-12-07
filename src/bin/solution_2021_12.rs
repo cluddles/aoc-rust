@@ -1,112 +1,162 @@
 extern crate aoc;
 
-use std::collections::HashMap;
 use aoc::shared;
+use std::collections::HashMap;
 
 const DAY: &str = "2021/12";
 
-// Potential improvement: stop using strings everywhere; cave lookup by usize or something?
+const START: usize = 0;
+const END: usize = 1;
 
-/// Contains all permitted node -> node moves
-struct Rulebook {
-    connections: HashMap<String, Vec<String>>
+/// All cave data
+#[derive(Default, Debug)]
+struct CaveSystem {
+    caves: Vec<Cave>,
+    cave_lookup: HashMap<String, usize>,
+}
+
+impl CaveSystem {
+    /// Parse input text as CaveSystem object
+    fn parse(input: &str) -> CaveSystem {
+        let mut result = CaveSystem {
+            ..Default::default()
+        };
+        result.get_or_create_cave("start");
+        result.get_or_create_cave("end");
+        let lines = shared::split_lines(input);
+        for line in lines {
+            let parts: Vec<&str> = line.split('-').collect();
+            let (a, b) = (parts[0], parts[1]);
+            let c1 = result.get_or_create_cave(a);
+            let c2 = result.get_or_create_cave(b);
+            result.caves[c1].connections.push(c2);
+            result.caves[c2].connections.push(c1);
+        }
+        result
+    }
+
+    /// Lookup cave with given name, creating it if it doesn't exist.
+    fn get_or_create_cave(&mut self, name: &str) -> usize {
+        if let Some(&x) = self.cave_lookup.get(name) {
+            return x;
+        }
+        self.caves.push(Cave {
+            name: name.to_string(),
+            ..Default::default()
+        });
+        let index = self.caves.len() - 1;
+        self.cave_lookup.insert(name.to_string(), self.caves.len() - 1);
+        index
+    }
+
+    /// Determine whether the given node can be visited, based on previous visits
+    fn can_visit(&self, history: &[usize], node: usize, dupes_allowed: u8) -> Visit {
+        if node != START {
+            if self.caves[node].is_big() || !history.contains(&node) {
+                return Visit::Allowed(false);
+            }
+            if dupes_allowed > 0 {
+                return Visit::Allowed(true);
+            }
+        }
+        Visit::Denied
+    }
+
+    /// Calculate all successful routes for the given history and current node
+    fn traverse(&self, path: &[usize], current: usize, dupes_allowed: u8) -> Vec<Vec<usize>> {
+        // Add current node to history
+        let mut path = path.to_owned();
+        path.push(current);
+        // If we've reached the end then this route was successful - return it!
+        if current == END {
+            return vec![path];
+        }
+        // Otherwise, traverse all valid connected nodes
+        let mut result: Vec<Vec<usize>> = Vec::new();
+        let nodes = &self.caves[current].connections;
+        for &node in nodes {
+            // Big caves can be revisited; everything else cannot
+            if let Visit::Allowed(dupe) = self.can_visit(&path, node, dupes_allowed) {
+                let d = if dupe {
+                    dupes_allowed - 1
+                } else {
+                    dupes_allowed
+                };
+                self.traverse(&path, node, d)
+                    .into_iter()
+                    .for_each(|path| result.push(path));
+            }
+        }
+        result
+    }
+}
+
+/// A single cave: name and connections (as indexes)
+#[derive(Default, Debug)]
+struct Cave {
+    name: String,
+    connections: Vec<usize>,
+}
+
+impl Cave {
+    /// True if this cave is "big" (has an uppercase name)
+    fn is_big(&self) -> bool {
+        self.name.starts_with(|c: char| c.is_uppercase())
+    }
 }
 
 /// Whether node can be visited, and whether it is a valid duplicate visit (part 2)
+#[derive(Debug)]
 enum Visit {
     Allowed(bool),
     Denied,
 }
 
-fn parse_rulebook(input: &str) -> Rulebook {
-    let mut connections: HashMap<String, Vec<String>> = HashMap::new();
-    let lines = shared::split_lines(input);
-    for line in lines {
-        let parts: Vec<&str> = line.split('-').collect();
-        let (a, b) = (parts[0], parts[1]);
-        connections.entry(a.to_string()).or_default().push(b.to_string());
-        connections.entry(b.to_string()).or_default().push(a.to_string());
-    }
-    Rulebook { connections }
+fn part1(cs: &CaveSystem) -> u32 {
+    cs.traverse(&[], START, 0).len() as u32
 }
 
-/// Determine whether the given node can be visited, based on previous visits
-fn can_visit(history: &[String], node: &String, dupes_allowed: u8) -> Visit {
-    if node != "start" {
-        if node.starts_with(|c: char| c.is_uppercase()) || !history.contains(node) { return Visit::Allowed(false); }
-        if dupes_allowed > 0 { return Visit::Allowed(true); }
-    }
-    Visit::Denied
-}
-
-/// Calculate all successful routes for the given history and current node
-fn traverse(path: &[String], current: &str, rulebook: &Rulebook, dupes_allowed: u8) -> Vec<Vec<String>> {
-    // Add current node to history
-    let mut path = path.to_owned();
-    path.push(current.to_string());
-    // If we've reached the end then this route was successful - return it!
-    if current == "end" {
-        return vec![path];
-    }
-    // Otherwise, traverse all valid connected nodes
-    let mut result: Vec<Vec<String>> = Vec::new();
-    let nodes = rulebook.connections.get(current).unwrap();
-    for node in nodes {
-        // Big caves can be revisited; everything else cannot
-        if let Visit::Allowed(dupe) = can_visit(&path, node, dupes_allowed) {
-            let d = if dupe { dupes_allowed - 1 } else { dupes_allowed };
-            traverse(&path, node, rulebook, d).into_iter().for_each(|path| result.push(path));
-        }
-    }
-    result
-}
-
-fn part1(rulebook: &Rulebook) -> u32 {
-    traverse(&[], "start", rulebook, 0).len() as u32
-}
-
-fn part2(rulebook: &Rulebook) -> u32 {
-    traverse(&[], "start", rulebook, 1).len() as u32
+fn part2(cs: &CaveSystem) -> u32 {
+    cs.traverse(&[], START, 1).len() as u32
 }
 
 fn main() {
-    let rulebook = parse_rulebook(&shared::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&rulebook));
-    println!("Part 2: {}", part2(&rulebook));
+    let cs = CaveSystem::parse(&shared::input_as_str(DAY, "input"));
+    println!("Part 1: {}", part1(&cs));
+    println!("Part 2: {}", part2(&cs));
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn rulebook(filename: &str) -> Rulebook {
-        parse_rulebook(&shared::input_as_str(DAY, filename))
+    fn gen_test_cave_system(filename: &str) -> CaveSystem {
+        CaveSystem::parse(&shared::input_as_str(DAY, filename))
     }
 
     #[test]
     fn test_part1_1() {
-        assert_eq!(part1(&rulebook("input.test.1")), 10);
+        assert_eq!(part1(&gen_test_cave_system("input.test.1")), 10);
     }
     #[test]
     fn test_part1_2() {
-        assert_eq!(part1(&rulebook("input.test.2")), 19);
+        assert_eq!(part1(&gen_test_cave_system("input.test.2")), 19);
     }
     #[test]
     fn test_part1_3() {
-        assert_eq!(part1(&rulebook("input.test.3")), 226);
+        assert_eq!(part1(&gen_test_cave_system("input.test.3")), 226);
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(part2(&rulebook("input.test.1")), 36);
+        assert_eq!(part2(&gen_test_cave_system("input.test.1")), 36);
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(part2(&rulebook("input.test.2")), 103);
+        assert_eq!(part2(&gen_test_cave_system("input.test.2")), 103);
     }
     #[test]
     fn test_part2_3() {
-        assert_eq!(part2(&rulebook("input.test.3")), 3509);
+        assert_eq!(part2(&gen_test_cave_system("input.test.3")), 3509);
     }
-
 }
