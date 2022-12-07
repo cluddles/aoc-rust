@@ -1,0 +1,158 @@
+extern crate aoc;
+
+use aoc::shared;
+use aoc::shared::Point2;
+use std::collections::HashSet;
+use std::fmt::Formatter;
+
+const DAY: &str = "2021/13";
+
+#[derive(Default, Debug, Clone)]
+struct Paper {
+    points: HashSet<Point2<usize>>,
+}
+
+impl Paper {
+    /// Create new Paper by applying the fold predicate and op to all points
+    fn apply_fold_inner(
+        &self,
+        fold_pos: usize,
+        predicate: fn(Point2<usize>, usize) -> bool,
+        op: fn(Point2<usize>, usize) -> Point2<usize>,
+    ) -> Paper {
+        let mut points = HashSet::new();
+        self.points.iter().for_each(|&p| {
+            if predicate(p, fold_pos) {
+                points.insert(op(p, fold_pos));
+            } else {
+                points.insert(p);
+            }
+        });
+        Paper { points }
+    }
+
+    /// Create new Paper by applying the given fold to it
+    fn apply_fold(&self, fold: &Fold) -> Paper {
+        match fold {
+            Fold::X(val) => self.apply_fold_inner(
+                *val,
+                |p: Point2<usize>, v| p.x > v,
+                |p: Point2<usize>, v| Point2 {
+                    x: v - (p.x - v),
+                    y: p.y,
+                },
+            ),
+            Fold::Y(val) => self.apply_fold_inner(
+                *val,
+                |p: Point2<usize>, v| p.y > v,
+                |p: Point2<usize>, v| Point2 {
+                    x: p.x,
+                    y: v - (p.y - v),
+                },
+            ),
+        }
+    }
+}
+
+impl std::fmt::Display for Paper {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        // Determine w,h required (max in each dimension, +1)
+        let (w, h) = (
+            self.points.iter().map(|p| p.x).max().unwrap() + 1,
+            self.points.iter().map(|p| p.y).max().unwrap() + 1,
+        );
+        // Render state (could use a Grid; probably not required)
+        for y in 0..h {
+            for x in 0..w {
+                write!(f, "{}", if self.points.contains(&Point2 { x, y }) {
+                    "#"
+                } else {
+                    "."
+                })?
+            }
+            writeln!(f)?
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug)]
+enum Fold {
+    X(usize),
+    Y(usize),
+}
+
+#[derive(Debug)]
+struct Input {
+    paper: Paper,
+    folds: Vec<Fold>,
+}
+
+impl Input {
+    /// Parse input text as paper, folds
+    fn parse(text: &str) -> Input {
+        let parts: Vec<&str> = text.split("\n\n").collect();
+        // Before the cut - paper points, comma delim
+        let mut paper = Paper {
+            ..Default::default()
+        };
+        shared::split_lines(parts[0]).iter().for_each(|x| {
+            let tokens = shared::tokenize(x, ',');
+            paper.points.insert(Point2 {
+                x: tokens[0],
+                y: tokens[1],
+            });
+        });
+        // After the cut - folds; axis and position, equals delim
+        let mut folds = Vec::new();
+        shared::split_lines(parts[1]).iter().for_each(|x| {
+            let tokens: Vec<&str> = x.split('=').collect();
+            let num = tokens[1].parse::<usize>().unwrap();
+            folds.push(if tokens[0].ends_with('x') {
+                Fold::X(num)
+            } else {
+                Fold::Y(num)
+            });
+        });
+        Input { paper, folds }
+    }
+}
+
+fn part1(input: &Input) -> usize {
+    let fold = input.folds.first().unwrap();
+    input.paper.apply_fold(fold).points.len()
+}
+
+fn part2(input: &Input) -> usize {
+    let paper = input
+        .folds
+        .iter()
+        .fold(input.paper.clone(), |p, f| p.apply_fold(f));
+    println!("{}", paper);
+    paper.points.len()
+}
+
+fn main() {
+    let input = Input::parse(&shared::input_as_str(DAY, "input"));
+    println!("Part 1: {}", part1(&input));
+    println!("Part 2: {}", part2(&input));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn gen_test_input(filename: &str) -> Input {
+        Input::parse(&shared::input_as_str(DAY, filename))
+    }
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(part1(&gen_test_input("input.test")), 17);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2(&gen_test_input("input.test")), 16);
+    }
+}

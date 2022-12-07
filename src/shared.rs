@@ -64,7 +64,7 @@ pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Vec<T> {
 }
 
 /// Basic 2d point
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Point2<T: Copy + Clone> {
     pub x: T,
     pub y: T,
