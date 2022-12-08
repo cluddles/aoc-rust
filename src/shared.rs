@@ -63,14 +63,24 @@ pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Vec<T> {
     tokenize(split_lines(content).first().unwrap(), delim)
 }
 
-/// Basic 2d point
+/// Basic 2d point.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Point2<T: Copy + Clone> {
+pub struct Point2<T: Copy> {
     pub x: T,
     pub y: T,
 }
 
-/// Basic 2d grid
+impl <T: Copy> Point2<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Point2 { x, y }
+    }
+
+    pub fn to_tuple(&self) -> (T, T) {
+        (self.x, self.y)
+    }
+}
+
+/// Thin wrapper for a vector, to treat it as a 2d grid of values
 #[derive(Debug, Clone)]
 pub struct Grid<T: Clone> {
     dim: Point2<usize>,
@@ -79,19 +89,16 @@ pub struct Grid<T: Clone> {
 
 impl<T: Clone> Grid<T> {
     /// Create grid filled with val
-    pub fn new(val: T, x: usize, y: usize) -> Grid<T> {
+    pub fn new(val: T, w: usize, h: usize) -> Self {
         Grid {
-            dim: Point2 { x, y },
-            vals: vec![val; x * y],
+            dim: Point2 { x: w, y: h },
+            vals: vec![val; w * h],
         }
     }
 
     /// Create grid, copying values from source
     pub fn from_2d(source: &Vec<Vec<T>>) -> Grid<T> {
-        let dim = Point2 {
-            x: source[0].len(),
-            y: source.len(),
-        };
+        let dim = Point2::new(source[0].len(), source.len());
         let vals = source
             .iter()
             .flat_map(|x| {
@@ -119,4 +126,18 @@ impl<T: Clone> Grid<T> {
         &self.dim
     }
 
+    /// True if given position is an edge
+    pub fn is_edge(&self, x: usize, y: usize) -> bool {
+        x == 0 || y == 0 || x == self.dim.x - 1 || y == self.dim.y - 1
+    }
+
+    /// True if given position is in bounds
+    pub fn is_in_bounds(&self, x: usize, y: usize) -> bool {
+        x < self.dim.x && y < self.dim.y
+    }
+
+    /// Provides immutable access to the underlying vector, mostly for iteration
+    pub fn vec(&self) -> &Vec<T> {
+        &self.vals
+    }
 }
