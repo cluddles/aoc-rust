@@ -68,11 +68,10 @@ fn rope_step(rope_pos: &mut RopePos, dir: &Dir4) {
     move_in_dir4(&mut rope_pos[0], dir);
     for i in 1..rope_pos.len() {
         let prev = rope_pos[i-1];
-        let sep = Pos::new(prev.x - rope_pos[i].x, prev.y - rope_pos[i].y);
+        let sep = prev - rope_pos[i];
         let delta = Pos::new(sep.x.signum(), sep.y.signum());
         if sep.x.abs() >= 2 || sep.y.abs() >= 2 {
-            rope_pos[i].x += delta.x;
-            rope_pos[i].y += delta.y;
+            rope_pos[i] += delta;
         }
     }
     // println!("{:?}: {:?}", dir, rope_pos);
@@ -80,7 +79,7 @@ fn rope_step(rope_pos: &mut RopePos, dir: &Dir4) {
 
 /// Apply all motions to rope of specified length.
 fn simulate_rope(motions: &MotionList, rope_length: usize) -> usize {
-    let mut rope_pos: RopePos = vec![Point2::new(0, 0); rope_length];
+    let mut rope_pos: RopePos = vec![Point2::default(); rope_length];
     let mut result: HashSet<Pos> = HashSet::new();
     for motion in motions {
         for _ in 0..motion.1 {

@@ -1,3 +1,5 @@
+use num_traits::{Num, NumAssign};
+use std::ops::{Add, AddAssign, Sub, SubAssign};
 use std::str::FromStr;
 
 const RESOURCE_PREFIX: &str = "resource/";
@@ -70,13 +72,46 @@ pub struct Point2<T: Copy> {
     pub y: T,
 }
 
-impl <T: Copy> Point2<T> {
+impl<T: Copy> Point2<T> {
     pub fn new(x: T, y: T) -> Self {
         Point2 { x, y }
     }
-
     pub fn to_tuple(&self) -> (T, T) {
         (self.x, self.y)
+    }
+}
+
+impl<T: Default + Copy> Point2<T> {
+    pub fn default() -> Self {
+        Self::new(T::default(), T::default())
+    }
+}
+
+impl<T: Copy + Num> Add for Point2<T> {
+    type Output = Self;
+    fn add(self, other: Self) -> Self::Output {
+        Self::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<T: Copy + Num> Sub for Point2<T> {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self::Output {
+        Self::new(self.x - other.x, self.y - other.y)
+    }
+}
+
+impl<T: Copy + NumAssign> AddAssign for Point2<T> {
+    fn add_assign(&mut self, other: Self) {
+        self.x += other.x;
+        self.y += other.y;
+    }
+}
+
+impl<T: Copy + NumAssign> SubAssign for Point2<T> {
+    fn sub_assign(&mut self, other: Self) {
+        self.x -= other.x;
+        self.y -= other.y;
     }
 }
 
@@ -139,5 +174,12 @@ impl<T: Clone> Grid<T> {
     /// Provides immutable access to the underlying vector, mostly for iteration
     pub fn vec(&self) -> &Vec<T> {
         &self.vals
+    }
+}
+
+impl<T: Default + Clone> Grid<T> {
+    /// Create grid filled with default
+    pub fn new_with_default(w: usize, h: usize) -> Self {
+        Grid::new(T::default(), w, h)
     }
 }

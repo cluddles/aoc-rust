@@ -75,7 +75,7 @@ fn scenic_score(treemap: &Treemap, x: usize, y: usize) -> u32 {
 
 fn part1(treemap: &Treemap) -> u32 {
     let (w, h) = treemap.dim().to_tuple();
-    let mut vis: Grid<bool> = Grid::new(false, w, h);
+    let mut vis: Grid<bool> = Grid::new_with_default(w, h);
     for y in 0..h {
         scan_vis(treemap, &mut vis, &Point2::new(0, y), &Dir4::Right);
         scan_vis(treemap, &mut vis, &Point2::new(w - 1, y), &Dir4::Left);

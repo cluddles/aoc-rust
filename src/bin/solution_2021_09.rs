@@ -65,7 +65,7 @@ fn basin_iter(heights: &Grid<u8>, basins: &mut Grid<u8>, x: usize, y: usize) -> 
 
 /// Product of largest three basin sizes
 fn part2(heights: &Grid<u8>) -> u32 {
-    let mut basins = Grid::new(0, heights.dim().x, heights.dim().y);
+    let mut basins = Grid::new_with_default(heights.dim().x, heights.dim().y);
     let mut basin_sizes: Vec<u32> = lowpoints(heights)
         .iter()
         .map(|x| basin_iter(heights, &mut basins, x.x, x.y))
