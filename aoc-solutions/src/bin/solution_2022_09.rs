@@ -1,8 +1,8 @@
-extern crate aoc;
+extern crate aoc_lib;
 
 use std::collections::HashSet;
-use aoc::shared;
-use aoc::shared::Point2;
+use aoc_lib::common;
+use aoc_lib::Point2;
 use std::str::FromStr;
 
 const DAY: &str = "2022/09";
@@ -50,7 +50,7 @@ fn move_in_dir4(p: &mut Pos, dir: &Dir4) {
 }
 
 fn parse_input(content: &str) -> MotionList {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     lines
         .iter()
         .map(|x| {
@@ -99,7 +99,7 @@ fn part2(motions: &MotionList) -> usize {
 }
 
 fn main() {
-    let input = parse_input(&shared::input_as_str(DAY, "input"));
+    let input = parse_input(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
@@ -109,7 +109,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input(filename: &str) -> MotionList {
-        parse_input(&shared::input_as_str(DAY, filename))
+        parse_input(&common::input_as_str(DAY, filename))
     }
 
     #[test]

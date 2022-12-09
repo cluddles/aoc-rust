@@ -1,7 +1,7 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
-use aoc::shared::{Grid, Point2};
+use aoc_lib::common;
+use aoc_lib::{Point2, Grid};
 
 const DAY: &str = "2022/08";
 
@@ -27,7 +27,7 @@ fn move_in_dir4(p: &mut Point2<usize>, dir: &Dir4) {
 
 fn parse_treemap(content: &str) -> Treemap {
     // TODO shared code (2021/09)
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     Grid::from_2d(
         &lines
             .iter()
@@ -75,7 +75,7 @@ fn scenic_score(treemap: &Treemap, x: usize, y: usize) -> u32 {
 
 fn part1(treemap: &Treemap) -> u32 {
     let (w, h) = treemap.dim().to_tuple();
-    let mut vis: Grid<bool> = Grid::new_with_default(w, h);
+    let mut vis: Grid<bool> = Grid::new_default(w, h);
     for y in 0..h {
         scan_vis(treemap, &mut vis, &Point2::new(0, y), &Dir4::Right);
         scan_vis(treemap, &mut vis, &Point2::new(w - 1, y), &Dir4::Left);
@@ -99,7 +99,7 @@ fn part2(treemap: &Treemap) -> u32 {
 }
 
 fn main() {
-    let treemap = parse_treemap(&shared::input_as_str(DAY, "input"));
+    let treemap = parse_treemap(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&treemap));
     println!("Part 2: {}", part2(&treemap));
 }
@@ -109,7 +109,7 @@ mod tests {
     use super::*;
 
     fn gen_test_treemap() -> Treemap {
-        parse_treemap(&shared::input_as_str(DAY, "input.test"))
+        parse_treemap(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

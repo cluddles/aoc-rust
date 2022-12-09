@@ -1,6 +1,6 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -109,8 +109,8 @@ fn part2(fs: &Rc<Dir>) -> u32 {
 }
 
 fn main() {
-    let input = shared::input_as_str(DAY, "input");
-    let lines = shared::split_lines(&input);
+    let input = common::input_as_str(DAY, "input");
+    let lines = common::split_lines(&input);
     let fs = build_fs(&lines);
     println!("Part 1: {}", part1(&fs));
     println!("Part 2: {}", part2(&fs));
@@ -121,7 +121,7 @@ mod tests {
     use super::*;
 
     fn gen_test_fs() -> Rc<Dir> {
-        build_fs(&shared::split_lines(&shared::input_as_str(
+        build_fs(&common::split_lines(&common::input_as_str(
             DAY,
             "input.test",
         )))

@@ -1,10 +1,11 @@
-extern crate aoc;
-use aoc::shared;
+extern crate aoc_lib;
+
+use aoc_lib::common;
 
 const DAY: &str = "2021/01";
 
 fn generate_sonar(content: &str) -> Vec<u32> {
-    shared::tokenize(content, '\n')
+    common::tokenize(content, '\n')
 }
 
 /// How many values that are greater than previous value?
@@ -33,7 +34,7 @@ fn part2(sonar: &Vec<u32>) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let sonar = generate_sonar(&content);
     println!("Part 1: {}", part1(&sonar));
     println!("Part 2: {}", part2(&sonar));
@@ -44,7 +45,7 @@ mod tests {
     use super::*;
 
     fn gen_test_sonar() -> Vec<u32> {
-        generate_sonar(&shared::input_as_str(DAY, "input.test"))
+        generate_sonar(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

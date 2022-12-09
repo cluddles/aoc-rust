@@ -1,5 +1,6 @@
-extern crate aoc;
-use aoc::shared;
+extern crate aoc_lib;
+
+use aoc_lib::common;
 
 const DAY: &str = "2021/03";
 
@@ -58,20 +59,20 @@ fn filter_binary(lines: &Vec<&str>, most_common: bool) -> String {
 }
 
 fn part1(content: &str) -> usize {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     let gamma = common_binary(&lines, true);
     binary_to_int(&gamma) * binary_to_int(&inv_binary(&gamma))
 }
 
 fn part2(content: &str) -> usize {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     let oxy_bin = filter_binary(&lines, true);
     let co2_bin = filter_binary(&lines, false);
     binary_to_int(&oxy_bin) * binary_to_int(&co2_bin)
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     println!("Part 1: {}", part1(&content));
     println!("Part 2: {}", part2(&content));
 }
@@ -82,8 +83,8 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = shared::input_as_str(DAY, "input.test");
-        let lines = shared::split_lines(&content);
+        let content = common::input_as_str(DAY, "input.test");
+        let lines = common::split_lines(&content);
         let most_common = common_binary(&lines, true);
         assert_eq!(most_common, "10110");
         assert_eq!(inv_binary(&most_common), "01001");
@@ -92,8 +93,8 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let content = shared::input_as_str(DAY, "input.test");
-        let lines = shared::split_lines(&content);
+        let content = common::input_as_str(DAY, "input.test");
+        let lines = common::split_lines(&content);
         let oxy_bin = filter_binary(&lines, true);
         let co2_bin = filter_binary(&lines, false);
         assert_eq!(oxy_bin, "10111");

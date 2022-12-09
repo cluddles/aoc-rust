@@ -1,6 +1,6 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 use std::collections::HashMap;
 
 const DAY: &str = "2021/12";
@@ -23,7 +23,7 @@ impl CaveSystem {
         };
         result.get_or_create_cave("start");
         result.get_or_create_cave("end");
-        let lines = shared::split_lines(input);
+        let lines = common::split_lines(input);
         for line in lines {
             let parts: Vec<&str> = line.split('-').collect();
             let (a, b) = (parts[0], parts[1]);
@@ -121,7 +121,7 @@ fn part2(cs: &CaveSystem) -> u32 {
 }
 
 fn main() {
-    let cs = CaveSystem::parse(&shared::input_as_str(DAY, "input"));
+    let cs = CaveSystem::parse(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&cs));
     println!("Part 2: {}", part2(&cs));
 }
@@ -131,7 +131,7 @@ mod tests {
     use super::*;
 
     fn gen_test_cave_system(filename: &str) -> CaveSystem {
-        CaveSystem::parse(&shared::input_as_str(DAY, filename))
+        CaveSystem::parse(&common::input_as_str(DAY, filename))
     }
 
     #[test]

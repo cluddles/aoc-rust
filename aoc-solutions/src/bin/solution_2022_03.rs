@@ -1,12 +1,12 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2022/03";
 
 /// Split each line into 2 compartments
 fn parse_compartments(content: &str) -> Vec<Vec<&str>> {
-    shared::split_lines(content)
+    common::split_lines(content)
         .iter()
         .map(|x| x.split_at(x.len() / 2))
         .map(|x| vec![x.0, x.1])
@@ -15,7 +15,7 @@ fn parse_compartments(content: &str) -> Vec<Vec<&str>> {
 
 /// Split by groups of 3 lines
 fn parse_elf_groups(content: &str) -> Vec<Vec<&str>> {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     let mut result = Vec::new();
     for i in (0..lines.len()).step_by(3) {
         result.push(vec![lines[i], lines[i + 1], lines[i + 2]]);
@@ -46,7 +46,7 @@ fn sum_priority(input: &[Vec<&str>]) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     println!("Part 1: {}", sum_priority(&parse_compartments(&content)));
     println!("Part 2: {}", sum_priority(&parse_elf_groups(&content)));
 }
@@ -57,13 +57,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = shared::input_as_str(DAY, "input.test");
+        let content = common::input_as_str(DAY, "input.test");
         assert_eq!(sum_priority(&parse_compartments(&content)), 157);
     }
 
     #[test]
     fn test_part2() {
-        let content = shared::input_as_str(DAY, "input.test");
+        let content = common::input_as_str(DAY, "input.test");
         assert_eq!(sum_priority(&parse_elf_groups(&content)), 70);
     }
 }

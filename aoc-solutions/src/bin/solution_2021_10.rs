@@ -1,11 +1,11 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2021/10";
 
 fn parse_input(content: &str) -> Vec<&str> {
-    shared::split_lines(content)
+    common::split_lines(content)
 }
 
 /// Returns closing counterpart for opening character
@@ -92,7 +92,7 @@ fn part2(input: &[&str]) -> u64 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let input = parse_input(&content);
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
@@ -104,13 +104,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = &shared::input_as_str(DAY, "input.test");
+        let input = &common::input_as_str(DAY, "input.test");
         assert_eq!(part1(&parse_input(input)), 26397);
     }
 
     #[test]
     fn test_part2() {
-        let input = &shared::input_as_str(DAY, "input.test");
+        let input = &common::input_as_str(DAY, "input.test");
         assert_eq!(part2(&parse_input(input)), 288957);
     }
 }

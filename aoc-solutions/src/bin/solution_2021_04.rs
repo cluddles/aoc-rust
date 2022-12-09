@@ -1,5 +1,6 @@
-extern crate aoc;
-use aoc::shared;
+extern crate aoc_lib;
+
+use aoc_lib::common;
 
 const DAY: &str = "2021/04";
 
@@ -23,7 +24,7 @@ struct State {
 
 /// Parse line of text of form "12 34 56 78 90" into Vec
 fn parse_board_row(line: &str) -> Vec<i32> {
-    shared::tokenize(line, ' ')
+    common::tokenize(line, ' ')
 }
 
 /// Parse 5 lines
@@ -36,7 +37,7 @@ fn parse_board(lines: &[&str]) -> Board {
 /// Parse input from text. First line is call list, then some number of boards
 fn parse_input(content: &str) -> State {
     // Don't forget that this scrubs any empty lines...
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     // Calls - reverse so we can pop from the end
     let calls = lines[0]
         .split(',')
@@ -142,7 +143,7 @@ fn part2(input: &State) -> u32 {
 }
 
 fn main() {
-    let input = parse_input(&shared::input_as_str(DAY, "input"));
+    let input = parse_input(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
@@ -152,7 +153,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> State {
-        parse_input(&shared::input_as_str(DAY, "input.test"))
+        parse_input(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

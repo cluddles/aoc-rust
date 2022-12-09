@@ -1,11 +1,11 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2021/07";
 
 fn parse_input(content: &str) -> Vec<u32> {
-    shared::tokenize_first_line(content, ',')
+    common::tokenize_first_line(content, ',')
 }
 
 /// Calculate distance between two points
@@ -49,7 +49,7 @@ fn part2(input: &[u32]) -> u32 {
 }
 
 fn main() {
-    let input = parse_input(&shared::input_as_str(DAY, "input"));
+    let input = parse_input(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
@@ -59,7 +59,7 @@ mod tests {
     use super::*;
 
     fn gen_input() -> Vec<u32> {
-        parse_input(&shared::input_as_str(DAY, "input.test"))
+        parse_input(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

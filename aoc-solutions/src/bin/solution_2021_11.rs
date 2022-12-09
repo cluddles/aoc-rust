@@ -1,7 +1,7 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
-use aoc::shared::Grid;
+use aoc_lib::common;
+use aoc_lib::Grid;
 
 const DAY: &str = "2021/11";
 
@@ -18,7 +18,7 @@ const ADJACENTS: &[(i8, i8); 8] = &[
 ];
 
 fn parse_input(input: &str) -> Grid<u8> {
-    let lines = shared::split_lines(input);
+    let lines = common::split_lines(input);
     Grid::from_2d(
         &lines
             .iter()
@@ -86,7 +86,7 @@ fn part2(input: &Grid<u8>) -> u32 {
 }
 
 fn main() {
-    let input = parse_input(&shared::input_as_str(DAY, "input"));
+    let input = parse_input(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
@@ -96,7 +96,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> Grid<u8> {
-        parse_input(&shared::input_as_str(DAY, "input.test"))
+        parse_input(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

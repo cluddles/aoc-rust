@@ -1,6 +1,6 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2022/05";
 
@@ -13,7 +13,7 @@ struct Move {
 
 /// Parse the crate block of the input, including the final line with column indexes
 fn parse_crates(content: &str) -> Vec<Vec<u8>> {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     // Get number of columns from the last line
     let cols = lines.last().unwrap().split_whitespace().count();
     let mut result = vec![Vec::new(); cols];
@@ -41,7 +41,7 @@ fn parse_move(line: &str) -> Move {
 
 /// Parse the move block of the input
 fn parse_moves(content: &str) -> Vec<Move> {
-    shared::split_lines(content)
+    common::split_lines(content)
         .iter()
         .map(|x| parse_move(x))
         .collect()
@@ -84,7 +84,7 @@ fn part2(crates: &[Vec<u8>], moves: &[Move]) -> String {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let (crates, moves) = parse_input(&content);
     println!("Part 1: {}", part1(&crates, &moves));
     println!("Part 2: {}", part2(&crates, &moves));
@@ -95,7 +95,7 @@ mod tests {
     use super::*;
 
     fn gen_input() -> (Vec<Vec<u8>>, Vec<Move>) {
-        parse_input(&shared::input_as_str(DAY, "input.test"))
+        parse_input(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

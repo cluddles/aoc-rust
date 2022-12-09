@@ -1,7 +1,7 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
-use aoc::shared::Point2;
+use aoc_lib::common;
+use aoc_lib::Point2;
 use std::collections::HashSet;
 use std::fmt::Formatter;
 
@@ -96,8 +96,8 @@ impl Input {
         let mut paper = Paper {
             ..Default::default()
         };
-        shared::split_lines(parts[0]).iter().for_each(|x| {
-            let tokens = shared::tokenize(x, ',');
+        common::split_lines(parts[0]).iter().for_each(|x| {
+            let tokens = common::tokenize(x, ',');
             paper.points.insert(Point2 {
                 x: tokens[0],
                 y: tokens[1],
@@ -105,7 +105,7 @@ impl Input {
         });
         // After the cut - folds; axis and position, equals delim
         let mut folds = Vec::new();
-        shared::split_lines(parts[1]).iter().for_each(|x| {
+        common::split_lines(parts[1]).iter().for_each(|x| {
             let tokens: Vec<&str> = x.split('=').collect();
             let num = tokens[1].parse::<usize>().unwrap();
             folds.push(if tokens[0].ends_with('x') {
@@ -133,7 +133,7 @@ fn part2(input: &Input) -> usize {
 }
 
 fn main() {
-    let input = Input::parse(&shared::input_as_str(DAY, "input"));
+    let input = Input::parse(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
 }
@@ -143,7 +143,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input(filename: &str) -> Input {
-        Input::parse(&shared::input_as_str(DAY, filename))
+        Input::parse(&common::input_as_str(DAY, filename))
     }
 
     #[test]

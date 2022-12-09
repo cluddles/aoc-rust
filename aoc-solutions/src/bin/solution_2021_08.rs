@@ -1,11 +1,11 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2021/08";
 
 fn parse_input(content: &str) -> Vec<&str> {
-    shared::split_lines(content)
+    common::split_lines(content)
 }
 
 /// Count digits with 2, 3, 4 and 7 segments
@@ -123,7 +123,7 @@ fn part2(input: &[&str]) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let input = parse_input(&content);
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
@@ -135,13 +135,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = shared::input_as_str(DAY, "input.test");
+        let content = common::input_as_str(DAY, "input.test");
         assert_eq!(part1(&parse_input(&content)), 26);
     }
 
     #[test]
     fn test_part2() {
-        let content = shared::input_as_str(DAY, "input.test");
+        let content = common::input_as_str(DAY, "input.test");
         assert_eq!(part2(&parse_input(&content)), 61229);
     }
 }

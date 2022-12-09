@@ -1,6 +1,6 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2022/04";
 
@@ -22,7 +22,7 @@ fn parse_sec_range(sec: &str) -> SecRange {
 
 /// Convert "a-b,c-d" into a pair of SecRanges
 fn parse_sec_range_pairs(content: &str) -> Vec<(SecRange, SecRange)> {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     let mut result = Vec::new();
     for line in lines {
         let parts: Vec<&str> = line.split(',').collect();
@@ -55,7 +55,7 @@ fn part2(input: &[(SecRange, SecRange)]) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let input = parse_sec_range_pairs(&content);
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
@@ -66,7 +66,7 @@ mod tests {
     use super::*;
 
     fn gen_input() -> Vec<(SecRange, SecRange)> {
-        parse_sec_range_pairs(&shared::input_as_str(DAY, "input.test"))
+        parse_sec_range_pairs(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

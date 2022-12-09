@@ -1,5 +1,6 @@
-extern crate aoc;
-use aoc::shared;
+extern crate aoc_lib;
+
+use aoc_lib::common;
 
 const DAY: &str = "2021/02";
 
@@ -57,7 +58,7 @@ fn part2(instructions: &Vec<Instruction>) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let instructions = generate_instructions(&content);
     println!("Part 1: {}", part1(&instructions));
     println!("Part 2: {}", part2(&instructions));
@@ -68,7 +69,7 @@ mod tests {
     use super::*;
 
     fn gen_test_instructions() -> Vec<Instruction> {
-        generate_instructions(&shared::input_as_str(DAY, "input.test"))
+        generate_instructions(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

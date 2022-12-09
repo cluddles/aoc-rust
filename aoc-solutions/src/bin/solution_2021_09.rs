@@ -1,12 +1,12 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
-use aoc::shared::{Grid, Point2};
+use aoc_lib::common;
+use aoc_lib::{Point2, Grid};
 
 const DAY: &str = "2021/09";
 
 fn parse_heightmap(content: &str) -> Grid<u8> {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     Grid::from_2d(
         &lines
             .iter()
@@ -65,7 +65,7 @@ fn basin_iter(heights: &Grid<u8>, basins: &mut Grid<u8>, x: usize, y: usize) -> 
 
 /// Product of largest three basin sizes
 fn part2(heights: &Grid<u8>) -> u32 {
-    let mut basins = Grid::new_with_default(heights.dim().x, heights.dim().y);
+    let mut basins = Grid::new_default(heights.dim().x, heights.dim().y);
     let mut basin_sizes: Vec<u32> = lowpoints(heights)
         .iter()
         .map(|x| basin_iter(heights, &mut basins, x.x, x.y))
@@ -75,7 +75,7 @@ fn part2(heights: &Grid<u8>) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let heightmap = parse_heightmap(&content);
     println!("Part 1: {}", part1(&heightmap));
     println!("Part 2: {}", part2(&heightmap));
@@ -87,13 +87,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = parse_heightmap(&shared::input_as_str(DAY, "input.test"));
+        let input = parse_heightmap(&common::input_as_str(DAY, "input.test"));
         assert_eq!(part1(&input), 15);
     }
 
     #[test]
     fn test_part2() {
-        let input = parse_heightmap(&shared::input_as_str(DAY, "input.test"));
+        let input = parse_heightmap(&common::input_as_str(DAY, "input.test"));
         assert_eq!(part2(&input), 1134);
     }
 }

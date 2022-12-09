@@ -1,6 +1,6 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2022/01";
 
@@ -20,7 +20,7 @@ fn gen_elf() -> Elf {
 
 /// Given input text, create corresponding elves
 fn gen_elves(content: &str) -> Vec<Elf> {
-    let lines = shared::split_lines_keep_empty(content);
+    let lines = common::split_lines_keep_empty(content);
     let mut result: Vec<Elf> = Vec::new();
     let mut elf = gen_elf();
     for l in lines {
@@ -55,7 +55,7 @@ fn part2(elves: &[Elf]) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let elves = gen_elves(&content);
     println!("Part 1: {}", part1(&elves));
     println!("Part 2: {}", part2(&elves));
@@ -66,7 +66,7 @@ mod tests {
     use super::*;
 
     fn gen_test_elves() -> Vec<Elf> {
-        gen_elves(&shared::input_as_str(DAY, "input.test"))
+        gen_elves(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

@@ -1,7 +1,7 @@
-extern crate aoc;
+extern crate aoc_lib;
 
 use std::collections::HashMap;
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2021/05";
 
@@ -24,7 +24,7 @@ struct Grid {
 }
 
 fn parse_pos(pos: &str) -> Pos {
-    let coords: Vec<i32> = shared::tokenize(pos, ',');
+    let coords: Vec<i32> = common::tokenize(pos, ',');
     Pos {
         x: coords[0],
         y: coords[1],
@@ -40,7 +40,7 @@ fn parse_line(line: &str) -> Line {
 }
 
 fn parse_lines(content: &str) -> Vec<Line> {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     lines.iter().map(|x| parse_line(x)).collect()
 }
 
@@ -93,7 +93,7 @@ fn part2(lines: &[Line]) -> u32 {
 }
 
 fn main() {
-    let lines = parse_lines(&shared::input_as_str(DAY, "input"));
+    let lines = parse_lines(&common::input_as_str(DAY, "input"));
     println!("Part 1: {}", part1(&lines));
     println!("Part 2: {}", part2(&lines));
 }
@@ -103,7 +103,7 @@ mod tests {
     use super::*;
 
     fn gen_test_input() -> Vec<Line> {
-        parse_lines(&shared::input_as_str(DAY, "input.test"))
+        parse_lines(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]

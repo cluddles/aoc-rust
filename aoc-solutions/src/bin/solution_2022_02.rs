@@ -1,6 +1,6 @@
-extern crate aoc;
+extern crate aoc_lib;
 
-use aoc::shared;
+use aoc_lib::common;
 
 const DAY: &str = "2022/02";
 
@@ -89,7 +89,7 @@ fn parse_outcome(outcome: char) -> Outcome {
 
 /// Parse strategy for a round from a line of text
 fn parse_strategy(line: &str) -> Strategy {
-    let parts: Vec<char> = shared::tokenize(line, ' ');
+    let parts: Vec<char> = common::tokenize(line, ' ');
     Strategy {
         opp: parts[0],
         strat: parts[1],
@@ -98,7 +98,7 @@ fn parse_strategy(line: &str) -> Strategy {
 
 /// Parse complete strategy guide
 fn parse_strategy_guide(content: &str) -> Vec<Strategy> {
-    let lines = shared::split_lines(content);
+    let lines = common::split_lines(content);
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
 
@@ -144,7 +144,7 @@ fn part2(moves: &[Strategy]) -> u32 {
 }
 
 fn main() {
-    let content = shared::input_as_str(DAY, "input");
+    let content = common::input_as_str(DAY, "input");
     let rounds = parse_strategy_guide(&content);
     println!("Part 1: {}", part1(&rounds));
     println!("Part 2: {}", part2(&rounds));
@@ -155,7 +155,7 @@ mod tests {
     use super::*;
 
     fn gen_test_moves() -> Vec<Strategy> {
-        parse_strategy_guide(&shared::input_as_str(DAY, "input.test"))
+        parse_strategy_guide(&common::input_as_str(DAY, "input.test"))
     }
 
     #[test]
