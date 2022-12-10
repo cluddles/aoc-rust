@@ -1,60 +1,60 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/01";
+struct Year2021Day01;
 
-fn generate_sonar(content: &str) -> Vec<u32> {
-    common::tokenize(content, '\n')
-}
+type Input = Vec<u32>;
 
-/// How many values that are greater than previous value?
-fn part1(sonar: &Vec<u32>) -> u32 {
-    let mut count: u32 = 0;
-    for i in 1..sonar.len() {
-        if sonar[i] > sonar[i - 1] {
-            count += 1;
-        }
+impl Solution<Input> for Year2021Day01 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Sonar Sweep", 2021, 1)
     }
-    count
-}
 
-/// How many triplets ("sliding window") with sum greater than the previous triplet?
-fn part2(sonar: &Vec<u32>) -> u32 {
-    let mut prev: u32 = 0;
-    let mut count: u32 = 0;
-    for i in 2..sonar.len() {
-        let sum3 = sonar[i - 2] + sonar[i - 1] + sonar[i];
-        if prev != 0 && sum3 > prev {
-            count += 1;
-        }
-        prev = sum3
+    fn parse_input(&self, resource: &dyn Resource) -> Input {
+        common::tokenize(&resource.as_str(), '\n')
     }
-    count
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult {
+        Ok(input
+            .iter()
+            .enumerate()
+            .skip(1)
+            .filter(|(i, &x)| x > input[i - 1])
+            .count()
+            .to_string())
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult {
+        let mut prev = 0;
+        let mut count = 0;
+        for i in 0..input.len() - 2 {
+            let sum3 = input[i..i + 2].iter().sum();
+            if prev != 0 && sum3 > prev {
+                count += 1;
+            }
+            prev = sum3
+        }
+        Ok(count.to_string())
+    }
 }
 
 fn main() {
-    let content = common::input_as_str(DAY, "input");
-    let sonar = generate_sonar(&content);
-    println!("Part 1: {}", part1(&sonar));
-    println!("Part 2: {}", part2(&sonar));
+    run_solution(&Year2021Day01);
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_sonar() -> Vec<u32> {
-        generate_sonar(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_sonar()), 7);
+        assert_eq!(test_exec_part1(&Year2021Day01), "7");
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_sonar()), 5);
+        assert_eq!(test_exec_part2(&Year2021Day01), "5");
     }
 }

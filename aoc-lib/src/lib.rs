@@ -1,4 +1,5 @@
 pub mod common;
+pub mod harness;
 
 mod grid;
 pub use grid::Grid;
