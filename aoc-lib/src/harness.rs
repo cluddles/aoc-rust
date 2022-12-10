@@ -49,6 +49,10 @@ pub trait Resource {
     // input_as_str, input_as_u8
     fn as_str(&self) -> String;
     fn as_u8(&self) -> Vec<u8>;
+    fn as_str_lines(&self) -> Vec<String> {
+        let lines = self.as_str();
+        lines.split('\n').filter(|x| !x.is_empty()).map(|x| x.to_owned()).collect()
+    }
 }
 
 pub struct FileResource {
