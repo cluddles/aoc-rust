@@ -1,8 +1,7 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
-
-const DAY: &str = "2022/03";
+use aoc_lib::harness::*;
 
 /// Split each line into 2 compartments
 fn parse_compartments(content: &str) -> Vec<Vec<&str>> {
@@ -45,10 +44,29 @@ fn sum_priority(input: &[Vec<&str>]) -> u32 {
     input.iter().map(|x| priority(dup(x)) as u32).sum()
 }
 
+type Input = String;
+type Output = u32;
+struct Year2022Day03;
+impl Solution<Input, Output> for Year2022Day03 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Rucksack Reorganization", 2022, 3)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> Input {
+        resource.as_str()
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(sum_priority(&parse_compartments(input)))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(sum_priority(&parse_elf_groups(input)))
+    }
+}
+
 fn main() {
-    let content = common::input_as_str(DAY, "input");
-    println!("Part 1: {}", sum_priority(&parse_compartments(&content)));
-    println!("Part 2: {}", sum_priority(&parse_elf_groups(&content)));
+    run_solution(&Year2022Day03)
 }
 
 #[cfg(test)]
@@ -57,13 +75,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let content = common::input_as_str(DAY, "input.test");
-        assert_eq!(sum_priority(&parse_compartments(&content)), 157);
+        assert_eq!(test_solution(&Year2022Day03, SolutionPart::One), 157);
     }
 
     #[test]
     fn test_part2() {
-        let content = common::input_as_str(DAY, "input.test");
-        assert_eq!(sum_priority(&parse_elf_groups(&content)), 70);
+        assert_eq!(test_solution(&Year2022Day03, SolutionPart::Two), 70);
     }
 }

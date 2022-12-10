@@ -1,12 +1,9 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
+use aoc_lib::harness::*;
+
 use std::collections::HashMap;
-
-const DAY: &str = "2021/12";
-
-const START: usize = 0;
-const END: usize = 1;
 
 /// All cave data
 #[derive(Default, Debug)]
@@ -16,6 +13,9 @@ struct CaveSystem {
 }
 
 impl CaveSystem {
+    const START: usize = 0;
+    const END: usize = 1;
+
     /// Parse input text as CaveSystem object
     fn parse(input: &str) -> CaveSystem {
         let mut result = CaveSystem {
@@ -51,7 +51,7 @@ impl CaveSystem {
 
     /// Determine whether the given node can be visited, based on previous visits
     fn can_visit(&self, history: &[usize], node: usize, dupes_allowed: u8) -> Visit {
-        if node != START {
+        if node != CaveSystem::START {
             if self.caves[node].is_big() || !history.contains(&node) {
                 return Visit::Allowed(false);
             }
@@ -68,7 +68,7 @@ impl CaveSystem {
         let mut path = path.to_owned();
         path.push(current);
         // If we've reached the end then this route was successful - return it!
-        if current == END {
+        if current == CaveSystem::END {
             return vec![path];
         }
         // Otherwise, traverse all valid connected nodes
@@ -112,51 +112,58 @@ enum Visit {
     Denied,
 }
 
-fn part1(cs: &CaveSystem) -> u32 {
-    cs.traverse(&[], START, 0).len() as u32
-}
+struct Year2021Day12;
 
-fn part2(cs: &CaveSystem) -> u32 {
-    cs.traverse(&[], START, 1).len() as u32
+impl Solution<CaveSystem, usize> for Year2021Day12 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Passage Pathing", 2021, 12)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> CaveSystem {
+        CaveSystem::parse(&resource.as_str())
+    }
+
+    fn solve_part1(&self, input: &CaveSystem) -> SolutionResult<usize> {
+        Ok(input.traverse(&[], CaveSystem::START, 0).len())
+    }
+
+    fn solve_part2(&self, input: &CaveSystem) -> SolutionResult<usize> {
+        Ok(input.traverse(&[], CaveSystem::START, 1).len())
+    }
 }
 
 fn main() {
-    let cs = CaveSystem::parse(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&cs));
-    println!("Part 2: {}", part2(&cs));
+    run_solution(&Year2021Day12);
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_cave_system(filename: &str) -> CaveSystem {
-        CaveSystem::parse(&common::input_as_str(DAY, filename))
-    }
-
     #[test]
     fn test_part1_1() {
-        assert_eq!(part1(&gen_test_cave_system("input.test.1")), 10);
+        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::One, "input.test.1"), 10);
     }
     #[test]
     fn test_part1_2() {
-        assert_eq!(part1(&gen_test_cave_system("input.test.2")), 19);
+        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::One, "input.test.2"), 19);
     }
     #[test]
     fn test_part1_3() {
-        assert_eq!(part1(&gen_test_cave_system("input.test.3")), 226);
+        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::One, "input.test.3"), 226);
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(part2(&gen_test_cave_system("input.test.1")), 36);
+        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::Two, "input.test.1"), 36);
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(part2(&gen_test_cave_system("input.test.2")), 103);
+        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::Two, "input.test.2"), 103);
     }
     #[test]
     fn test_part2_3() {
-        assert_eq!(part2(&gen_test_cave_system("input.test.3")), 3509);
+        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::Two, "input.test.3"), 3509);
     }
+
 }

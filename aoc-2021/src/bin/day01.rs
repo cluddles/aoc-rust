@@ -6,8 +6,9 @@ use aoc_lib::harness::*;
 struct Year2021Day01;
 
 type Input = Vec<u32>;
+type Output = usize;
 
-impl Solution<Input> for Year2021Day01 {
+impl Solution<Input, Output> for Year2021Day01 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Sonar Sweep", 2021, 1)
     }
@@ -16,17 +17,16 @@ impl Solution<Input> for Year2021Day01 {
         common::tokenize(&resource.as_str(), '\n')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult {
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
         Ok(input
             .iter()
             .enumerate()
             .skip(1)
             .filter(|(i, &x)| x > input[i - 1])
-            .count()
-            .to_string())
+            .count())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult {
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
         let mut prev = 0;
         let mut count = 0;
         for i in 0..input.len() - 2 {
@@ -36,7 +36,7 @@ impl Solution<Input> for Year2021Day01 {
             }
             prev = sum3
         }
-        Ok(count.to_string())
+        Ok(count)
     }
 }
 
@@ -50,11 +50,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2021Day01, SolutionPart::One), "7");
+        assert_eq!(test_solution(&Year2021Day01, SolutionPart::One), 7);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2021Day01, SolutionPart::Two), "5");
+        assert_eq!(test_solution(&Year2021Day01, SolutionPart::Two), 5);
     }
 }

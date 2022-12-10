@@ -1,6 +1,7 @@
+use std::fmt::Display;
 use crate::common;
 
-pub fn run_solution<S: Solution<I>, I> (solution: &S) {
+pub fn run_solution<S: Solution<I, O>, I, O: Display> (solution: &S) {
     // Get info from solution
     let info = solution.info();
     println!("--- [{}] Day {}: {} ---", info.year, info.day, info.title);
@@ -8,10 +9,8 @@ pub fn run_solution<S: Solution<I>, I> (solution: &S) {
     let resource = FileResource { filename: "input", year: info.year, day: info.day };
     // Call proc on solution to parse input into relevant part1/2 input type
     let input = solution.parse_input(&resource);
-    // Call part 1
     if let Ok(v) = solution.solve_part1(&input) { println!("Part 1: {}", v) }
-    // Call part 2
-    if let Ok(v) = solution.solve_part2(&input) { println!("Part 1: {}", v) }
+    if let Ok(v) = solution.solve_part2(&input) { println!("Part 2: {}", v) }
 }
 
 pub enum SolutionPart {
@@ -19,10 +18,22 @@ pub enum SolutionPart {
     Two,
 }
 
-pub fn test_solution<S: Solution<I>, I> (solution: &S, part: SolutionPart) -> String {
+pub fn test_solution<S: Solution<I, O>, I, O> (solution: &S, part: SolutionPart) -> O {
     let info = solution.info();
-    let resource = FileResource { filename: "input.test", year: info.year, day: info.day };
-    let input = solution.parse_input(&resource);
+    test_solution_inner(solution, part, &FileResource { filename: "input.test", year: info.year, day: info.day })
+}
+
+pub fn test_solution_ext<S: Solution<I, O>, I, O> (solution: &S, part: SolutionPart, filename: &'static str) -> O {
+    let info = solution.info();
+    test_solution_inner(solution, part, &FileResource { filename, year: info.year, day: info.day })
+}
+
+pub fn test_solution_inline<S: Solution<I, O>, I, O> (solution: &S, part: SolutionPart, text: &'static str) -> O {
+    test_solution_inner(solution, part, &InlineResource { text })
+}
+
+fn test_solution_inner<S: Solution<I, O>, I, O> (solution: &S, part: SolutionPart, resource: &dyn Resource) -> O {
+    let input = solution.parse_input(resource);
     let result = match part {
         SolutionPart::One => solution.solve_part1(&input),
         SolutionPart::Two => solution.solve_part2(&input),
@@ -56,6 +67,20 @@ impl Resource for FileResource {
     }
 }
 
+pub struct InlineResource {
+    text: &'static str,
+}
+
+impl Resource for InlineResource {
+    fn as_str(&self) -> String {
+        self.text.to_string()
+    }
+
+    fn as_u8(&self) -> Vec<u8> {
+        common::str_to_u8(self.text)
+    }
+}
+
 pub struct SolutionInfo {
     title: &'static str,
     year: u32,
@@ -68,13 +93,13 @@ impl SolutionInfo {
     }
 }
 
-pub type SolutionResult = Result<String, &'static str>;
+pub type SolutionResult<O> = Result<O, String>;
 
-pub trait Solution<T> {
+pub trait Solution<I, O> {
     fn info(&self) -> SolutionInfo;
 
-    fn parse_input(&self, resource: &dyn Resource) -> T;
+    fn parse_input(&self, resource: &dyn Resource) -> I;
 
-    fn solve_part1(&self, input: &T) -> SolutionResult;
-    fn solve_part2(&self, input: &T) -> SolutionResult;
+    fn solve_part1(&self, input: &I) -> SolutionResult<O>;
+    fn solve_part2(&self, input: &I) -> SolutionResult<O>;
 }
