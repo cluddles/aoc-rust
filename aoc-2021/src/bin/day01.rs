@@ -50,11 +50,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_exec_part1(&Year2021Day01), "7");
+        assert_eq!(test_solution(&Year2021Day01, SolutionPart::One), "7");
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_exec_part2(&Year2021Day01), "5");
+        assert_eq!(test_solution(&Year2021Day01, SolutionPart::Two), "5");
     }
 }

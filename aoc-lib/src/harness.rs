@@ -14,22 +14,20 @@ pub fn run_solution<S: Solution<I>, I> (solution: &S) {
     if let Ok(v) = solution.solve_part2(&input) { println!("Part 1: {}", v) }
 }
 
-// TODO this needs refactoring lol
-pub fn test_exec_part1<S: Solution<I>, I> (solution: &S) -> String {
-    let info = solution.info();
-    let resource = FileResource { filename: "input.test", year: info.year, day: info.day };
-    let input = solution.parse_input(&resource);
-    match solution.solve_part1(&input) {
-        Ok(v) => v,
-        Err(e) => panic!("{}", e),
-    }
+pub enum SolutionPart {
+    One,
+    Two,
 }
 
-pub fn test_exec_part2<S: Solution<I>, I> (solution: &S) -> String {
+pub fn test_solution<S: Solution<I>, I> (solution: &S, part: SolutionPart) -> String {
     let info = solution.info();
     let resource = FileResource { filename: "input.test", year: info.year, day: info.day };
     let input = solution.parse_input(&resource);
-    match solution.solve_part2(&input) {
+    let result = match part {
+        SolutionPart::One => solution.solve_part1(&input),
+        SolutionPart::Two => solution.solve_part2(&input),
+    };
+    match result {
         Ok(v) => v,
         Err(e) => panic!("{}", e),
     }
