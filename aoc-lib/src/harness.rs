@@ -37,6 +37,7 @@ pub trait Solution<I, O> {
 pub fn run_solution<S: Solution<I, O>, I, O: Display> (solution: &S) -> DynResult<()> {
     // Get info from solution
     let info = solution.info();
+    println!();
     println!("--- [{}] Day {}: {} ---", info.year, info.day, info.title);
     // Create resource using year/day from info
     let resource = FileResource { filename: "input", year: info.year, day: info.day };

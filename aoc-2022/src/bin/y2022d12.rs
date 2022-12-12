@@ -18,13 +18,15 @@ impl Solution<Input, Output> for Year2022Day12 {
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(path_find(input, input.start)
+        Ok(path_find(input, vec![input.start])
             .ok_or_else(|| SimpleError::new_dyn("No path found"))?
             .len())
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(path_find_var(input).ok_or_else(|| SimpleError::new_dyn("No path found"))?)
+        Ok(path_find_var(input)
+            .ok_or_else(|| SimpleError::new_dyn("No path found"))?
+            .len())
     }
 }
 
@@ -63,9 +65,9 @@ impl Area {
     }
 }
 
-fn best_f(open: &mut HashSet<GridPos>, f_scores: &HashMap<GridPos, usize>) -> Option<GridPos> {
+fn best_f(open: &mut HashSet<GridPos>, nodes: &HashMap<GridPos, NodeData>) -> Option<GridPos> {
     open.iter()
-        .map(|x| (x, f_scores.get(x).unwrap_or(&9999)))
+        .map(|x| (x, nodes.get(x).map(|x| x.f).unwrap_or(9999)))
         .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
         .map(|(x, _)| *x)
 }
@@ -90,43 +92,46 @@ fn neighbour_one(result: &mut Vec<GridPos>, area: &Area, p: &Point2<usize>, n: P
     }
 }
 
+struct NodeData {
+    f: usize,
+    g: usize,
+    came_from: GridPos,
+}
+
 /// Find shortest path
-fn path_find(area: &Area, start: GridPos) -> Option<Vec<GridPos>> {
+fn path_find(area: &Area, starts: Vec<GridPos>) -> Option<Vec<GridPos>> {
     let mut open = HashSet::new();
-    open.insert(start);
-    let mut f_scores: HashMap<GridPos, usize> = HashMap::new();
-    let mut g_scores: HashMap<GridPos, usize> = HashMap::new();
-    g_scores.insert(start, 0);
-    let mut came_from: HashMap<GridPos, GridPos> = HashMap::new();
-    f_scores.insert(start, h(area, &start));
+    let mut nodes: HashMap<GridPos, NodeData> = HashMap::new();
+
+    for s in starts {
+        open.insert(s);
+        nodes.insert(s, NodeData { f: h(area, &s), g: 0, came_from: s });
+    }
 
     while !open.is_empty() {
-        let current = best_f(&mut open, &f_scores)?;
+        let current = best_f(&mut open, &nodes)?;
         if current == area.end {
             // reconstruct path
             let mut p = current;
             let mut result = Vec::new();
             loop {
-                match came_from.get(&p) {
-                    Some(&v) => {
-                        result.push(p);
+                if let Some(v) = nodes.get(&p).map(|x| x.came_from) {
+                    if v == p { return Some(result); } else {
+                        result.push(v);
                         p = v;
-                    }
-                    None => {
-                        return Some(result);
                     }
                 }
             }
         }
         open.remove(&current);
         // Check neighbours
-        let current_g = *g_scores.get(&current).unwrap_or(&9999);
+        let node = nodes.get(&current);
+        let current_g = node.map(|x| x.g).unwrap_or(9999);
         for n in neighbours(area, &current) {
             let tentative_g = current_g + 1;
-            if tentative_g < *g_scores.get(&n).unwrap_or(&9999) {
-                came_from.insert(n, current);
-                g_scores.insert(n, tentative_g);
-                f_scores.insert(n, tentative_g + h(area, &n));
+            let neighbour = nodes.get(&n);
+            if tentative_g < neighbour.map(|x| x.g).unwrap_or(9999) {
+                nodes.insert(n, NodeData { f:  tentative_g + h(area, &n), g: tentative_g, came_from: current });
                 open.insert(n);
             }
         }
@@ -135,31 +140,17 @@ fn path_find(area: &Area, start: GridPos) -> Option<Vec<GridPos>> {
 }
 
 /// Find shortest path from any starting position at height 'a'
-fn path_find_var(area: &Area) -> Option<usize> {
-    // This is incredibly slow
-    // Suspect a better way would be to floodfill from the end and stop as soon as you hit an 'a'
-    let mut best_len = 9999;
+fn path_find_var(area: &Area) -> Option<Vec<GridPos>> {
+    let mut starts = Vec::new();
     for x in 0..area.dim().x {
         for y in 0..area.dim().y {
-            let pos = Point2::new(x, y);
-            if area.height_at(&pos) != b'a' {
-                continue;
-            }
-            let h = h(area, &pos);
-            // No point checking anything further from end than our current best
-            if h >= best_len {
-                continue;
-            }
-            let best = path_find(area, pos);
-            if let Some(v) = best {
-                let l = v.len();
-                if l < best_len {
-                    best_len = l;
-                }
+            let p = Point2 { x, y };
+            if area.height_at(&p) == b'a' {
+                starts.push(p);
             }
         }
     }
-    Some(best_len)
+    path_find(area, starts)
 }
 
 fn main() -> DynResult<()> {
