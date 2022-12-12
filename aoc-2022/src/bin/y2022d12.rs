@@ -18,7 +18,7 @@ impl Solution<Input, Output> for Year2022Day12 {
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(path_find(input, vec![input.start])
+        Ok(path_find(input)
             .ok_or_else(|| SimpleError::new_dyn("No path found"))?
             .len())
     }
@@ -32,6 +32,7 @@ impl Solution<Input, Output> for Year2022Day12 {
 
 type GridPos = Point2<usize>;
 
+/// Track the grid and related start/end points
 struct Area {
     grid: Grid<u8>,
     start: GridPos,
@@ -93,12 +94,14 @@ fn neighbours(area: &Area, p: &GridPos) -> Vec<GridPos> {
 }
 
 fn neighbour_one(result: &mut Vec<GridPos>, area: &Area, p: &Point2<usize>, n: Point2<usize>) {
-    let (hn, hp) = (area.height_at(&n), area.height_at(p));
-    if hn < hp || hn - hp <= 1 {
+    // Remember that we're traversing from end to start, so the rules are backwards
+    let (h1, h2) = (area.height_at(&n), area.height_at(p));
+    if h2 < h1 || h2 - h1 <= 1 {
         result.push(n);
     }
 }
 
+/// Track A* node data
 struct NodeData {
     f: usize,
     g: usize,
@@ -106,24 +109,23 @@ struct NodeData {
 }
 
 /// Find shortest path
-fn path_find(area: &Area, starts: Vec<GridPos>) -> Option<Vec<GridPos>> {
+fn path_find_inner(area: &Area, start: GridPos, ends: Vec<GridPos>) -> Option<Vec<GridPos>> {
     let mut open = HashSet::new();
     let mut nodes: HashMap<GridPos, NodeData> = HashMap::new();
 
-    for s in starts {
-        open.insert(s);
-        nodes.insert(s, NodeData { f: h(area, &s), g: 0, came_from: s });
-    }
+    open.insert(start);
+    nodes.insert(start, NodeData { f: h(area, &start), g: 0, came_from: start });
 
     while !open.is_empty() {
         let current = select_best_from_open(&mut open, &nodes)?;
-        if current == area.end {
+        if ends.contains(&current) {
             // reconstruct path
             let mut p = current;
             let mut result = Vec::new();
             loop {
                 if let Some(v) = nodes.get(&p).map(|x| x.came_from) {
                     if v == p { return Some(result); } else {
+                        // println!("{:?}", v);
                         result.push(v);
                         p = v;
                     }
@@ -146,8 +148,15 @@ fn path_find(area: &Area, starts: Vec<GridPos>) -> Option<Vec<GridPos>> {
     None
 }
 
+/// Find shortest path from fixed start
+fn path_find(area: &Area) -> Option<Vec<GridPos>> {
+    // Flip start and end just so we can use the same rules as part 2...
+    path_find_inner(area, area.end, vec![area.start])
+}
+
 /// Find shortest path from any starting position at height 'a'
 fn path_find_var(area: &Area) -> Option<Vec<GridPos>> {
+    // Multiple "starts", which we actually use as endpoints
     let mut starts = Vec::new();
     for x in 0..area.dim().x {
         for y in 0..area.dim().y {
@@ -157,7 +166,7 @@ fn path_find_var(area: &Area) -> Option<Vec<GridPos>> {
             }
         }
     }
-    path_find(area, starts)
+    path_find_inner(area, area.end, starts)
 }
 
 fn main() -> DynResult<()> {
