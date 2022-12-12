@@ -1,8 +1,12 @@
 pub mod common;
 pub mod harness;
 
-mod grid;
-pub use grid::Grid;
-
 mod point2;
-pub use point2::Point2;
+mod grid;
+mod dir4;
+
+pub mod data {
+    pub use crate::point2::Point2;
+    pub use crate::grid::Grid;
+    pub use crate::dir4::Dir4;
+}

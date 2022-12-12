@@ -31,6 +31,22 @@ enum Op {
     Sq(),
 }
 
+impl Op {
+    fn parse(op: &str, val: &str) -> DynResult<Op> {
+        Ok(match (op, val) {
+            ("*", "old") => Op::Sq(),
+            ("*", v) => Op::Mult(v.parse::<u64>()?),
+            ("+", v) => Op::Add(v.parse::<u64>()?),
+            (op, v) => {
+                return Err(SimpleError::new_dyn(format!(
+                    "could not parse op: '{}' '{}'",
+                    op, v
+                )))
+            }
+        })
+    }
+}
+
 /// Monkey definition
 struct Monkey {
     items: Vec<u64>,
@@ -43,24 +59,14 @@ struct Monkey {
 impl Monkey {
     fn parse(text: &str) -> DynResult<Monkey> {
         let lines: Vec<&str> = text.split('\n').collect();
-        let last_num = |x: &str| x.split_whitespace().last().unwrap_or("").parse();
         let items: &str = lines[1].split(':').collect::<Vec<&str>>()[1];
         let items = items
             .split(',')
             .map(|x| x.trim().parse::<u64>())
             .collect::<Result<_, _>>()?;
         let op: Vec<&str> = lines[2].split_whitespace().collect();
-        let op = match (op[4], op[5]) {
-            ("*", "old") => Op::Sq(),
-            ("*", v) => Op::Mult(v.parse::<u64>()?),
-            ("+", v) => Op::Add(v.parse::<u64>()?),
-            (op, v) => {
-                return Err(SimpleError::new_dyn(format!(
-                    "could not parse op: '{}' '{}'",
-                    op, v
-                )))
-            }
-        };
+        let op = Op::parse(op[4], op[5])?;
+        let last_num = |x: &str| x.split_whitespace().last().unwrap_or("").parse();
         Ok(Monkey {
             items,
             op,

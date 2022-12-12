@@ -1,6 +1,8 @@
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
+use std::time::SystemTime;
 use crate::common;
+use crate::data::Grid;
 
 pub type DynResult<O> = Result<O, Box<dyn Error>>;
 pub type SolutionResult<O> = DynResult<O>;
@@ -40,8 +42,17 @@ pub fn run_solution<S: Solution<I, O>, I, O: Display> (solution: &S) -> DynResul
     let resource = FileResource { filename: "input", year: info.year, day: info.day };
     // Call proc on solution to parse input into relevant part1/2 input type
     let input = solution.parse_input(&resource)?;
+
+    let time = SystemTime::now();
+    println!();
     println!("Part 1: {}", solution.solve_part1(&input)?);
+    println!("[in {:?}]", time.elapsed()?);
+
+    let time = SystemTime::now();
+    println!();
     println!("Part 2: {}", solution.solve_part2(&input)?);
+    println!("[in {:?}]", time.elapsed()?);
+
     Ok(())
 }
 
@@ -78,14 +89,25 @@ fn test_solution_inner<S: Solution<I, O>, I, O> (solution: &S, part: SolutionPar
 
 /// Resource to pull solution input from
 pub trait Resource {
+
     /// Read string from resource
     fn as_str(&self) -> String;
+
     /// Read u8 vec from resource
     fn as_u8(&self) -> Vec<u8>;
+
     /// Read string lines from resource
     fn as_str_lines(&self) -> Vec<String> {
         let lines = self.as_str();
         lines.split('\n').filter(|x| !x.is_empty()).map(|x| x.to_owned()).collect()
+    }
+
+    /// Read grid of u8 from resource
+    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> Grid<u8> {
+        let input = self.as_u8();
+        let w = input.iter().enumerate().find(|(_, &x)| x < 32).unwrap_or((input.len(), &0)).0;
+        let grid_raw = input.iter().filter(|&&x| x >= 32).map(|&x| converter(x)).collect();
+        Grid::from_1d(grid_raw, w)
     }
 }
 

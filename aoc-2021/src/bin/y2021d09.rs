@@ -1,7 +1,7 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
-use aoc_lib::{Point2, Grid};
+use aoc_lib::data::{Point2, Grid};
 
 const DAY: &str = "2021/09";
 

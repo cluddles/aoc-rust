@@ -1,8 +1,8 @@
-use crate::Point2;
+use crate::data::Point2;
 
 /// Thin wrapper for a vector, to treat it as a 2d grid of values
 #[derive(Debug, Clone)]
-pub struct Grid<T: Clone> {
+pub struct Grid<T> {
     dim: Point2<usize>,
     vals: Vec<T>,
 }
@@ -14,6 +14,13 @@ impl<T: Clone> Grid<T> {
             dim: Point2 { x: w, y: h },
             vals: vec![val; w * h],
         }
+    }
+
+    /// Create grid, copying values from source
+    pub fn from_1d(source: Vec<T>, w: usize) -> Grid<T> {
+        let h = source.len() / w;
+        let dim = Point2::new(w, h);
+        Grid { vals: source, dim }
     }
 
     /// Create grid, copying values from source
@@ -59,6 +66,13 @@ impl<T: Clone> Grid<T> {
     /// Provides immutable access to the underlying vector, mostly for iteration
     pub fn vec(&self) -> &Vec<T> {
         &self.vals
+    }
+}
+
+impl<T: PartialEq> Grid<T> {
+    pub fn find_pos(&self, value: &T) -> Option<Point2<usize>> {
+        let (i, _) = self.vals.iter().enumerate().find(|(_, x)| x == &value)?;
+        Some(Point2::new(i % self.dim.x, i / self.dim.x))
     }
 }
 

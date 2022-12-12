@@ -2,8 +2,7 @@ extern crate aoc_lib;
 
 use std::collections::HashSet;
 use aoc_lib::common;
-use aoc_lib::Point2;
-use std::str::FromStr;
+use aoc_lib::data::{Dir4, Point2};
 
 const DAY: &str = "2022/09";
 
@@ -11,34 +10,6 @@ type Motion = (Dir4, u8);
 type MotionList = Vec<Motion>;
 type Pos = Point2<i32>;
 type RopePos = Vec<Pos>;
-
-// This is very similar (identical?) to Dir4 in 2022/08...
-#[derive(Debug)]
-pub enum Dir4 {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Dir4 {
-    pub const VALUES: [Dir4; 4] = [Dir4::Up, Dir4::Down, Dir4::Left, Dir4::Right];
-}
-
-impl FromStr for Dir4 {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let result = match s {
-            "U" => Dir4::Up,
-            "D" => Dir4::Down,
-            "L" => Dir4::Left,
-            "R" => Dir4::Right,
-            _ => return Err(()),
-        };
-        Ok(result)
-    }
-}
 
 fn move_in_dir4(p: &mut Pos, dir: &Dir4) {
     match dir {

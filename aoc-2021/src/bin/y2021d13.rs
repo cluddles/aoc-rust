@@ -1,7 +1,7 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
-use aoc_lib::Point2;
+use aoc_lib::data::Point2;
 use std::collections::HashSet;
 use std::fmt::Formatter;
 
