@@ -65,19 +65,26 @@ impl Area {
     }
 }
 
-fn best_f(open: &mut HashSet<GridPos>, nodes: &HashMap<GridPos, NodeData>) -> Option<GridPos> {
+/// Node in open set with the lowest F
+fn select_best_from_open(open: &mut HashSet<GridPos>, nodes: &HashMap<GridPos, NodeData>) -> Option<GridPos> {
     open.iter()
         .map(|x| (x, nodes.get(x).map(|x| x.f).unwrap_or(9999)))
         .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
         .map(|(x, _)| *x)
 }
 
+/// Heuristic, used to calculate F
 fn h(area: &Area, pos: &GridPos) -> usize {
-    ((area.end.x as i32 - pos.x as i32).abs() + (area.end.y as i32 - pos.y as i32).abs()) as usize
+    // Return 0 to behave like Dijkstra - breadth first search
+    0
+
+    // Because of the evil spiral input, this heuristic is actually really bad!
+    //((area.end.x as i32 - pos.x as i32).abs() + (area.end.y as i32 - pos.y as i32).abs()) as usize
 }
 
+/// All (valid) neighbours for given position
 fn neighbours(area: &Area, p: &GridPos) -> Vec<GridPos> {
-    let mut result = Vec::new();
+    let mut result = Vec::with_capacity(4);
     if p.x > 0 { neighbour_one(&mut result, area, p, GridPos::new(p.x - 1, p.y)); }
     if p.y > 0 { neighbour_one(&mut result, area, p, GridPos::new(p.x, p.y - 1)); }
     if p.x < area.dim().x - 1 { neighbour_one(&mut result, area, p, GridPos::new(p.x + 1, p.y)); }
@@ -109,7 +116,7 @@ fn path_find(area: &Area, starts: Vec<GridPos>) -> Option<Vec<GridPos>> {
     }
 
     while !open.is_empty() {
-        let current = best_f(&mut open, &nodes)?;
+        let current = select_best_from_open(&mut open, &nodes)?;
         if current == area.end {
             // reconstruct path
             let mut p = current;
@@ -131,7 +138,7 @@ fn path_find(area: &Area, starts: Vec<GridPos>) -> Option<Vec<GridPos>> {
             let tentative_g = current_g + 1;
             let neighbour = nodes.get(&n);
             if tentative_g < neighbour.map(|x| x.g).unwrap_or(9999) {
-                nodes.insert(n, NodeData { f:  tentative_g + h(area, &n), g: tentative_g, came_from: current });
+                nodes.insert(n, NodeData { f: tentative_g + h(area, &n), g: tentative_g, came_from: current });
                 open.insert(n);
             }
         }
