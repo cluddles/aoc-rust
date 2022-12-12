@@ -119,8 +119,8 @@ impl Solution<CaveSystem, usize> for Year2021Day12 {
         SolutionInfo::new("Passage Pathing", 2021, 12)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> CaveSystem {
-        CaveSystem::parse(&resource.as_str())
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<CaveSystem> {
+        Ok(CaveSystem::parse(&resource.as_str()))
     }
 
     fn solve_part1(&self, input: &CaveSystem) -> SolutionResult<usize> {
@@ -132,8 +132,8 @@ impl Solution<CaveSystem, usize> for Year2021Day12 {
     }
 }
 
-fn main() {
-    run_solution(&Year2021Day12);
+fn main() -> DynResult<()> {
+    run_solution(&Year2021Day12)
 }
 
 #[cfg(test)]

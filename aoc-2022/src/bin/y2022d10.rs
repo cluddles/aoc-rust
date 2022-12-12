@@ -47,21 +47,21 @@ fn run_program(program: &Input) -> isize {
     }
 }
 
-fn render_tick(state: &mut State, output: &mut [String]) {
-    let tick = state.cycle as isize;
-    let col = tick % 40;
-    let row = (tick / 40) as usize;
-    output[row].push(if (state.x - col).abs() <= 1 { '#' } else { '.' });
+fn render_tick(state: &mut State, output: &mut [char]) {
+    let tick = state.cycle;
+    let col = (tick % 40) as isize;
+    if (state.x - col).abs() <= 1 { output[tick] = '#' }
 }
 
 fn run_and_render(program: &Input) -> String {
     let mut state = State::new();
-    let mut result = vec!["".to_string(); 6];
+    let mut result = vec!['.'; 240];
     loop {
         render_tick(&mut state, &mut result);
         cpu_tick(&mut state, program);
         if state.cycle == 240 {
-            return format!("\n{}", result.join("\n"));
+            let rows: Vec<String> = result.chunks(40).map(|x| x.iter().collect()).collect();
+            return format!("\n{}", rows.join("\n"));
         }
     }
 }
@@ -74,8 +74,8 @@ impl Solution<Input, Output> for Year2022Day10 {
         SolutionInfo::new("Cathode-Ray Tube", 2022, 10)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> Input {
-        resource.as_str_lines()
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(resource.as_str_lines())
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -87,7 +87,7 @@ impl Solution<Input, Output> for Year2022Day10 {
     }
 }
 
-fn main() {
+fn main() -> DynResult<()> {
     run_solution(&Year2022Day10)
 }
 

@@ -13,8 +13,8 @@ impl Solution<Input, Output> for Year2021Day01 {
         SolutionInfo::new("Sonar Sweep", 2021, 1)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> Input {
-        common::tokenize(&resource.as_str(), '\n')
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(common::tokenize(&resource.as_str(), '\n'))
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -40,8 +40,8 @@ impl Solution<Input, Output> for Year2021Day01 {
     }
 }
 
-fn main() {
-    run_solution(&Year2021Day01);
+fn main() -> DynResult<()> {
+    run_solution(&Year2021Day01)
 }
 
 #[cfg(test)]

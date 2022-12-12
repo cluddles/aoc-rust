@@ -25,8 +25,8 @@ impl Solution<Input, usize> for Year2022Day06 {
         SolutionInfo::new("Tuning Trouble", 2022, 6)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> Input {
-        resource.as_u8()
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(resource.as_u8())
     }
 
     /// Unique segment, length 4
@@ -40,8 +40,8 @@ impl Solution<Input, usize> for Year2022Day06 {
     }
 }
 
-fn main() {
-    run_solution(&Year2022Day06);
+fn main() -> DynResult<()> {
+    run_solution(&Year2022Day06)
 }
 
 #[cfg(test)]

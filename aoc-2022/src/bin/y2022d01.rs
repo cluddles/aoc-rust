@@ -26,7 +26,7 @@ impl Solution<Input, Output> for Year2022Day01 {
         SolutionInfo::new("Calorie Counting", 2022, 1)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> Input {
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
         let text = resource.as_str();
         let lines = common::split_lines_keep_empty(&text);
         let mut result: Vec<Elf> = Vec::new();
@@ -47,7 +47,7 @@ impl Solution<Input, Output> for Year2022Day01 {
         if elf.total != 0 {
             result.push(elf);
         }
-        result
+        Ok(result)
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -61,8 +61,8 @@ impl Solution<Input, Output> for Year2022Day01 {
     }
 }
 
-fn main() {
-    run_solution(&Year2022Day01);
+fn main() -> DynResult<()> {
+    run_solution(&Year2022Day01)
 }
 
 #[cfg(test)]

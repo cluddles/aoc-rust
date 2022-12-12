@@ -52,8 +52,8 @@ impl Solution<Input, Output> for Year2022Day03 {
         SolutionInfo::new("Rucksack Reorganization", 2022, 3)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> Input {
-        resource.as_str()
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(resource.as_str())
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -65,7 +65,7 @@ impl Solution<Input, Output> for Year2022Day03 {
     }
 }
 
-fn main() {
+fn main() -> DynResult<()> {
     run_solution(&Year2022Day03)
 }
 
