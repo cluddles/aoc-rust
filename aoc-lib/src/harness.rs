@@ -4,7 +4,8 @@ use std::time::SystemTime;
 use crate::common;
 use crate::data::Grid;
 
-pub type DynResult<O> = Result<O, Box<dyn Error>>;
+pub type DynError = Box<dyn Error>;
+pub type DynResult<O> = Result<O, DynError>;
 pub type SolutionResult<O> = DynResult<O>;
 
 /// Error that displays "something"
@@ -27,9 +28,13 @@ impl<T: Debug + Display + Clone> Display for SimpleError<T> {
 
 /// Solution for a day's puzzle
 pub trait Solution<I, O> {
+    /// Solution metadata
     fn info(&self) -> SolutionInfo;
+    /// Get puzzle input from given resource
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<I>;
+    /// Solution to puzzle part 1
     fn solve_part1(&self, input: &I) -> SolutionResult<O>;
+    /// Solution to puzzle part 2
     fn solve_part2(&self, input: &I) -> SolutionResult<O>;
 }
 
@@ -37,22 +42,22 @@ pub trait Solution<I, O> {
 pub fn run_solution<S: Solution<I, O>, I, O: Display> (solution: &S) -> DynResult<()> {
     // Get info from solution
     let info = solution.info();
-    println!();
-    println!("--- [{}] Day {}: {} ---", info.year, info.day, info.title);
+    println!("\n--- [{}] Day {}: {} ---", info.year, info.day, info.title);
     // Create resource using year/day from info
     let resource = FileResource { filename: "input", year: info.year, day: info.day };
     // Call proc on solution to parse input into relevant part1/2 input type
+    let time = SystemTime::now();
+    println!("\nParse input");
     let input = solution.parse_input(&resource)?;
-
+    println!("[{:?}]", time.elapsed()?);
+    // Solve part 1
     let time = SystemTime::now();
-    println!();
-    println!("Part 1: {}", solution.solve_part1(&input)?);
-    println!("[in {:?}]", time.elapsed()?);
-
+    println!("\nPart 1: {}", solution.solve_part1(&input)?);
+    println!("[{:?}]", time.elapsed()?);
+    // Solve part 2
     let time = SystemTime::now();
-    println!();
-    println!("Part 2: {}", solution.solve_part2(&input)?);
-    println!("[in {:?}]", time.elapsed()?);
+    println!("\nPart 2: {}", solution.solve_part2(&input)?);
+    println!("[{:?}]", time.elapsed()?);
 
     Ok(())
 }
@@ -97,7 +102,7 @@ pub trait Resource {
     /// Read u8 vec from resource
     fn as_u8(&self) -> Vec<u8>;
 
-    /// Read string lines from resource
+    /// Read string lines from resource. Filters out empty lines.
     fn as_str_lines(&self) -> Vec<String> {
         let lines = self.as_str();
         lines.split('\n').filter(|x| !x.is_empty()).map(|x| x.to_owned()).collect()
