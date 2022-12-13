@@ -24,27 +24,23 @@ impl Solution<Input, Output> for Year2022Day13 {
         // Work on pairs of packets
         Ok((0..input.len())
             .step_by(2)
-            .filter(|&i| cmp_lists(&input[i].list, &input[i + 1].list).is_le())
+            .filter(|&i| cmp_lists(&input[i].0, &input[i + 1].0).is_le())
             .map(|i| (i / 2) + 1)
             .sum())
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
         let dividers = vec![
-            Packet {
-                list: vec![El::List(vec![El::Int(2)])],
-            },
-            Packet {
-                list: vec![El::List(vec![El::Int(6)])],
-            },
+            Packet(vec![El::List(vec![El::Int(2)])]),
+            Packet(vec![El::List(vec![El::Int(6)])]),
         ];
         // We need to clone the input to a) sort it and b) add extra divider packets
         let mut sorted = input.to_owned();
         dividers.iter().for_each(|d| sorted.push(d.clone()));
-        sorted.sort_unstable_by(|a, b| cmp_lists(&a.list, &b.list));
+        sorted.sort_unstable_by(|a, b| cmp_lists(&a.0, &b.0));
         // Now just find the dividers
         Ok(sorted
-            .iter()
+            .into_iter()
             .enumerate()
             .filter(|(_, x)| dividers.contains(x))
             .map(|(i, _)| i + 1)
@@ -59,20 +55,16 @@ enum El {
 }
 
 #[derive(PartialEq, Debug, Clone)]
-struct Packet {
-    list: Vec<El>,
-}
+struct Packet(Vec<El>);
 
 impl FromStr for Packet {
     type Err = DynError;
     fn from_str(s: &str) -> DynResult<Self> {
         let mut chars = s.chars();
         if chars.next() != Some('[') {
-            return Err(SimpleError::new_dyn("Doesn't start with '['"));
+            Err("Doesn't start with '['")?;
         }
-        Ok(Packet {
-            list: parse_list(&mut chars)?,
-        })
+        Ok(Packet(parse_list(&mut chars)?))
     }
 }
 
@@ -99,7 +91,7 @@ fn parse_list(chars: &mut dyn Iterator<Item = char>) -> DynResult<Vec<El>> {
             x => val = Some(val.unwrap_or(0) * 10 + (x as u8 - b'0') as u32),
         }
     }
-    Err(SimpleError::new_dyn("Invalid input"))
+    Err("Invalid input")?
 }
 
 fn cmp_lists(left: &[El], right: &[El]) -> Ordering {
@@ -138,10 +130,10 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        assert_eq!(Packet::from_str("[]").unwrap().list, Vec::new());
-        assert_eq!(Packet::from_str("[1]").unwrap().list, vec![El::Int(1)]);
+        assert_eq!(Packet::from_str("[]").unwrap().0, Vec::new());
+        assert_eq!(Packet::from_str("[1]").unwrap().0, vec![El::Int(1)]);
         assert_eq!(
-            Packet::from_str("[1,[2,3],4]").unwrap().list,
+            Packet::from_str("[1,[2,3],4]").unwrap().0,
             vec![
                 El::Int(1),
                 El::List(vec![El::Int(2), El::Int(3)]),
@@ -149,9 +141,7 @@ mod tests {
             ]
         );
         assert_eq!(
-            Packet::from_str("[1,[2,[3,[4,[5,6,7]]]],8,9]")
-                .unwrap()
-                .list,
+            Packet::from_str("[1,[2,[3,[4,[5,6,7]]]],8,9]").unwrap().0,
             vec![
                 El::Int(1),
                 El::List(vec![
