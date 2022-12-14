@@ -3,10 +3,10 @@ extern crate aoc_lib;
 use aoc_lib::data::{Grid, GridChar, Point2};
 use aoc_lib::harness::*;
 
-pub struct Year2022Day14;
+pub struct Day14;
 type Input = Cave;
 type Output = usize;
-impl Solution<Input, Output> for Year2022Day14 {
+impl Solution<Input, Output> for Day14 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Regolith Reservoir", 2022, 14)
     }
@@ -64,7 +64,7 @@ type CavePos = Point2<usize>;
 type CaveLine = Vec<CavePos>;
 
 #[derive(Clone)]
-struct Cave {
+pub struct Cave {
     grid: Grid<CaveCell>,
     entry_point: CavePos,
 }
@@ -166,21 +166,17 @@ fn tick(cave: &mut Cave, path: &mut Vec<CavePos>, start: CavePos, floor: bool) -
     false
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day14)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day14, SolutionPart::One), 24);
+        assert_eq!(test_solution(&Day14, SolutionPart::One), 24);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day14, SolutionPart::Two), 93);
+        assert_eq!(test_solution(&Day14, SolutionPart::Two), 93);
     }
 }

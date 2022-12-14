@@ -2,10 +2,10 @@ extern crate aoc_lib;
 
 use aoc_lib::harness::*;
 
-struct Year2022Day11;
+pub struct Day11;
 type Input = Vec<Monkey>;
 type Output = u64;
-impl Solution<Input, Output> for Year2022Day11 {
+impl Solution<Input, Output> for Day11 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Monkey in the Middle", 2022, 11)
     }
@@ -48,7 +48,7 @@ impl Op {
 }
 
 /// Monkey definition
-struct Monkey {
+pub struct Monkey {
     items: Vec<u64>,
     op: Op,
     div_by: u64,
@@ -78,7 +78,7 @@ impl Monkey {
 }
 
 /// Monkey state as sim runs
-struct MonkeyState {
+pub struct MonkeyState {
     items: Vec<u64>,
     inspections: u64,
 }
@@ -132,21 +132,17 @@ fn run_sim_once(state: &mut [MonkeyState], input: &Input, common_multiple: Optio
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day11)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day11, SolutionPart::One), 10605);
+        assert_eq!(test_solution(&Day11, SolutionPart::One), 10605);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day11, SolutionPart::Two), 2713310158);
+        assert_eq!(test_solution(&Day11, SolutionPart::Two), 2713310158);
     }
 }

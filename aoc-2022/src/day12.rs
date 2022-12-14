@@ -4,10 +4,10 @@ use aoc_lib::data::{Grid, Point2};
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet};
 
-struct Year2022Day12;
+pub struct Day12;
 type Input = Area;
 type Output = usize;
-impl Solution<Input, Output> for Year2022Day12 {
+impl Solution<Input, Output> for Day12 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Hill Climbing Algorithm", 2022, 12)
     }
@@ -33,7 +33,7 @@ impl Solution<Input, Output> for Year2022Day12 {
 type GridPos = Point2<usize>;
 
 /// Track the grid and related start/end points
-struct Area {
+pub struct Area {
     grid: Grid<u8>,
     start: GridPos,
     end: GridPos,
@@ -169,21 +169,17 @@ fn path_find_var(area: &Area) -> Option<Vec<GridPos>> {
     path_find_inner(area, area.end, starts)
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day12)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day12, SolutionPart::One), 31);
+        assert_eq!(test_solution(&Day12, SolutionPart::One), 31);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day12, SolutionPart::Two), 29);
+        assert_eq!(test_solution(&Day12, SolutionPart::Two), 29);
     }
 }

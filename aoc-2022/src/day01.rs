@@ -4,7 +4,7 @@ use aoc_lib::common;
 use aoc_lib::harness::*;
 
 #[derive(Debug, Clone)]
-struct Elf {
+pub struct Elf {
     carried: Vec<u32>,
     total: u32,
 }
@@ -20,8 +20,8 @@ impl Elf {
 
 type Input = Vec<Elf>;
 type Output = u32;
-struct Year2022Day01;
-impl Solution<Input, Output> for Year2022Day01 {
+pub struct Day01;
+impl Solution<Input, Output> for Day01 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Calorie Counting", 2022, 1)
     }
@@ -61,21 +61,17 @@ impl Solution<Input, Output> for Year2022Day01 {
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day01)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day01, SolutionPart::One), 24000);
+        assert_eq!(test_solution(&Day01, SolutionPart::One), 24000);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day01, SolutionPart::Two), 45000);
+        assert_eq!(test_solution(&Day01, SolutionPart::Two), 45000);
     }
 }

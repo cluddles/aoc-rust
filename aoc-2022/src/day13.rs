@@ -4,10 +4,10 @@ use aoc_lib::harness::*;
 use std::cmp::Ordering;
 use std::str::FromStr;
 
-struct Year2022Day13;
+pub struct Day13;
 type Input = Vec<Packet>;
 type Output = usize;
-impl Solution<Input, Output> for Year2022Day13 {
+impl Solution<Input, Output> for Day13 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Distress Signal", 2022, 13)
     }
@@ -55,7 +55,7 @@ enum El {
 }
 
 #[derive(PartialEq, Debug, Clone)]
-struct Packet(Vec<El>);
+pub struct Packet(Vec<El>);
 
 impl FromStr for Packet {
     type Err = DynError;
@@ -120,10 +120,6 @@ fn cmp_lists(left: &[El], right: &[El]) -> Ordering {
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day13)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -162,11 +158,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day13, SolutionPart::One), 13);
+        assert_eq!(test_solution(&Day13, SolutionPart::One), 13);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day13, SolutionPart::Two), 140);
+        assert_eq!(test_solution(&Day13, SolutionPart::Two), 140);
     }
 }
