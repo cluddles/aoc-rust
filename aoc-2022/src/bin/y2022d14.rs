@@ -3,7 +3,7 @@ extern crate aoc_lib;
 use aoc_lib::data::{Grid, GridChar, Point2};
 use aoc_lib::harness::*;
 
-struct Year2022Day14;
+pub struct Year2022Day14;
 type Input = Cave;
 type Output = usize;
 impl Solution<Input, Output> for Year2022Day14 {
@@ -72,9 +72,7 @@ struct Cave {
 impl Cave {
     /// Add line (multiple segments) of rocks to cave
     fn apply_line(&mut self, cl: &CaveLine, offset: &CavePos) {
-        for i in 0..cl.len() - 1 {
-            self.apply_line_seg(&cl[i], &cl[i + 1], offset);
-        }
+        cl.windows(2).for_each(|x| self.apply_line_seg(&x[0], &x[1], offset));
     }
 
     /// Add single line segment of rocks to cave
@@ -123,23 +121,31 @@ fn parse_line(text: &str) -> DynResult<CaveLine> {
 fn simulate(cave_in: &Cave, floor: bool) -> usize {
     let mut cave = cave_in.to_owned();
     let mut ticks = 0;
+    // Improvement: Track path taken by sand. Next sand can start at penultimate position.
+    // This makes part 2 about 10 times quicker...
+    let mut path: Vec<CavePos> = Vec::with_capacity(cave.grid.dim().y);
     loop {
         // println!("\n{}", cave.grid);
         if floor && cave.grid.get(cave.entry_point.x, cave.entry_point.y) == &CaveCell::Sand {
             return ticks;
         }
-        if !tick(&mut cave, floor) {
+        // This is where the sand came to rest. We don't care.
+        path.pop();
+        // This is where the sand was before that. Use this as the start, if available...
+        let start = path.pop().unwrap_or(cave_in.entry_point);
+        if !tick(&mut cave, &mut path, start, floor) {
             return ticks;
         }
         ticks += 1;
     }
 }
 
-/// Run a single simulation tick. Returns true when sim should continue.
-fn tick(cave: &mut Cave, floor: bool) -> bool {
-    let mut p = cave.entry_point;
+/// Run a single simulation tick. Returns true if sand came to rest.
+fn tick(cave: &mut Cave, path: &mut Vec<CavePos>, start: CavePos, floor: bool) -> bool {
+    let mut p = start;
     while p.y < cave.grid.dim().y - 1 {
         // println!("{:?}", p);
+        path.push(p);
         if cave.grid.get(p.x, p.y + 1) == &CaveCell::Air {
             p.y += 1;
         } else if cave.grid.get(p.x - 1, p.y + 1) == &CaveCell::Air {
