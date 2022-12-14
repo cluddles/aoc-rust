@@ -1,8 +1,28 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2022/02";
+type Input = Vec<Strategy>;
+type Output = u32;
+pub struct Day02;
+impl Solution<Input, Output> for Day02 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Rock Paper Scissors", 2022, 2)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        parse_strategy_guide(&resource.as_str())
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(input.iter().map(score_part1).sum())
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(input.iter().map(score_part2).sum())
+    }
+}
 
 /// Player choice
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -62,7 +82,7 @@ impl Outcome {
 
 /// A single entry from the strategy guide
 #[derive(Debug)]
-struct Strategy {
+pub struct Strategy {
     opp: char,
     strat: char,
 }
@@ -88,16 +108,16 @@ fn parse_outcome(outcome: char) -> Outcome {
 }
 
 /// Parse strategy for a round from a line of text
-fn parse_strategy(line: &str) -> Strategy {
-    let parts: Vec<char> = common::tokenize(line, ' ').unwrap();
-    Strategy {
+fn parse_strategy(line: &str) -> DynResult<Strategy> {
+    let parts: Vec<char> = common::tokenize(line, ' ')?;
+    Ok(Strategy {
         opp: parts[0],
         strat: parts[1],
-    }
+    })
 }
 
 /// Parse complete strategy guide
-fn parse_strategy_guide(content: &str) -> Vec<Strategy> {
+fn parse_strategy_guide(content: &str) -> DynResult<Vec<Strategy>> {
     let lines = common::split_lines(content);
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
@@ -135,36 +155,17 @@ fn score_part2(round: &Strategy) -> u32 {
     outcome(&opp, &mine).score() + mine.score()
 }
 
-fn part1(moves: &[Strategy]) -> u32 {
-    moves.iter().map(score_part1).sum()
-}
-
-fn part2(moves: &[Strategy]) -> u32 {
-    moves.iter().map(score_part2).sum()
-}
-
-fn main() {
-    let content = common::input_as_str(DAY, "input");
-    let rounds = parse_strategy_guide(&content);
-    println!("Part 1: {}", part1(&rounds));
-    println!("Part 2: {}", part2(&rounds));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_moves() -> Vec<Strategy> {
-        parse_strategy_guide(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_moves()), 15);
+        assert_eq!(test_solution(&Day02, SolutionPart::One), 15);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_moves()), 12);
+        assert_eq!(test_solution(&Day02, SolutionPart::Two), 12);
     }
 }

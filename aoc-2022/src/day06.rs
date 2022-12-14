@@ -2,7 +2,7 @@ extern crate aoc_lib;
 
 use aoc_lib::harness::*;
 
-struct Year2022Day06;
+pub struct Day06;
 type Input = Vec<u8>;
 
 /// True if the given slice contains any duplicate values
@@ -20,7 +20,7 @@ fn find_unique_marker(text: &[u8], len: usize) -> usize {
     (0..text.len() - len).find(|&i| !contains_duplicates(&text[i..i + len])).unwrap() + len
 }
 
-impl Solution<Input, usize> for Year2022Day06 {
+impl Solution<Input, usize> for Day06 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Tuning Trouble", 2022, 6)
     }
@@ -40,17 +40,13 @@ impl Solution<Input, usize> for Year2022Day06 {
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day06)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        let solution = Year2022Day06;
+        let solution = Day06;
         let test = |x| test_solution_inline(&solution, SolutionPart::One, x);
         assert_eq!(test("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 7);
         assert_eq!(test("bvwbjplbgvbhsrlpgdmjqwftvncz"), 5);
@@ -61,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let solution = Year2022Day06;
+        let solution = Day06;
         let test = |x| test_solution_inline(&solution, SolutionPart::Two, x);
         assert_eq!(test("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 19);
         assert_eq!(test("bvwbjplbgvbhsrlpgdmjqwftvncz"), 23);

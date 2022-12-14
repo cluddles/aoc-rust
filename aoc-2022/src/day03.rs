@@ -46,8 +46,8 @@ fn sum_priority(input: &[Vec<&str>]) -> u32 {
 
 type Input = String;
 type Output = u32;
-struct Year2022Day03;
-impl Solution<Input, Output> for Year2022Day03 {
+pub struct Day03;
+impl Solution<Input, Output> for Day03 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Rucksack Reorganization", 2022, 3)
     }
@@ -65,21 +65,17 @@ impl Solution<Input, Output> for Year2022Day03 {
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day03)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day03, SolutionPart::One), 157);
+        assert_eq!(test_solution(&Day03, SolutionPart::One), 157);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day03, SolutionPart::Two), 70);
+        assert_eq!(test_solution(&Day03, SolutionPart::Two), 70);
     }
 }

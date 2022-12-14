@@ -3,7 +3,7 @@ extern crate aoc_lib;
 use aoc_lib::harness::*;
 
 #[derive(Default)]
-struct State {
+pub struct State {
     x: isize,
     cycle: usize,
     pending_add: Option<isize>,
@@ -66,10 +66,10 @@ fn run_and_render(program: &Input) -> String {
     }
 }
 
-struct Year2022Day10;
+pub struct Day10;
 type Input = Vec<String>;
 type Output = String;
-impl Solution<Input, Output> for Year2022Day10 {
+impl Solution<Input, Output> for Day10 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Cathode-Ray Tube", 2022, 10)
     }
@@ -85,10 +85,6 @@ impl Solution<Input, Output> for Year2022Day10 {
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
         Ok(run_and_render(input))
     }
-}
-
-fn main() -> DynResult<()> {
-    run_solution(&Year2022Day10)
 }
 
 #[cfg(test)]
@@ -113,12 +109,12 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2022Day10, SolutionPart::One), "13140".to_string());
+        assert_eq!(test_solution(&Day10, SolutionPart::One), "13140".to_string());
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2022Day10, SolutionPart::Two), vec![
+        assert_eq!(test_solution(&Day10, SolutionPart::Two), vec![
             "\n##..##..##..##..##..##..##..##..##..##..".to_string(),
             "\n###...###...###...###...###...###...###.".to_string(),
             "\n####....####....####....####....####....".to_string(),
