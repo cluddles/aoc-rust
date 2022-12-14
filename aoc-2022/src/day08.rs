@@ -1,18 +1,46 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
-use aoc_lib::data::{Point2, Grid};
-
-const DAY: &str = "2022/08";
+use aoc_lib::data::{Point2, Grid, Dir4};
+use aoc_lib::harness::*;
 
 type Treemap = Grid<u8>;
 
-pub enum Dir4 {
-    Up, Down, Left, Right,
-}
+pub struct Day08;
+type Input = Treemap;
+type Output = u32;
+impl Solution<Input, Output> for Day08 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Treetop Tree House", 2022, 8)
+    }
 
-impl Dir4 {
-    pub const VALUES: [Dir4; 4] = [Dir4::Up, Dir4::Down, Dir4::Left, Dir4::Right];
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(resource.as_u8_grid(|c| c - b'0'))
+    }
+
+    fn solve_part1(&self, treemap: &Input) -> SolutionResult<Output> {
+        let (w, h) = treemap.dim().to_tuple();
+        let mut vis: Grid<bool> = Grid::new_default(w, h);
+        for y in 0..h {
+            scan_vis(treemap, &mut vis, &Point2::new(0, y), &Dir4::Right);
+            scan_vis(treemap, &mut vis, &Point2::new(w - 1, y), &Dir4::Left);
+        }
+        for x in 0..w {
+            scan_vis(treemap, &mut vis, &Point2::new(x, 0), &Dir4::Down);
+            scan_vis(treemap, &mut vis, &Point2::new(x, h - 1), &Dir4::Up);
+        }
+        Ok(vis.vec().iter().filter(|&&x| x).count() as u32)
+    }
+
+    fn solve_part2(&self, treemap: &Input) -> SolutionResult<Output> {
+        let mut best = 0;
+        for x in 0..treemap.dim().x {
+            for y in 0..treemap.dim().y {
+                let score = scenic_score(treemap, x, y);
+                if score > best { best = score; }
+            }
+        }
+        Ok(best)
+    }
 }
 
 fn move_in_dir4(p: &mut Point2<usize>, dir: &Dir4) {
@@ -23,17 +51,6 @@ fn move_in_dir4(p: &mut Point2<usize>, dir: &Dir4) {
         Dir4::Left => p.x = p.x.wrapping_sub(1),
         Dir4::Right => p.x = p.x.wrapping_add(1),
     }
-}
-
-fn parse_treemap(content: &str) -> Treemap {
-    // TODO shared code (2021/09)
-    let lines = common::split_lines(content);
-    Grid::from_2d(
-        &lines
-            .iter()
-            .map(|x| x.chars().map(|c| c as u8 - b'0').collect())
-            .collect(),
-    )
 }
 
 /// Scan row/column and update visibility map
@@ -73,52 +90,17 @@ fn scenic_score(treemap: &Treemap, x: usize, y: usize) -> u32 {
     Dir4::VALUES.iter().map(|x| scan_scenic(treemap, &p, x)).product()
 }
 
-fn part1(treemap: &Treemap) -> u32 {
-    let (w, h) = treemap.dim().to_tuple();
-    let mut vis: Grid<bool> = Grid::new_default(w, h);
-    for y in 0..h {
-        scan_vis(treemap, &mut vis, &Point2::new(0, y), &Dir4::Right);
-        scan_vis(treemap, &mut vis, &Point2::new(w - 1, y), &Dir4::Left);
-    }
-    for x in 0..w {
-        scan_vis(treemap, &mut vis, &Point2::new(x, 0), &Dir4::Down);
-        scan_vis(treemap, &mut vis, &Point2::new(x, h - 1), &Dir4::Up);
-    }
-    vis.vec().iter().filter(|&&x| x).count() as u32
-}
-
-fn part2(treemap: &Treemap) -> u32 {
-    let mut best = 0;
-    for x in 0..treemap.dim().x {
-        for y in 0..treemap.dim().y {
-            let score = scenic_score(treemap, x, y);
-            if score > best { best = score; }
-        }
-    }
-    best
-}
-
-fn main() {
-    let treemap = parse_treemap(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&treemap));
-    println!("Part 2: {}", part2(&treemap));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_treemap() -> Treemap {
-        parse_treemap(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_treemap()), 21);
+        assert_eq!(test_solution(&Day08, SolutionPart::One), 21);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_treemap()), 8);
+        assert_eq!(test_solution(&Day08, SolutionPart::Two), 8);
     }
 }

@@ -38,7 +38,7 @@ impl Solution<Input, Output> for Day01 {
                 elf = Elf::new();
             } else {
                 // Update current elf
-                let val = l.trim().parse::<u32>().unwrap();
+                let val = l.trim().parse::<u32>()?;
                 elf.carried.push(val);
                 elf.total += val;
             }
@@ -51,7 +51,7 @@ impl Solution<Input, Output> for Day01 {
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(input.iter().map(|x| x.total).max().unwrap())
+        Ok(input.iter().map(|x| x.total).max().ok_or_else(|| SimpleError::new_dyn("No max"))?)
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {

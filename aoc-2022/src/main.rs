@@ -5,6 +5,7 @@ use aoc_2022::day03::Day03;
 use aoc_2022::day04::Day04;
 use aoc_2022::day05::Day05;
 use aoc_2022::day06::Day06;
+use aoc_2022::day08::Day08;
 use aoc_2022::day10::Day10;
 use aoc_2022::day11::Day11;
 use aoc_2022::day12::Day12;
@@ -21,6 +22,7 @@ fn main() -> DynResult<()> {
     run_solution(&Day04)?;
     run_solution(&Day05)?;
     run_solution(&Day06)?;
+    run_solution(&Day08)?;
     run_solution(&Day10)?;
     run_solution(&Day11)?;
     run_solution(&Day12)?;
