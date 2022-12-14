@@ -1,4 +1,5 @@
 use crate::data::Point2;
+use std::fmt::{Display, Formatter};
 
 /// Thin wrapper for a vector, to treat it as a 2d grid of values
 #[derive(Debug, Clone)]
@@ -7,24 +8,31 @@ pub struct Grid<T> {
     vals: Vec<T>,
 }
 
-impl<T: Clone> Grid<T> {
+impl<T> Grid<T> {
     /// Create grid filled with val
-    pub fn new(val: T, w: usize, h: usize) -> Self {
+    pub fn new(val: T, w: usize, h: usize) -> Self
+    where
+        T: Clone,
+    {
         Grid {
             dim: Point2 { x: w, y: h },
             vals: vec![val; w * h],
         }
     }
 
-    /// Create grid, copying values from source
-    pub fn from_1d(source: Vec<T>, w: usize) -> Grid<T> {
-        let h = source.len() / w;
-        let dim = Point2::new(w, h);
-        Grid { vals: source, dim }
+    /// Create grid filled with default
+    pub fn new_default(w: usize, h: usize) -> Self
+    where
+        T: Default + Clone,
+    {
+        Grid::new(T::default(), w, h)
     }
 
     /// Create grid, copying values from source
-    pub fn from_2d(source: &Vec<Vec<T>>) -> Grid<T> {
+    pub fn from_2d(source: &Vec<Vec<T>>) -> Grid<T>
+    where
+        T: Clone,
+    {
         let dim = Point2::new(source[0].len(), source.len());
         let vals = source
             .iter()
@@ -36,6 +44,13 @@ impl<T: Clone> Grid<T> {
             })
             .collect();
         Grid { vals, dim }
+    }
+
+    /// Create grid, copying values from source
+    pub fn from_1d(source: Vec<T>, w: usize) -> Grid<T> {
+        let h = source.len() / w;
+        let dim = Point2::new(w, h);
+        Grid { vals: source, dim }
     }
 
     /// Get single value from grid
@@ -67,18 +82,31 @@ impl<T: Clone> Grid<T> {
     pub fn vec(&self) -> &Vec<T> {
         &self.vals
     }
-}
 
-impl<T: PartialEq> Grid<T> {
-    pub fn find_pos(&self, value: &T) -> Option<Point2<usize>> {
+    pub fn find_pos(&self, value: &T) -> Option<Point2<usize>>
+    where
+        T: PartialEq,
+    {
         let (i, _) = self.vals.iter().enumerate().find(|(_, x)| x == &value)?;
         Some(Point2::new(i % self.dim.x, i / self.dim.x))
     }
 }
 
-impl<T: Default + Clone> Grid<T> {
-    /// Create grid filled with default
-    pub fn new_default(w: usize, h: usize) -> Self {
-        Grid::new(T::default(), w, h)
+impl<T: GridChar> Display for Grid<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut x = 0;
+        for v in self.vals.iter() {
+            write!(f, "{}", v.to_grid_char())?;
+            x += 1;
+            if x == self.dim.x {
+                writeln!(f)?;
+                x = 0;
+            }
+        }
+        Ok(())
     }
+}
+
+pub trait GridChar {
+    fn to_grid_char(&self) -> char;
 }

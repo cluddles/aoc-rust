@@ -97,7 +97,7 @@ impl Input {
             ..Default::default()
         };
         common::split_lines(parts[0]).iter().for_each(|x| {
-            let tokens = common::tokenize(x, ',');
+            let tokens = common::tokenize(x, ',').unwrap();
             paper.points.insert(Point2 {
                 x: tokens[0],
                 y: tokens[1],

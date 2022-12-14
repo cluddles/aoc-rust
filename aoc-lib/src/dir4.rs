@@ -1,5 +1,5 @@
-use std::str::FromStr;
 use crate::harness::SimpleError;
+use std::str::FromStr;
 
 #[derive(Debug, Clone)]
 pub enum Dir4 {

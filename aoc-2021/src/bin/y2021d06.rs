@@ -12,7 +12,7 @@ struct State {
 
 /// Read input as a simple list of first ticks
 fn parse_input(content: &str) -> Vec<u32> {
-    common::tokenize_first_line(content, ',')
+    common::tokenize_first_line(content, ',').unwrap()
 }
 
 /// Run a single tick on the supplied state

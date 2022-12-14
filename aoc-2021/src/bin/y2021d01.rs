@@ -14,7 +14,7 @@ impl Solution<Input, Output> for Year2021Day01 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        Ok(common::tokenize(&resource.as_str(), '\n'))
+        common::tokenize(&resource.as_str(), '\n')
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {

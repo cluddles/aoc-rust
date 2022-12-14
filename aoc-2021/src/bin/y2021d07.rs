@@ -5,7 +5,7 @@ use aoc_lib::common;
 const DAY: &str = "2021/07";
 
 fn parse_input(content: &str) -> Vec<u32> {
-    common::tokenize_first_line(content, ',')
+    common::tokenize_first_line(content, ',').unwrap()
 }
 
 /// Calculate distance between two points

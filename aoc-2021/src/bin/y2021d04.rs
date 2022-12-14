@@ -24,7 +24,7 @@ struct State {
 
 /// Parse line of text of form "12 34 56 78 90" into Vec
 fn parse_board_row(line: &str) -> Vec<i32> {
-    common::tokenize(line, ' ')
+    common::tokenize(line, ' ').unwrap()
 }
 
 /// Parse 5 lines

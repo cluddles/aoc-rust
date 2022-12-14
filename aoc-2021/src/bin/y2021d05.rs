@@ -24,7 +24,7 @@ struct Grid {
 }
 
 fn parse_pos(pos: &str) -> Pos {
-    let coords: Vec<i32> = common::tokenize(pos, ',');
+    let coords: Vec<i32> = common::tokenize(pos, ',').unwrap();
     Pos {
         x: coords[0],
         y: coords[1],

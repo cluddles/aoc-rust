@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use crate::harness::{DynResult, SimpleError};
 
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
@@ -50,24 +51,36 @@ pub fn split_lines_keep_empty(content: &str) -> Vec<&str> {
 }
 
 /// Parse a value, panicking on error (without relying on Debug)
-fn parse<T: FromStr>(val: &str) -> T {
+fn parse<T: FromStr>(val: &str) -> DynResult<T> {
     match val.trim().parse::<T>() {
-        Ok(v) => v,
-        Err(_) => panic!("Could not parse '{}'", val),
+        Ok(v) => Ok(v),
+        Err(_) => Err(SimpleError::new_dyn(format!("Could not parse '{}'", val))),
     }
 }
 
 /// Split text on given delim, converting tokens with parse()
 ///
 /// Empty tokens will be ignored.
-pub fn tokenize<T: FromStr>(text: &str, delim: char) -> Vec<T> {
-    text.split(delim)
+pub fn tokenize<T: FromStr>(text: &str, delim: char) -> DynResult<Vec<T>>
+// where
+//     <T as FromStr>::Err: Error,
+{
+    text
+        .split(delim)
         .filter(|x| !x.is_empty())
-        .map(parse)
+        .map(|x| parse(x))
         .collect()
 }
 
 /// Split the first line of given text, converting tokens with parse()
-pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Vec<T> {
-    tokenize(split_lines(content).first().unwrap(), delim)
+pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> DynResult<Vec<T>>
+    // where
+    //     <T as FromStr>::Err: Error,
+{
+    tokenize(
+        split_lines(content)
+            .first()
+            .ok_or_else(|| SimpleError::new_dyn("No data"))?,
+        delim,
+    )
 }
