@@ -26,7 +26,7 @@ impl Solution<Input, usize> for Day06 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        Ok(resource.as_u8())
+        resource.as_u8()
     }
 
     /// Unique segment, length 4

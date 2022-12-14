@@ -75,7 +75,7 @@ impl Solution<Input, Output> for Day10 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        Ok(resource.as_str_lines())
+        resource.as_str_lines()
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -92,7 +92,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_pre() {
+    fn test_state() {
         let program = vec!["noop", "addx 3", "addx -5"].iter().map(|x| x.to_string()).collect();
         let mut state = State::new();
         cpu_tick(&mut state, &program);

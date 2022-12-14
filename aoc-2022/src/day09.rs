@@ -1,15 +1,43 @@
 extern crate aoc_lib;
 
-use std::collections::HashSet;
-use aoc_lib::common;
 use aoc_lib::data::{Dir4, Point2};
-
-const DAY: &str = "2022/09";
+use aoc_lib::harness::*;
+use std::collections::HashSet;
 
 type Motion = (Dir4, u8);
 type MotionList = Vec<Motion>;
 type Pos = Point2<i32>;
 type RopePos = Vec<Pos>;
+
+pub struct Day09;
+type Input = MotionList;
+type Output = usize;
+impl Solution<Input, Output> for Day09 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Rope Bridge", 2022, 9)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource
+            .as_str_lines()?
+            .iter()
+            .map(|x| parse_motion(x))
+            .collect()
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(simulate_rope(input, 2))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(simulate_rope(input, 10))
+    }
+}
+
+fn parse_motion(s: &str) -> DynResult<Motion> {
+    let parts: Vec<&str> = s.split_whitespace().collect();
+    Ok((parts[0].parse::<Dir4>()?, parts[1].parse::<u8>()?))
+}
 
 fn move_in_dir4(p: &mut Pos, dir: &Dir4) {
     match dir {
@@ -20,25 +48,11 @@ fn move_in_dir4(p: &mut Pos, dir: &Dir4) {
     }
 }
 
-fn parse_input(content: &str) -> MotionList {
-    let lines = common::split_lines(content);
-    lines
-        .iter()
-        .map(|x| {
-            let parts: Vec<&str> = x.split_whitespace().collect();
-            (
-                parts[0].parse::<Dir4>().unwrap(),
-                parts[1].parse::<u8>().unwrap(),
-            )
-        })
-        .collect()
-}
-
 /// Apply a single move step to rope
 fn rope_step(rope_pos: &mut RopePos, dir: &Dir4) {
     move_in_dir4(&mut rope_pos[0], dir);
     for i in 1..rope_pos.len() {
-        let prev = rope_pos[i-1];
+        let prev = rope_pos[i - 1];
         let sep = prev - rope_pos[i];
         let delta = Pos::new(sep.x.signum(), sep.y.signum());
         if sep.x.abs() >= 2 || sep.y.abs() >= 2 {
@@ -61,40 +75,30 @@ fn simulate_rope(motions: &MotionList, rope_length: usize) -> usize {
     result.len()
 }
 
-fn part1(motions: &MotionList) -> usize {
-    simulate_rope(motions, 2)
-}
-
-fn part2(motions: &MotionList) -> usize {
-    simulate_rope(motions, 10)
-}
-
-fn main() {
-    let input = parse_input(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_input(filename: &str) -> MotionList {
-        parse_input(&common::input_as_str(DAY, filename))
-    }
-
     #[test]
     fn test_part1_1() {
-        assert_eq!(part1(&gen_test_input("input.test.1")), 13);
+        assert_eq!(
+            test_solution_ext(&Day09, SolutionPart::One, "input.test.1"),
+            13
+        );
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(part2(&gen_test_input("input.test.1")), 1);
+        assert_eq!(
+            test_solution_ext(&Day09, SolutionPart::Two, "input.test.1"),
+            1
+        );
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(part2(&gen_test_input("input.test.2")), 36);
+        assert_eq!(
+            test_solution_ext(&Day09, SolutionPart::Two, "input.test.2"),
+            36
+        );
     }
-
 }

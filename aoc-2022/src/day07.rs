@@ -1,15 +1,43 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
+use aoc_lib::harness::*;
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-const DAY: &str = "2022/07";
+pub struct Day07;
+type Input = Rc<Dir>;
+type Output = u32;
+impl Solution<Input, Output> for Day07 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("No Space Left On Device", 2022, 7)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(build_fs(&resource.as_str_lines()?))
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(Dir::flatten(input)
+            .iter()
+            .map(|n| n.size())
+            .filter(|x| x <= &100000)
+            .sum())
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        let used = input.size();
+        // Total 70000000, req 30000000: max usage=40000000
+        let min_required = used - 40000000;
+        let mut sorted: Vec<u32> = Dir::flatten(input).iter().map(|n| n.size()).collect();
+        sorted.sort_unstable();
+        Ok(*sorted.iter().find(|&&x| x >= min_required).ok_or_else(|| SimpleError::new_dyn("No result"))?)
+    }
+}
 
 /// A directory in the filesystem
 #[derive(Default, Debug)]
-struct Dir {
+pub struct Dir {
     name: String,
     // Could use a hashmap for this instead; whatever
     dirs: RefCell<Vec<Rc<Dir>>>,
@@ -35,12 +63,12 @@ impl Dir {
 
 /// A file in the filesystem
 #[derive(Debug)]
-struct File {
+pub struct File {
     size: u32,
 }
 
 /// Parse input into a meaningful filesystem
-fn build_fs(lines: &[&str]) -> Rc<Dir> {
+fn build_fs(lines: &Vec<String>) -> Rc<Dir> {
     let root = Rc::new(Dir {
         name: "".to_string(),
         ..Default::default()
@@ -89,51 +117,17 @@ fn build_fs(lines: &[&str]) -> Rc<Dir> {
     root
 }
 
-/// Sum of all directories that have size <= 100000
-fn part1(fs: &Rc<Dir>) -> u32 {
-    Dir::flatten(fs)
-        .iter()
-        .map(|n| n.size())
-        .filter(|x| x <= &100000)
-        .sum()
-}
-
-/// Smallest deletion to reach 30000000 bytes free
-fn part2(fs: &Rc<Dir>) -> u32 {
-    let used = fs.size();
-    // Total 70000000, req 30000000: max usage=40000000
-    let min_required = used - 40000000;
-    let mut sorted: Vec<u32> = Dir::flatten(fs).iter().map(|n| n.size()).collect();
-    sorted.sort_unstable();
-    *sorted.iter().find(|&&x| x >= min_required).unwrap()
-}
-
-fn main() {
-    let input = common::input_as_str(DAY, "input");
-    let lines = common::split_lines(&input);
-    let fs = build_fs(&lines);
-    println!("Part 1: {}", part1(&fs));
-    println!("Part 2: {}", part2(&fs));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_fs() -> Rc<Dir> {
-        build_fs(&common::split_lines(&common::input_as_str(
-            DAY,
-            "input.test",
-        )))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_fs()), 95437);
+        assert_eq!(test_solution(&Day07, SolutionPart::One), 95437);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_fs()), 24933642);
+        assert_eq!(test_solution(&Day07, SolutionPart::Two), 24933642);
     }
 }

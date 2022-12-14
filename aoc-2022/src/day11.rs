@@ -11,7 +11,7 @@ impl Solution<Input, Output> for Day11 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        resource.as_str().split("\n\n").map(Monkey::parse).collect()
+        resource.as_str()?.split("\n\n").map(Monkey::parse).collect()
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {

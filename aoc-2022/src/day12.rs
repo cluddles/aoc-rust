@@ -13,7 +13,7 @@ impl Solution<Input, Output> for Day12 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        let grid = resource.as_u8_grid(std::convert::identity);
+        let grid = resource.as_u8_grid(std::convert::identity)?;
         Area::new(grid)
     }
 

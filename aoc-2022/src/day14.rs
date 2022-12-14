@@ -12,7 +12,7 @@ impl Solution<Input, Output> for Day14 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        let lines = resource.as_str_lines();
+        let lines = resource.as_str_lines()?;
         // Read input into line segments
         let data: Vec<CaveLine> = lines
             .iter()

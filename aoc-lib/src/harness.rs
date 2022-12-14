@@ -4,12 +4,11 @@ use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 use std::time::SystemTime;
 
+// TODO these errors should probably live in common or something
+
 pub type DynError = Box<dyn Error>;
 pub type DynResult<O> = Result<O, DynError>;
 pub type SolutionResult<O> = DynResult<O>;
-
-
-// TODO these errors should probably live in common or something
 
 /// Error that displays "something"
 #[derive(Debug, Clone)]
@@ -135,24 +134,24 @@ fn test_solution_inner<S: Solution<I, O>, I, O>(
 /// Resource to pull solution input from
 pub trait Resource {
     /// Read string from resource
-    fn as_str(&self) -> String;
+    fn as_str(&self) -> DynResult<String>;
 
     /// Read u8 vec from resource
-    fn as_u8(&self) -> Vec<u8>;
+    fn as_u8(&self) -> DynResult<Vec<u8>>;
 
     /// Read string lines from resource. Filters out empty lines.
-    fn as_str_lines(&self) -> Vec<String> {
-        let lines = self.as_str();
-        lines
+    fn as_str_lines(&self) -> DynResult<Vec<String>> {
+        let lines = self.as_str()?;
+        Ok(lines
             .split('\n')
             .filter(|x| !x.is_empty())
             .map(|x| x.to_owned())
-            .collect()
+            .collect())
     }
 
     /// Read grid of u8 from resource
-    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> Grid<u8> {
-        let input = self.as_u8();
+    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> DynResult<Grid<u8>> {
+        let input = self.as_u8()?;
         let w = input
             .iter()
             .enumerate()
@@ -164,7 +163,7 @@ pub trait Resource {
             .filter(|&&x| x >= 32)
             .map(|&x| converter(x))
             .collect();
-        Grid::from_1d(grid_raw, w)
+        Ok(Grid::from_1d(grid_raw, w))
     }
 }
 
@@ -175,13 +174,23 @@ pub struct FileResource {
     day: u8,
 }
 
+fn file_res_as_str(day: &str, filename: &str) -> DynResult<String> {
+    Ok(std::fs::read_to_string(resource_path_day_filename(
+        day, filename,
+    ))?)
+}
+
+fn file_res_as_u8(day: &str, filename: &str) -> DynResult<Vec<u8>> {
+    Ok(std::fs::read(resource_path_day_filename(day, filename))?)
+}
+
 impl Resource for FileResource {
-    fn as_str(&self) -> String {
-        input_as_str(&format!("{}/{:02}", self.year, self.day), self.filename)
+    fn as_str(&self) -> DynResult<String> {
+        file_res_as_str(&format!("{}/{:02}", self.year, self.day), self.filename)
     }
 
-    fn as_u8(&self) -> Vec<u8> {
-        input_as_u8(&format!("{}/{:02}", self.year, self.day), self.filename)
+    fn as_u8(&self) -> DynResult<Vec<u8>> {
+        file_res_as_u8(&format!("{}/{:02}", self.year, self.day), self.filename)
     }
 }
 
@@ -191,12 +200,12 @@ pub struct InlineResource {
 }
 
 impl Resource for InlineResource {
-    fn as_str(&self) -> String {
-        self.text.to_string()
+    fn as_str(&self) -> DynResult<String> {
+        Ok(self.text.to_string())
     }
 
-    fn as_u8(&self) -> Vec<u8> {
-        str_to_u8(self.text)
+    fn as_u8(&self) -> DynResult<Vec<u8>> {
+        Ok(str_to_u8(self.text))
     }
 }
 

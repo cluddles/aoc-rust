@@ -12,7 +12,7 @@ impl Solution<Input, Output> for Day02 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        parse_strategy_guide(&resource.as_str())
+        parse_strategy_guide(&resource.as_str()?)
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {

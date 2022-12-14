@@ -53,7 +53,7 @@ impl Solution<Input, Output> for Day03 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        Ok(resource.as_str())
+        resource.as_str()
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {

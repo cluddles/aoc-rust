@@ -14,7 +14,7 @@ impl Solution<Input, Output> for Day08 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        Ok(resource.as_u8_grid(|c| c - b'0'))
+        resource.as_u8_grid(|c| c - b'0')
     }
 
     fn solve_part1(&self, treemap: &Input) -> SolutionResult<Output> {

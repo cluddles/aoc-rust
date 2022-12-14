@@ -12,7 +12,7 @@ impl Solution<Input, Output> for Day05 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        let content = resource.as_str();
+        let content = resource.as_str()?;
         let parts: Vec<&str> = content.split("\n\n").collect();
         Ok((parse_crates(parts[0])?, parse_moves(parts[1])?))
     }

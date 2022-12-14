@@ -120,7 +120,7 @@ impl Solution<CaveSystem, usize> for Year2021Day12 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<CaveSystem> {
-        Ok(CaveSystem::parse(&resource.as_str()))
+        Ok(CaveSystem::parse(&resource.as_str()?))
     }
 
     fn solve_part1(&self, input: &CaveSystem) -> SolutionResult<usize> {

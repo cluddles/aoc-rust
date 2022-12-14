@@ -27,7 +27,7 @@ impl Solution<Input, Output> for Day01 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        let text = resource.as_str();
+        let text = resource.as_str()?;
         let lines = common::split_lines_keep_empty(&text);
         let mut result: Vec<Elf> = Vec::new();
         let mut elf = Elf::new();

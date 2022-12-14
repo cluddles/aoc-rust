@@ -14,7 +14,7 @@ impl Solution<Input, Output> for Day13 {
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
         resource
-            .as_str_lines()
+            .as_str_lines()?
             .iter()
             .map(|x| Packet::from_str(x))
             .collect::<Result<_, _>>()
