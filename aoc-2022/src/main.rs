@@ -13,6 +13,7 @@ use aoc_2022::day11::Day11;
 use aoc_2022::day12::Day12;
 use aoc_2022::day13::Day13;
 use aoc_2022::day14::Day14;
+use aoc_2022::day15::Day15;
 use aoc_lib::harness::*;
 
 fn main() -> DynResult<()> {
@@ -32,6 +33,7 @@ fn main() -> DynResult<()> {
     run_solution(&Day12)?;
     run_solution(&Day13)?;
     run_solution(&Day14)?;
+    run_solution(&Day15)?;
 
     println!("\nTotal time: {:?}", time.elapsed()?);
     Ok(())

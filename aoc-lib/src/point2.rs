@@ -1,5 +1,5 @@
 use crate::common;
-use num_traits::{Num, NumAssign};
+use num_traits::{Num, NumAssign, Signed};
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 use std::str::FromStr;
 use crate::harness::{DynError, DynResult, SimpleError};
@@ -20,9 +20,14 @@ impl<T: Copy> Point2<T> {
     }
 }
 
-impl<T: Default + Copy> Point2<T> {
-    pub fn default() -> Self {
+impl<T: Copy> Point2<T> {
+    pub fn default() -> Self where T: Default {
         Self::new(T::default(), T::default())
+    }
+
+    /// Manhattan distance of 0,0 to this point
+    pub fn manhattan(&self) -> T where T: Num + Signed {
+        self.x.abs() + self.y.abs()
     }
 }
 

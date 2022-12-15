@@ -50,11 +50,7 @@ pub fn run_solution<S: Solution<I, O>, I, O: Display>(solution: &S) -> DynResult
     let info = solution.info();
     println!("\n--- [{}] Day {}: {} ---", info.year, info.day, info.title);
     // Create resource using year/day from info
-    let resource = FileResource {
-        filename: "input",
-        year: info.year,
-        day: info.day,
-    };
+    let resource = FileResource::new("input", info.year, info.day);
     // Call proc on solution to parse input into relevant part1/2 input type
     let time = SystemTime::now();
     println!("\nParse input");
@@ -83,11 +79,7 @@ pub fn test_solution<S: Solution<I, O>, I, O>(solution: &S, part: SolutionPart) 
     test_solution_inner(
         solution,
         part,
-        &FileResource {
-            filename: "input.test",
-            year: info.year,
-            day: info.day,
-        },
+        &FileResource::new("input.test", info.year, info.day),
     )
 }
 
@@ -101,11 +93,7 @@ pub fn test_solution_ext<S: Solution<I, O>, I, O>(
     test_solution_inner(
         solution,
         part,
-        &FileResource {
-            filename,
-            year: info.year,
-            day: info.day,
-        },
+        &FileResource::new(filename, info.year, info.day),
     )
 }
 
@@ -174,6 +162,16 @@ pub struct FileResource {
     day: u8,
 }
 
+impl FileResource {
+    pub fn new(filename: &'static str, year: u32, day: u8) -> Self {
+        Self {
+            filename,
+            year,
+            day,
+        }
+    }
+}
+
 fn file_res_as_str(day: &str, filename: &str) -> DynResult<String> {
     Ok(std::fs::read_to_string(resource_path_day_filename(
         day, filename,
@@ -197,6 +195,12 @@ impl Resource for FileResource {
 /// Resource corresponding to inline text
 pub struct InlineResource {
     text: &'static str,
+}
+
+impl InlineResource {
+    pub fn new(text: &'static str) -> Self {
+        Self { text }
+    }
 }
 
 impl Resource for InlineResource {

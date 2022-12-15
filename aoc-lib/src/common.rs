@@ -50,8 +50,8 @@ pub fn split_lines_keep_empty(content: &str) -> Vec<&str> {
     split_lines_ext(content, true)
 }
 
-/// Parse a value, panicking on error (without relying on Debug)
-fn parse<T: FromStr>(val: &str) -> DynResult<T> {
+/// Parse a value, standardising into DynResult
+pub fn parse_str<T: FromStr>(val: &str) -> DynResult<T> {
     match val.trim().parse::<T>() {
         Ok(v) => Ok(v),
         Err(_) => Err(SimpleError::new_dyn(format!("Could not parse '{}'", val))),
@@ -68,7 +68,7 @@ pub fn tokenize<T: FromStr>(text: &str, delim: char) -> DynResult<Vec<T>>
     text
         .split(delim)
         .filter(|x| !x.is_empty())
-        .map(|x| parse(x))
+        .map(|x| parse_str(x))
         .collect()
 }
 
