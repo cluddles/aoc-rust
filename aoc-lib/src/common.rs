@@ -1,26 +1,5 @@
-use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use crate::harness::{DynResult, SimpleError};
-
-const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
-
-pub fn resource_path() -> PathBuf {
-    Path::new(MANIFEST_DIR).join("..").join("resource")
-}
-
-pub fn resource_path_day_filename(day: &str, filename: &str) -> PathBuf {
-    resource_path().join(day).join(filename)
-}
-
-/// Convenience function to read resource for a particular day.
-pub fn input_as_str(day: &str, filename: &str) -> String {
-    std::fs::read_to_string(resource_path_day_filename(day, filename)).unwrap()
-}
-
-/// Convenience function to read resource for a particular day, as Vec of u8.
-pub fn input_as_u8(day: &str, filename: &str) -> Vec<u8> {
-    std::fs::read(resource_path_day_filename(day, filename)).unwrap()
-}
 
 /// Convert string to Vec of u8
 pub fn str_to_u8(text: &str) -> Vec<u8> {

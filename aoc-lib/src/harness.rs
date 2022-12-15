@@ -2,6 +2,7 @@ use crate::common::*;
 use crate::data::Grid;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
+use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
 // TODO these errors should probably live in common or something
@@ -155,6 +156,20 @@ pub trait Resource {
     }
 }
 
+const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
+
+pub fn resource_path(filename: &str, year: u32, day: u8) -> PathBuf {
+    Path::new(MANIFEST_DIR).join("..").join(format!("aoc-{}", year)).join("resource").join(format!("{:02}", day)).join(filename)
+}
+
+fn file_res_as_str(filename: &str, year: u32, day: u8) -> DynResult<String> {
+    Ok(std::fs::read_to_string(resource_path(filename, year, day))?)
+}
+
+fn file_res_as_u8(filename: &str, year: u32, day: u8) -> DynResult<Vec<u8>> {
+    Ok(std::fs::read(resource_path(filename, year, day))?)
+}
+
 /// Resource corresponding to a file on disk
 pub struct FileResource {
     filename: &'static str,
@@ -172,23 +187,13 @@ impl FileResource {
     }
 }
 
-fn file_res_as_str(day: &str, filename: &str) -> DynResult<String> {
-    Ok(std::fs::read_to_string(resource_path_day_filename(
-        day, filename,
-    ))?)
-}
-
-fn file_res_as_u8(day: &str, filename: &str) -> DynResult<Vec<u8>> {
-    Ok(std::fs::read(resource_path_day_filename(day, filename))?)
-}
-
 impl Resource for FileResource {
     fn as_str(&self) -> DynResult<String> {
-        file_res_as_str(&format!("{}/{:02}", self.year, self.day), self.filename)
+        file_res_as_str(self.filename, self.year, self.day)
     }
 
     fn as_u8(&self) -> DynResult<Vec<u8>> {
-        file_res_as_u8(&format!("{}/{:02}", self.year, self.day), self.filename)
+        file_res_as_u8(self.filename, self.year, self.day)
     }
 }
 
