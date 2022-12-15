@@ -1,26 +1,46 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/02";
+pub struct Day02;
 
-struct Instruction {
+type Input = Vec<Instruction>;
+type Output = u32;
+
+impl Solution<Input, Output> for Day02 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Dive!", 2021, 2)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource
+            .as_str_lines()?
+            .iter()
+            .map(|x| parse_instruction(x))
+            .collect::<Result<_,_>>()
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
+}
+
+pub struct Instruction {
     name: String,
     amount: u32,
 }
 
 /// Parse a single instruction from a line of text
-fn parse_instruction(line: &str) -> Instruction {
+fn parse_instruction(line: &str) -> DynResult<Instruction> {
     let parts: Vec<&str> = line.trim().split(' ').collect();
-    Instruction {
+    Ok(Instruction {
         name: parts[0].to_string(),
-        amount: parts[1].parse().unwrap(),
-    }
-}
-
-/// Convert input text to Vec of instructions
-fn generate_instructions(content: &str) -> Vec<Instruction> {
-    content.split('\n').map(parse_instruction).collect()
+        amount: parts[1].parse()?,
+    })
 }
 
 /// Horizontal * depth after running instructions
@@ -57,28 +77,17 @@ fn part2(instructions: &Vec<Instruction>) -> u32 {
     horiz * depth
 }
 
-fn main() {
-    let content = common::input_as_str(DAY, "input");
-    let instructions = generate_instructions(&content);
-    println!("Part 1: {}", part1(&instructions));
-    println!("Part 2: {}", part2(&instructions));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_instructions() -> Vec<Instruction> {
-        generate_instructions(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_instructions()), 150);
+        assert_eq!(test_solution(&Day02, SolutionPart::One), 150);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_instructions()), 900);
+        assert_eq!(test_solution(&Day02, SolutionPart::Two), 900);
     }
 }

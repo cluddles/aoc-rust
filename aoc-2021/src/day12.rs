@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 /// All cave data
 #[derive(Default, Debug)]
-struct CaveSystem {
+pub struct CaveSystem {
     caves: Vec<Cave>,
     cave_lookup: HashMap<String, usize>,
 }
@@ -93,7 +93,7 @@ impl CaveSystem {
 
 /// A single cave: name and connections (as indexes)
 #[derive(Default, Debug)]
-struct Cave {
+pub struct Cave {
     name: String,
     connections: Vec<usize>,
 }
@@ -112,9 +112,9 @@ enum Visit {
     Denied,
 }
 
-struct Year2021Day12;
+pub struct Day12;
 
-impl Solution<CaveSystem, usize> for Year2021Day12 {
+impl Solution<CaveSystem, usize> for Day12 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Passage Pathing", 2021, 12)
     }
@@ -132,38 +132,34 @@ impl Solution<CaveSystem, usize> for Year2021Day12 {
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2021Day12)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1_1() {
-        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::One, "input.test.1"), 10);
+        assert_eq!(test_solution_ext(&Day12, SolutionPart::One, "input.test.1"), 10);
     }
     #[test]
     fn test_part1_2() {
-        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::One, "input.test.2"), 19);
+        assert_eq!(test_solution_ext(&Day12, SolutionPart::One, "input.test.2"), 19);
     }
     #[test]
     fn test_part1_3() {
-        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::One, "input.test.3"), 226);
+        assert_eq!(test_solution_ext(&Day12, SolutionPart::One, "input.test.3"), 226);
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::Two, "input.test.1"), 36);
+        assert_eq!(test_solution_ext(&Day12, SolutionPart::Two, "input.test.1"), 36);
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::Two, "input.test.2"), 103);
+        assert_eq!(test_solution_ext(&Day12, SolutionPart::Two, "input.test.2"), 103);
     }
     #[test]
     fn test_part2_3() {
-        assert_eq!(test_solution_ext(&Year2021Day12, SolutionPart::Two, "input.test.3"), 3509);
+        assert_eq!(test_solution_ext(&Day12, SolutionPart::Two, "input.test.3"), 3509);
     }
 
 }

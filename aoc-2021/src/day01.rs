@@ -3,12 +3,12 @@ extern crate aoc_lib;
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
-struct Year2021Day01;
+pub struct Day01;
 
 type Input = Vec<u32>;
 type Output = usize;
 
-impl Solution<Input, Output> for Year2021Day01 {
+impl Solution<Input, Output> for Day01 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Sonar Sweep", 2021, 1)
     }
@@ -40,21 +40,17 @@ impl Solution<Input, Output> for Year2021Day01 {
     }
 }
 
-fn main() -> DynResult<()> {
-    run_solution(&Year2021Day01)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        assert_eq!(test_solution(&Year2021Day01, SolutionPart::One), 7);
+        assert_eq!(test_solution(&Day01, SolutionPart::One), 7);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Year2021Day01, SolutionPart::Two), 5);
+        assert_eq!(test_solution(&Day01, SolutionPart::Two), 5);
     }
 }
