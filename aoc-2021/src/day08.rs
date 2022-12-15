@@ -1,15 +1,32 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/08";
+pub struct Day08;
 
-fn parse_input(content: &str) -> Vec<&str> {
-    common::split_lines(content)
+type Input = Vec<String>;
+type Output = u32;
+
+impl Solution<Input, Output> for Day08 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Seven Segment Search", 2021, 8)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource.as_str_lines()
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
 }
 
 /// Count digits with 2, 3, 4 and 7 segments
-fn part1(input: &[&str]) -> u32 {
+fn part1(input: &Input) -> u32 {
     input
         .iter()
         .map(|x| x.split(" | ").collect::<Vec<&str>>()[1])
@@ -107,7 +124,7 @@ fn digits_to_num(digits: &[String], src_patterns: &[String], dict: &[Option<u8>]
 }
 
 /// Sum all RHS values
-fn part2(input: &[&str]) -> u32 {
+fn part2(input: &Input) -> u32 {
     let mut result = 0;
     for line in input {
         let split_line: Vec<&str> = line.split(" | ").collect();
@@ -122,26 +139,17 @@ fn part2(input: &[&str]) -> u32 {
     result
 }
 
-fn main() {
-    let content = common::input_as_str(DAY, "input");
-    let input = parse_input(&content);
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        let content = common::input_as_str(DAY, "input.test");
-        assert_eq!(part1(&parse_input(&content)), 26);
+        assert_eq!(test_solution(&Day08, SolutionPart::One), 26);
     }
 
     #[test]
     fn test_part2() {
-        let content = common::input_as_str(DAY, "input.test");
-        assert_eq!(part2(&parse_input(&content)), 61229);
+        assert_eq!(test_solution(&Day08, SolutionPart::Two), 61229);
     }
 }

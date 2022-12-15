@@ -1,11 +1,28 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/10";
+pub struct Day10;
 
-fn parse_input(content: &str) -> Vec<&str> {
-    common::split_lines(content)
+type Input = Vec<String>;
+type Output = u64;
+
+impl Solution<Input, Output> for Day10 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Syntax Scoring", 2021, 10)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource.as_str_lines()
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
 }
 
 /// Returns closing counterpart for opening character
@@ -20,7 +37,7 @@ fn closer_for(c: u8) -> u8 {
 }
 
 /// Score for misplaced closer char
-fn score_syntax_error_closer(c: u8) -> u32 {
+fn score_syntax_error_closer(c: u8) -> u64 {
     match c {
         b')' => 3,
         b']' => 57,
@@ -59,7 +76,7 @@ fn find_error(line: &str) -> (Option<u8>, Vec<u8>) {
 }
 
 /// Score line for syntax error
-fn score_syntax_error_line(line: &str) -> u32 {
+fn score_syntax_error_line(line: &str) -> u64 {
     match find_error(line).0 {
         Some(v) => score_syntax_error_closer(v),
         None => 0,
@@ -77,11 +94,11 @@ fn score_autocomplete_line(line: &str) -> u64 {
     }
 }
 
-fn part1(input: &[&str]) -> u32 {
-    input.iter().map(|x| score_syntax_error_line(x)).sum()
+fn part1(input: &[String]) -> u64 {
+    input.iter().map(|x| score_syntax_error_line(&x)).sum()
 }
 
-fn part2(input: &[&str]) -> u64 {
+fn part2(input: &[String]) -> u64 {
     let mut scores: Vec<u64> = input
         .iter()
         .map(|x| score_autocomplete_line(x))
@@ -91,26 +108,17 @@ fn part2(input: &[&str]) -> u64 {
     scores[scores.len() / 2]
 }
 
-fn main() {
-    let content = common::input_as_str(DAY, "input");
-    let input = parse_input(&content);
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        let input = &common::input_as_str(DAY, "input.test");
-        assert_eq!(part1(&parse_input(input)), 26397);
+        assert_eq!(test_solution(&Day10, SolutionPart::One), 26397);
     }
 
     #[test]
     fn test_part2() {
-        let input = &common::input_as_str(DAY, "input.test");
-        assert_eq!(part2(&parse_input(input)), 288957);
+        assert_eq!(test_solution(&Day10, SolutionPart::Two), 288957);
     }
 }

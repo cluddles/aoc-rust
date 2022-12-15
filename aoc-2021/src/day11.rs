@@ -1,9 +1,30 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
 use aoc_lib::data::Grid;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/11";
+pub struct Day11;
+
+type Input = Grid<u8>;
+type Output = u32;
+
+impl Solution<Input, Output> for Day11 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Dumbo Octopus", 2021, 11)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource.as_u8_grid(|y| y as u8 - b'0')
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
+}
 
 /// x, y deltas representing adjacent positions
 const ADJACENTS: &[(i8, i8); 8] = &[
@@ -16,16 +37,6 @@ const ADJACENTS: &[(i8, i8); 8] = &[
     (0, 1),
     (1, 1),
 ];
-
-fn parse_input(input: &str) -> Grid<u8> {
-    let lines = common::split_lines(input);
-    Grid::from_2d(
-        &lines
-            .iter()
-            .map(|x| x.chars().map(|y| y as u8 - b'0').collect())
-            .collect::<Vec<Vec<u8>>>(),
-    )
-}
 
 /// Increment the value of a single cell.
 /// On flash, apply increment to all (valid) neighbours.
@@ -85,27 +96,17 @@ fn part2(input: &Grid<u8>) -> u32 {
     }
 }
 
-fn main() {
-    let input = parse_input(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_input() -> Grid<u8> {
-        parse_input(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_input()), 1656);
+        assert_eq!(test_solution(&Day11, SolutionPart::One), 1656);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_input()), 195);
+        assert_eq!(test_solution(&Day11, SolutionPart::Two), 195);
     }
 }

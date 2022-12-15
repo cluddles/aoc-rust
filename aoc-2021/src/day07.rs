@@ -1,11 +1,29 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/07";
+pub struct Day07;
 
-fn parse_input(content: &str) -> Vec<u32> {
-    common::tokenize_first_line(content, ',').unwrap()
+type Input = Vec<u32>;
+type Output = u32;
+
+impl Solution<Input, Output> for Day07 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("The Treachery of Whales", 2021, 7)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        common::tokenize_first_line(&resource.as_str()?, ',')
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(score_linear(input, median(input)))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(score_fac(input, mean(input).round() as u32))
+    }
 }
 
 /// Calculate distance between two points
@@ -40,36 +58,18 @@ fn mean(input: &[u32]) -> f64 {
     input.iter().sum::<u32>() as f64 / input.len() as f64
 }
 
-fn part1(input: &[u32]) -> u32 {
-    score_linear(input, median(input))
-}
-
-fn part2(input: &[u32]) -> u32 {
-    score_fac(input, mean(input).round() as u32)
-}
-
-fn main() {
-    let input = parse_input(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_input() -> Vec<u32> {
-        parse_input(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_input()), 37);
+        assert_eq!(test_solution(&Day07, SolutionPart::One), 37);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_input()), 168);
+        assert_eq!(test_solution(&Day07, SolutionPart::Two), 168);
     }
-
 }
+

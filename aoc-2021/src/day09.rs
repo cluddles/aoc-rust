@@ -1,18 +1,29 @@
 extern crate aoc_lib;
 
-use aoc_lib::common;
 use aoc_lib::data::{Point2, Grid};
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/09";
+pub struct Day09;
 
-fn parse_heightmap(content: &str) -> Grid<u8> {
-    let lines = common::split_lines(content);
-    Grid::from_2d(
-        &lines
-            .iter()
-            .map(|x| x.chars().map(|c| c as u8 - b'0').collect())
-            .collect(),
-    )
+type Input = Grid<u8>;
+type Output = u32;
+
+impl Solution<Input, Output> for Day09 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Smoke Basin", 2021, 9)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource.as_u8_grid(|c| c as u8 - b'0')
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
 }
 
 /// Find lowpoints, which are points lower than all adjacent cells
@@ -74,26 +85,17 @@ fn part2(heights: &Grid<u8>) -> u32 {
     basin_sizes.iter().rev().take(3).product()
 }
 
-fn main() {
-    let content = common::input_as_str(DAY, "input");
-    let heightmap = parse_heightmap(&content);
-    println!("Part 1: {}", part1(&heightmap));
-    println!("Part 2: {}", part2(&heightmap));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part1() {
-        let input = parse_heightmap(&common::input_as_str(DAY, "input.test"));
-        assert_eq!(part1(&input), 15);
+        assert_eq!(test_solution(&Day09, SolutionPart::One), 15);
     }
 
     #[test]
     fn test_part2() {
-        let input = parse_heightmap(&common::input_as_str(DAY, "input.test"));
-        assert_eq!(part2(&input), 1134);
+        assert_eq!(test_solution(&Day09, SolutionPart::Two), 1134);
     }
 }

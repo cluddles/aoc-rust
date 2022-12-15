@@ -4,11 +4,32 @@ use aoc_lib::common;
 use aoc_lib::data::Point2;
 use std::collections::HashSet;
 use std::fmt::Formatter;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/13";
+pub struct Day13;
+
+type Output = usize;
+
+impl Solution<Input, Output> for Day13 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Transparent Origami", 2021, 13)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(Input::parse(&resource.as_str()?))
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
+}
 
 #[derive(Default, Debug, Clone)]
-struct Paper {
+pub struct Paper {
     points: HashSet<Point2<usize>>,
 }
 
@@ -83,7 +104,7 @@ enum Fold {
 }
 
 #[derive(Debug)]
-struct Input {
+pub struct Input {
     paper: Paper,
     folds: Vec<Fold>,
 }
@@ -132,27 +153,17 @@ fn part2(input: &Input) -> usize {
     paper.points.len()
 }
 
-fn main() {
-    let input = Input::parse(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_input(filename: &str) -> Input {
-        Input::parse(&common::input_as_str(DAY, filename))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_input("input.test")), 17);
+        assert_eq!(test_solution(&Day13, SolutionPart::One), 17);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_input("input.test")), 16);
+        assert_eq!(test_solution(&Day13, SolutionPart::Two), 16);
     }
 }
