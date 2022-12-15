@@ -1,47 +1,65 @@
 extern crate aoc_lib;
 
-use std::collections::HashMap;
 use aoc_lib::common;
+use aoc_lib::data::Point2;
+use aoc_lib::harness::*;
+use std::collections::HashMap;
 
-const DAY: &str = "2021/05";
+pub struct Day05;
+
+type Input = Vec<Line>;
+type Output = u32;
+
+impl Solution<Input, Output> for Day05 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Hydrothermal Venture", 2021, 5)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        resource
+            .as_str_lines()?
+            .iter()
+            .map(|x| parse_line(x))
+            .collect::<Result<_,_>>()
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(draw_all(input, false))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(draw_all(input, true))
+    }
+}
 
 /// Line, consisting of start and end position (inclusive)
-struct Line {
+pub struct Line {
     start: Pos,
     end: Pos,
 }
 
 /// Simple 2D position
-#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
-struct Pos {
-    x: i32,
-    y: i32,
-}
+type Pos = Point2<i32>;
 
 /// 2D grid to track number of lines per point
-struct Grid {
+pub struct Grid {
     map: HashMap<Pos, i32>,
 }
 
-fn parse_pos(pos: &str) -> Pos {
-    let coords: Vec<i32> = common::tokenize(pos, ',').unwrap();
-    Pos {
+fn parse_pos(pos: &str) -> DynResult<Pos> {
+    let coords: Vec<i32> = common::tokenize(pos, ',')?;
+    Ok(Pos {
         x: coords[0],
         y: coords[1],
-    }
+    })
 }
 
-fn parse_line(line: &str) -> Line {
+fn parse_line(line: &str) -> DynResult<Line> {
     let points: Vec<&str> = line.split(" -> ").collect();
-    Line {
-        start: parse_pos(points[0]),
-        end: parse_pos(points[1]),
-    }
-}
-
-fn parse_lines(content: &str) -> Vec<Line> {
-    let lines = common::split_lines(content);
-    lines.iter().map(|x| parse_line(x)).collect()
+    Ok(Line {
+        start: parse_pos(points[0])?,
+        end: parse_pos(points[1])?,
+    })
 }
 
 /// Yield all points along line
@@ -84,35 +102,17 @@ fn draw_all(lines: &[Line], inc_diagonals: bool) -> u32 {
     grid.map.values().filter(|x| **x > 1).count() as u32
 }
 
-fn part1(lines: &[Line]) -> u32 {
-    draw_all(lines, false)
-}
-
-fn part2(lines: &[Line]) -> u32 {
-    draw_all(lines, true)
-}
-
-fn main() {
-    let lines = parse_lines(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&lines));
-    println!("Part 2: {}", part2(&lines));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_input() -> Vec<Line> {
-        parse_lines(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_input()), 5);
+        assert_eq!(test_solution(&Day05, SolutionPart::One), 5);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_input()), 12);
+        assert_eq!(test_solution(&Day05, SolutionPart::Two), 12);
     }
 }

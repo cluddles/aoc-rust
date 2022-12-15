@@ -1,12 +1,34 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/04";
+pub struct Day04;
+
+type Input = State;
+type Output = u32;
+
+impl Solution<Input, Output> for Day04 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Giant Squid", 2021, 4)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        Ok(parse_input(&resource.as_str_lines()?))
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part1(input))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(part2(input))
+    }
+}
 
 /// A Bingo board
 #[derive(Debug, Clone)]
-struct Board {
+pub struct Board {
     /// 2D array (ish), structured by row; access via grid\[y]\[x].
     ///
     /// Marked numbers will be replaced with -1.
@@ -15,7 +37,7 @@ struct Board {
 
 /// State, consisting of a Vec of numbers being called, and some Boards
 #[derive(Debug, Clone)]
-struct State {
+pub struct State {
     /// Numbers to call, popping from the end
     calls: Vec<u32>,
     /// Boards participating
@@ -28,16 +50,14 @@ fn parse_board_row(line: &str) -> Vec<i32> {
 }
 
 /// Parse 5 lines
-fn parse_board(lines: &[&str]) -> Board {
+fn parse_board(lines: &[String]) -> Board {
     Board {
-        grid: (0..5).map(|i| parse_board_row(lines[i])).collect(),
+        grid: (0..5).map(|i| parse_board_row(&lines[i])).collect(),
     }
 }
 
 /// Parse input from text. First line is call list, then some number of boards
-fn parse_input(content: &str) -> State {
-    // Don't forget that this scrubs any empty lines...
-    let lines = common::split_lines(content);
+fn parse_input(lines: &Vec<String>) -> State {
     // Calls - reverse so we can pop from the end
     let calls = lines[0]
         .split(',')
@@ -142,27 +162,17 @@ fn part2(input: &State) -> u32 {
     }
 }
 
-fn main() {
-    let input = parse_input(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn gen_test_input() -> State {
-        parse_input(&common::input_as_str(DAY, "input.test"))
-    }
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&gen_test_input()), 4512);
+        assert_eq!(test_solution(&Day04, SolutionPart::One), 4512);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&gen_test_input()), 1924);
+        assert_eq!(test_solution(&Day04, SolutionPart::Two), 1924);
     }
 }

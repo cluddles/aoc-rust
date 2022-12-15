@@ -1,18 +1,35 @@
 extern crate aoc_lib;
 
 use aoc_lib::common;
+use aoc_lib::harness::*;
 
-const DAY: &str = "2021/06";
+pub struct Day06;
 
-/// Track simulation state
-struct State {
-    /// Fish due to trigger per tick
-    ticks: Vec<u64>,
+type Input = Vec<u32>;
+type Output = u64;
+
+impl Solution<Input, Output> for Day06 {
+    fn info(&self) -> SolutionInfo {
+        SolutionInfo::new("Lanternfish", 2021, 6)
+    }
+
+    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+        common::tokenize_first_line(&resource.as_str()?, ',')
+    }
+
+    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(run_ticks(input, 80))
+    }
+
+    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        Ok(run_ticks(input, 256))
+    }
 }
 
-/// Read input as a simple list of first ticks
-fn parse_input(content: &str) -> Vec<u32> {
-    common::tokenize_first_line(content, ',').unwrap()
+/// Track simulation state
+pub struct State {
+    /// Fish due to trigger per tick
+    ticks: Vec<u64>,
 }
 
 /// Run a single tick on the supplied state
@@ -41,26 +58,12 @@ fn run_ticks(input: &[u32], ticks: usize) -> u64 {
     (ticks..ticks + 9).map(|x| state.ticks[x]).sum()
 }
 
-fn part1(input: &[u32]) -> u64 {
-    run_ticks(input, 80)
-}
-
-fn part2(input: &[u32]) -> u64 {
-    run_ticks(input, 256)
-}
-
-fn main() {
-    let input = parse_input(&common::input_as_str(DAY, "input"));
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     fn gen_input() -> Vec<u32> {
-        parse_input(&common::input_as_str(DAY, "input.test"))
+        Day06.parse_input(&FileResource::new("input.test", 2021, 6)).unwrap()
     }
 
     #[test]

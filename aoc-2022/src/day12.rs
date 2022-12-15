@@ -75,7 +75,7 @@ fn select_best_from_open(open: &mut HashSet<GridPos>, nodes: &HashMap<GridPos, N
 }
 
 /// Heuristic, used to calculate F
-fn h(area: &Area, pos: &GridPos) -> usize {
+fn h(_area: &Area, _pos: &GridPos) -> usize {
     // Return 0 to behave like Dijkstra - breadth first search
     0
 
