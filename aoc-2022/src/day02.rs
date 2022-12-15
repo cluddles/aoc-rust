@@ -12,7 +12,7 @@ impl Solution<Input, Output> for Day02 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        parse_strategy_guide(&resource.as_str()?)
+        parse_strategy_guide(&resource.as_str_lines()?)
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -117,8 +117,7 @@ fn parse_strategy(line: &str) -> DynResult<Strategy> {
 }
 
 /// Parse complete strategy guide
-fn parse_strategy_guide(content: &str) -> DynResult<Vec<Strategy>> {
-    let lines = common::split_lines(content);
+fn parse_strategy_guide(lines: &[String]) -> DynResult<Vec<Strategy>> {
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
 

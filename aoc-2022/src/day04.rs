@@ -38,8 +38,8 @@ pub struct SecRange {
 fn parse_sec_range(sec: &str) -> DynResult<SecRange> {
     let parts: Vec<&str> = sec.split('-').collect();
     Ok(SecRange {
-        from: parts[0].parse().unwrap(),
-        to: parts[1].parse().unwrap(),
+        from: parts[0].parse()?,
+        to: parts[1].parse()?,
     })
 }
 

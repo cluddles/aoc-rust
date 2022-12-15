@@ -15,7 +15,7 @@ impl State {
     fn new() -> State { State { x: 1, ..Default::default() } }
 }
 
-fn cpu_tick(state: &mut State, program: &Input) {
+fn cpu_tick(state: &mut State, program: &Input) -> DynResult<()> {
     state.cycle += 1;
     let cycle = state.cycle as isize;
     if (cycle - 20) % 40 == 0 {
@@ -34,16 +34,17 @@ fn cpu_tick(state: &mut State, program: &Input) {
         // Start
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts[0] == "addx" {
-            state.pending_add = Some(parts[1].parse::<isize>().unwrap());
+            state.pending_add = Some(parts[1].parse::<isize>()?);
         }
     }
+    Ok(())
 }
 
-fn run_program(program: &Input) -> isize {
+fn run_program(program: &Input) -> DynResult<isize> {
     let mut state = State::new();
     loop {
-        cpu_tick(&mut state, program);
-        if state.cycle == 220 { return state.signal_sum; }
+        cpu_tick(&mut state, program)?;
+        if state.cycle == 220 { return Ok(state.signal_sum); }
     }
 }
 
@@ -53,15 +54,15 @@ fn render_tick(state: &mut State, output: &mut [char]) {
     if (state.x - col).abs() <= 1 { output[tick] = '#' }
 }
 
-fn run_and_render(program: &Input) -> String {
+fn run_and_render(program: &Input) -> DynResult<String> {
     let mut state = State::new();
     let mut result = vec!['.'; 240];
     loop {
         render_tick(&mut state, &mut result);
-        cpu_tick(&mut state, program);
+        cpu_tick(&mut state, program)?;
         if state.cycle == 240 {
             let rows: Vec<String> = result.chunks(40).map(|x| x.iter().collect()).collect();
-            return format!("\n{}", rows.join("\n"));
+            return Ok(format!("\n{}", rows.join("\n")));
         }
     }
 }
@@ -79,11 +80,11 @@ impl Solution<Input, Output> for Day10 {
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(run_program(input).to_string())
+        Ok(run_program(input)?.to_string())
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(run_and_render(input))
+        run_and_render(input)
     }
 }
 
@@ -95,15 +96,15 @@ mod tests {
     fn test_state() {
         let program = vec!["noop", "addx 3", "addx -5"].iter().map(|x| x.to_string()).collect();
         let mut state = State::new();
-        cpu_tick(&mut state, &program);
+        cpu_tick(&mut state, &program).unwrap();
         assert_eq!(state.x, 1);
-        cpu_tick(&mut state, &program);
+        cpu_tick(&mut state, &program).unwrap();
         assert_eq!(state.x, 1);
-        cpu_tick(&mut state, &program);
+        cpu_tick(&mut state, &program).unwrap();
         assert_eq!(state.x, 4);
-        cpu_tick(&mut state, &program);
+        cpu_tick(&mut state, &program).unwrap();
         assert_eq!(state.x, 4);
-        cpu_tick(&mut state, &program);
+        cpu_tick(&mut state, &program).unwrap();
         assert_eq!(state.x, -1);
     }
 

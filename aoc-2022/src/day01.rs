@@ -3,19 +3,10 @@ extern crate aoc_lib;
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Elf {
     carried: Vec<u32>,
     total: u32,
-}
-
-impl Elf {
-    fn new() -> Elf {
-        Elf {
-            carried: Vec::new(),
-            total: 0,
-        }
-    }
 }
 
 type Input = Vec<Elf>;
@@ -30,12 +21,12 @@ impl Solution<Input, Output> for Day01 {
         let text = resource.as_str()?;
         let lines = common::split_lines_keep_empty(&text);
         let mut result: Vec<Elf> = Vec::new();
-        let mut elf = Elf::new();
+        let mut elf = Elf::default();
         for l in lines {
             if l.chars().count() == 0 {
                 // Empty line - commit the current elf, start a new one
                 result.push(elf);
-                elf = Elf::new();
+                elf = Elf::default();
             } else {
                 // Update current elf
                 let val = l.trim().parse::<u32>()?;

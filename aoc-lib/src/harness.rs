@@ -159,7 +159,12 @@ pub trait Resource {
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
 pub fn resource_path(filename: &str, year: u32, day: u8) -> PathBuf {
-    Path::new(MANIFEST_DIR).join("..").join(format!("aoc-{}", year)).join("resource").join(format!("{:02}", day)).join(filename)
+    Path::new(MANIFEST_DIR)
+        .join("..")
+        .join(format!("aoc-{}", year))
+        .join("resource")
+        .join(format!("{:02}", day))
+        .join(filename)
 }
 
 fn file_res_as_str(filename: &str, year: u32, day: u8) -> DynResult<String> {

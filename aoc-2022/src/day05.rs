@@ -21,12 +21,14 @@ impl Solution<Input, Output> for Day05 {
         let (crates, moves) = input;
         let mut state = crates.to_owned();
         for m in moves {
-            (0..m.quantity).for_each(|_| {
-                let popped = state[m.from - 1].pop().unwrap();
+            for _ in 0..m.quantity {
+                let popped = state[m.from - 1]
+                    .pop()
+                    .ok_or_else(|| SimpleError::new_dyn("Nothing to pop"))?;
                 state[m.to - 1].push(popped);
-            });
+            }
         }
-        Ok(summarise(&state))
+        summarise(&state)
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
@@ -37,7 +39,7 @@ impl Solution<Input, Output> for Day05 {
             (0..m.quantity).for_each(|_| popped.push(state[m.from - 1].pop().unwrap()));
             popped.iter().rev().for_each(|&p| state[m.to - 1].push(p));
         }
-        Ok(summarise(&state))
+        summarise(&state)
     }
 }
 
@@ -54,7 +56,7 @@ fn parse_crates(content: &str) -> DynResult<Vec<Vec<u8>>> {
     // Get number of columns from the last line
     let cols = lines
         .last()
-        .ok_or_else(|| SimpleError::new_dyn("No data"))?
+        .ok_or_else(|| SimpleError::new_dyn("Unable to find columns"))?
         .split_whitespace()
         .count();
     let mut result = vec![Vec::new(); cols];
@@ -89,8 +91,11 @@ fn parse_moves(content: &str) -> DynResult<Vec<Move>> {
 }
 
 /// Summarise the result, by taking the top crate from each stack
-fn summarise(crates: &[Vec<u8>]) -> String {
-    crates.iter().map(|x| *x.last().unwrap() as char).collect()
+fn summarise(crates: &[Vec<u8>]) -> DynResult<String> {
+    crates
+        .iter()
+        .map(|x| Ok(*x.last().ok_or(SimpleError::new_dyn("No crate data"))? as char))
+        .collect()
 }
 
 #[cfg(test)]

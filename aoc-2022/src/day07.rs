@@ -14,7 +14,7 @@ impl Solution<Input, Output> for Day07 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        Ok(build_fs(&resource.as_str_lines()?))
+        build_fs(&resource.as_str_lines()?)
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -68,7 +68,7 @@ pub struct File {
 }
 
 /// Parse input into a meaningful filesystem
-fn build_fs(lines: &Vec<String>) -> Rc<Dir> {
+fn build_fs(lines: &Vec<String>) -> DynResult<Rc<Dir>> {
     let root = Rc::new(Dir {
         name: "".to_string(),
         ..Default::default()
@@ -82,7 +82,7 @@ fn build_fs(lines: &Vec<String>) -> Rc<Dir> {
             ("$", "ls") => { /* no-op */ }
             ("$", "cd") => match cmd[2] {
                 ".." => {
-                    current = Rc::clone(&parents.pop().unwrap());
+                    current = Rc::clone(&parents.pop().ok_or_else(|| SimpleError::new_dyn("Cannot traverse up"))?);
                 }
                 "/" => {
                     current = Rc::clone(&root);
@@ -97,7 +97,7 @@ fn build_fs(lines: &Vec<String>) -> Rc<Dir> {
                             .borrow_mut()
                             .iter()
                             .find(|x| x.name == dir)
-                            .unwrap(),
+                            .ok_or_else(|| SimpleError::new_dyn("Dir not found"))?,
                     );
                     current = new_current;
                 }
@@ -110,11 +110,11 @@ fn build_fs(lines: &Vec<String>) -> Rc<Dir> {
             }
             (size, _) => current.files.borrow_mut().push(File {
                 // name: file.to_string(),
-                size: size.parse::<u32>().unwrap(),
+                size: size.parse::<u32>()?,
             }),
         }
     }
-    root
+    Ok(root)
 }
 
 #[cfg(test)]
