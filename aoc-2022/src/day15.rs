@@ -84,7 +84,7 @@ fn combine_spans(spans: &Vec<Span>) -> DynResult<Vec<Span>> {
     let mut spans = spans.to_owned();
     spans.sort_unstable_by(|a, b| a.from.cmp(&b.from));
     // Smush em
-    let mut current = spans.first().ok_or_else(|| SimpleError::new_dyn("No spans!"))?.clone();
+    let mut current = spans.first().expect("spans should not be empty").clone();
     let mut result: Vec<Span> = Vec::with_capacity(spans.len());
     for span in spans {
         if span.from > current.to + 1 {

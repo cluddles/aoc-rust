@@ -22,7 +22,7 @@ impl Solution<Input, Output> for Day07 {
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(score_fac(input, mean(input).round() as u32))
+        Ok(score_tri(input, mean(input).round() as u32))
     }
 }
 
@@ -36,14 +36,14 @@ fn score_linear(state: &[u32], pos: u32) -> u32 {
     state.iter().map(|x| dist(*x, pos)).sum()
 }
 
-/// Calculate factorial
-fn fac(x: u32) -> u32 {
+/// Calculate triangle value (this isn't factorial; my brain broke)
+fn tri(x: u32) -> u32 {
     (x * (x + 1)) / 2
 }
 
-/// Factorial score, where each point of distance costs 1 more than the previous
-fn score_fac(state: &[u32], pos: u32) -> u32 {
-    state.iter().map(|x| fac(dist(*x, pos))).sum()
+/// Triangle score, where each point of distance costs 1 more than the previous
+fn score_tri(state: &[u32], pos: u32) -> u32 {
+    state.iter().map(|x| tri(dist(*x, pos))).sum()
 }
 
 /// Calculate the median of the given Vec
