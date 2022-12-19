@@ -85,6 +85,9 @@ impl Solution<Input, Output> for Day17 {
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+        // Could do this programmatically
+        // tbh I just looked at the floor heights in excel, and did some maths
+
         // For real input,
         // tower appears to loop every ***1740*** rocks, height + 2724
 
@@ -132,7 +135,6 @@ fn run_sim(input: &Input, num_rocks: u64) -> u64 {
                 pos = old_pos;
                 settle(pos, rock, &mut settled);
                 floor = floor.max(pos.y + rock.size.y);
-                println!("{}", floor);
                 // println!("{}", floor);
                 break;
             }
