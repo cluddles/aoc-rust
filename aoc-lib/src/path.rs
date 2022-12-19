@@ -2,12 +2,14 @@ use num_traits::{Bounded, Num};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::hash::Hash;
 
+// TODO test these - I don't think they're usable in this state, lifetimes are confused
+
 /// Find a path using breadth first search
 pub fn bfs<'a, N: Eq + Hash, ItN: Iterator<Item = &'a N>, Ctx>(
-    start_node: &'a N,
-    end_node: &'a N,
     context: &Ctx,
+    start_node: &'a N,
     neighbours: fn(&Ctx, &N) -> ItN,
+    is_end: fn(&Ctx, &N) -> bool,
 ) -> Option<Vec<&'a N>> {
     // Empty queue - "open". Add the start node.
     let mut open = VecDeque::new();
@@ -20,10 +22,10 @@ pub fn bfs<'a, N: Eq + Hash, ItN: Iterator<Item = &'a N>, Ctx>(
         let current = open.pop_front().expect("Queue cannot be empty");
         for link in neighbours(context, current) {
             // If we're connected to the end then that'll do
-            if link == end_node {
+            if is_end(context, link) {
                 prev.insert(link, current);
                 // Could unfold the path properly here, but we only care about length
-                let mut at = end_node;
+                let mut at = link;
                 let mut result = vec![at];
                 loop {
                     let a = prev[at];
@@ -60,11 +62,11 @@ pub fn a_star<
     Ctx,
     C: Num + Bounded + Copy + Ord,
 >(
-    start_node: &'a N,
-    end_node: &'a N,
     context: &Ctx,
+    start_node: &'a N,
     neighbours: fn(&Ctx, &N) -> ItNC,
     heuristic: fn(&Ctx, &N) -> C,
+    is_end: fn(&Ctx, &N) -> bool,
 ) -> Option<Vec<&'a N>> {
     let mut open = HashSet::new();
     open.insert(start_node);
@@ -91,19 +93,18 @@ pub fn a_star<
             })
             .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
             .map(|(x, _)| *x)?;
-        if current == end_node {
+        if is_end(context, current) {
             // reconstruct path
             let mut p = current;
             let mut result = Vec::new();
             loop {
-                if let Some(v) = nodes.get(&p).map(|x| x.came_from) {
-                    if v == p {
-                        return Some(result);
-                    } else {
-                        // println!("{:?}", v);
-                        result.push(v);
-                        p = v;
-                    }
+                let v = nodes[&p].came_from;
+                if v == p {
+                    return Some(result);
+                } else {
+                    // println!("{:?}", v);
+                    result.push(v);
+                    p = v;
                 }
             }
         }
