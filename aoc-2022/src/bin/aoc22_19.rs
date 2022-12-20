@@ -26,7 +26,6 @@ impl Solution<Input, Output> for Day19 {
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        // Just about quick enough (~1s) in release mode
         Ok(input.iter().take(3).map(|bp| max_geodes(bp, 32)).product())
     }
 }
@@ -124,7 +123,7 @@ fn expand_node(bp: &Blueprint, num_ticks: u32, node: &Node, best: u32) -> Vec<No
     if max_geodes <= best { return vec![]; }
 
     // 4 potential bots we can build
-    // We could also do nothing, but I don't think that's ever desired
+    // (We could also do nothing, but I don't think that's ever desired)
     let mut result = Vec::with_capacity(4);
     'outer: for b in 0..NUM_RESOURCES {
         // Calculate the wait involved for this bot
@@ -151,8 +150,10 @@ fn expand_node(bp: &Blueprint, num_ticks: u32, node: &Node, best: u32) -> Vec<No
         if node.tick + wait >= num_ticks {
             continue;
         }
+        // Wait for the appropriate duration
         let mut current = node.clone();
         apply_ticks(&mut current, wait);
+        // Buy bot, but only if it makes sense to do so
         if check_max(bp, &current, b, num_ticks) {
             buy_bot(&mut current, bp, b, num_ticks);
             result.push(current);

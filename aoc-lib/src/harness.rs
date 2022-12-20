@@ -59,11 +59,13 @@ pub fn run_solution<S: Solution<I, O>, I, O: Display>(solution: &S) -> DynResult
     println!("[{:?}]", time.elapsed()?);
     // Solve part 1
     let time = SystemTime::now();
-    println!("\nPart 1: {}", solution.solve_part1(&input)?);
+    println!("\nPart 1:");
+    println!("{}", solution.solve_part1(&input)?);
     println!("[{:?}]", time.elapsed()?);
     // Solve part 2
     let time = SystemTime::now();
-    println!("\nPart 2: {}", solution.solve_part2(&input)?);
+    println!("\nPart 2:");
+    println!("{}", solution.solve_part2(&input)?);
     println!("[{:?}]", time.elapsed()?);
 
     Ok(())
