@@ -1,7 +1,7 @@
 extern crate aoc_lib;
 
-use std::collections::{HashMap, HashSet, VecDeque};
 use aoc_lib::harness::*;
+use std::collections::VecDeque;
 
 pub struct Day19;
 
@@ -22,21 +22,23 @@ impl Solution<Input, Output> for Day19 {
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        println!("{:?}", input);
-        Ok(0)
+        Ok(input.iter().map(|bp| bp.id * max_geodes(bp, 24)).sum())
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(0)
+        // Just about quick enough (~1s) in release mode
+        Ok(input.iter().take(3).map(|bp| max_geodes(bp, 32)).product())
     }
 }
 
 const ORE: usize = 0;
-const CLAY: usize = 1;
-const OBSIDIAN: usize = 2;
+// const CLAY: usize = 1;
+// const OBSIDIAN: usize = 2;
 const GEODE: usize = 3;
 
+/// Total number of resources, including geodes (which aren't used for costs)
 const NUM_RESOURCES: usize = 4;
+/// Total number of resources that are used for costs: ore, clay, obsidian
 const NUM_COST_RESOURCES: usize = 3;
 
 /// ore, clay, obsidian
@@ -46,7 +48,7 @@ type BotCost = [u32; NUM_COST_RESOURCES];
 struct Blueprint {
     id: u32,
     bots: [BotCost; NUM_RESOURCES],
-    max: BotCost
+    max: BotCost,
 }
 
 fn parse_blueprint(line: &str) -> DynResult<Blueprint> {
@@ -55,10 +57,12 @@ fn parse_blueprint(line: &str) -> DynResult<Blueprint> {
         r"Blueprint (\d+): .*costs (\d+) ore.*costs (\d+) ore.* costs (\d+) ore and (\d+) clay.* costs (\d+) ore and (\d+) obsidian",
     )?;
     if let Some(cap) = re.captures_iter(line).next() {
-        let bot_costs = [ [cap[2].parse()?, 0, 0],
+        let bot_costs = [
+            [cap[2].parse()?, 0, 0],
             [cap[3].parse()?, 0, 0],
             [cap[4].parse()?, cap[5].parse()?, 0],
-            [cap[6].parse()?, 0, cap[7].parse()?], ];
+            [cap[6].parse()?, 0, cap[7].parse()?],
+        ];
         let max = bot_costs.iter().fold([0; NUM_COST_RESOURCES], |mut s, v| {
             for i in 0..NUM_COST_RESOURCES {
                 s[i] = s[i].max(v[i]);
@@ -74,10 +78,10 @@ fn parse_blueprint(line: &str) -> DynResult<Blueprint> {
     Err(SimpleError::new_dyn("Nothing to parse"))
 }
 
+/// A single node in the decision process
 #[derive(Debug, Clone, Default)]
 struct Node {
     tick: u32,
-    skip_bots: [bool; NUM_COST_RESOURCES],
     bots: [u32; NUM_RESOURCES],
     resources: [u32; NUM_COST_RESOURCES],
     geodes: u32,
@@ -91,88 +95,112 @@ impl Node {
     }
 }
 
+/// Work out the max possible number of mined geodes for the given blueprint
 fn max_geodes(bp: &Blueprint, num_ticks: u32) -> u32 {
-    println!("{:?}", bp);
     let mut open = VecDeque::from([Node::new()]);
     let mut best = 0;
+    let mut _iterations = 0;
     while !open.is_empty() {
+        _iterations += 1;
         let next = open.pop_front().expect("open cannot be empty");
-        best = best.max(next.resources[GEODE]);
-        expand_node(bp, num_ticks, &next, best).into_iter().for_each(|i| open.push_front(i));
+        best = best.max(next.geodes);
+        expand_node(bp, num_ticks, &next, best)
+            .into_iter()
+            .for_each(|i| open.push_back(i));
     }
+    // println!("Done in {} iterations", _iterations);
     best
 }
 
+/// Expand a single node in the decision process, producing further nodes to consider.
 fn expand_node(bp: &Blueprint, num_ticks: u32, node: &Node, best: u32) -> Vec<Node> {
-    // Strats:
-    // 1. Cull decisions you can't afford
-    // 2. Cull decisions that make no sense (don't build a bot if you deliberately didn't in the previous step)
-    // 3. Always build geode bots (cull everything else)
-    // 4. Always build obsidian bots (cull everything else)
-    // 5. Cull bot builds if you're maxed on a resource already: maxed = getting the biggest cost of any robot
-    // 6. Best?
+    //    println!("Expand: {:?}", node);
 
-    println!("Expand: {:?}", node);
+    // Max geodes you could ever get from this position, if you did nothing but buy geode bots
+    // every turn. Bail if this is worse than previous best. Totally unrealistic, but reduces
+    // decision space by a considerable amount.
+    let rem = num_ticks - node.tick - 1;
+    let max_geodes = node.geodes + (rem * (rem + 1) / 2);
+    if max_geodes <= best { return vec![]; }
 
-    // Out of time
-    if node.tick + 1 >= num_ticks { return vec![]; }
-    // Cannot hit best?
-    let rem = num_ticks - node.tick;
-    let potential = (node.resources[GEODE] * rem) + ((rem * (rem - 1)) / 2);
-    if potential < best { return vec![]; }
-
-    // 5 potential choices: 1 for each bot, 1 for nothing
-    let mut result = Vec::with_capacity(5);
-    // This is the do nothing state, where everything ticks up.
-    // We can use this as a basis for everything else.
-    let mut nop = node.clone();
-    nop.tick += 1;
-    for i in 0..NUM_RESOURCES {
-        nop.resources[i] += nop.bots[i];
-    }
-
-    // Which bots can we build?
-    // These checks are based on the resource levels BEFORE ticking up
-    let mut affords = [false; 4];
-    for i in 0..NUM_RESOURCES {
-        if !node.skip_bots[i] && node.resources[ORE] >= bp.bots[i][ORE] && node.resources[CLAY] >= bp.bots[i][CLAY] && node.resources[OBSIDIAN] >= bp.bots[i][OBSIDIAN] {
-            affords[i] = true;
+    // 4 potential bots we can build
+    // We could also do nothing, but I don't think that's ever desired
+    let mut result = Vec::with_capacity(4);
+    'outer: for b in 0..NUM_RESOURCES {
+        // Calculate the wait involved for this bot
+        let mut wait = 0;
+        for r in 0..NUM_COST_RESOURCES {
+            let r_cost = bp.bots[b][r];
+            let r_income = node.bots[r];
+            if r_cost > 0 && r_income == 0 {
+                // This bot requires resource that we have no income for!
+                continue 'outer;
+            }
+            let r_current = node.resources[r];
+            // The wait needs to be rounded up
+            let r_wait = if r_cost <= r_current {
+                0
+            } else {
+                (r_cost + r_income - r_current - 1) / r_income
+            };
+            wait = wait.max(r_wait);
         }
-    }
-    if affords[GEODE] {
-        result.push(buy_bot(bp, &nop, GEODE));
-    } else {
-        if affords[OBSIDIAN] {
-            nop.skip_bots[CLAY] = false;
-            nop.skip_bots[ORE] = false;
-            if check_max(bp, &nop, OBSIDIAN) { result.push(buy_bot(bp, &nop, OBSIDIAN)); }
-            nop.skip_bots[OBSIDIAN] = true;
+        // Time until bot is completed = wait + 1
+        // Will this be too late to make any difference?
+        wait += 1;
+        if node.tick + wait >= num_ticks {
+            continue;
         }
-        if affords[CLAY] {
-            if check_max(bp, &nop, CLAY) { result.push(buy_bot(bp, &nop, CLAY)); }
-            nop.skip_bots[CLAY] = true;
+        let mut current = node.clone();
+        apply_ticks(&mut current, wait);
+        if check_max(bp, &current, b, num_ticks) {
+            buy_bot(&mut current, bp, b, num_ticks);
+            result.push(current);
         }
-        if affords[ORE] {
-            if check_max(bp, &nop, ORE) { result.push(buy_bot(bp, &nop, ORE)); }
-            nop.skip_bots[ORE] = true;
-        }
-        result.push(nop);
     }
     result
 }
 
-fn check_max(bp: &Blueprint, node: &Node, bot_res: usize) -> bool {
-    node.bots[bot_res] < bp.max[bot_res]
+/// Passes time for the given node, ticking up resources from bot-mining income.
+fn apply_ticks(node: &mut Node, num_ticks: u32) {
+    node.tick += num_ticks;
+    for i in 0..NUM_COST_RESOURCES {
+        node.resources[i] += node.bots[i] * num_ticks;
+    }
 }
 
-fn buy_bot(bp: &Blueprint, node: &Node, bot_res: usize) -> Node {
-    println!("buy bot: {}", bot_res);
-    let mut n = node.clone();
-    for i in 0..NUM_COST_RESOURCES {
-        n.resources[i] -= bp.bots[bot_res][i];
+/// Determines whether purchasing the given bot type is permitted.
+fn check_max(bp: &Blueprint, node: &Node, bot_type: usize, num_ticks: u32) -> bool {
+    if bot_type == GEODE {
+        return true;
     }
-    n.bots[bot_res] += 1;
-    n
+    // Don't exceed income required to buy most expensive bot every turn
+    if node.bots[bot_type] >= bp.max[bot_type] {
+        return false;
+    }
+    // Suppose you wanted to buy the most expensive bot every tick. If you've already got enough
+    // resource and income to do this, don't get any more bots!
+    let rem = num_ticks - node.tick - 1;
+    // I don't know why this +1 is required, but otherwise the answer is wrong (as per bp24 test)
+    let total_cost = bp.max[bot_type] * (rem + 1);
+    let stockpile = node.resources[bot_type] + node.bots[bot_type] * rem;
+    stockpile < total_cost
+}
+
+/// Purchases the given bot type, updating state.
+fn buy_bot(node: &mut Node, bp: &Blueprint, bot_type: usize, num_ticks: u32) {
+    //    println!("Tick: {}, Buy bot {}", node.tick, bot_res);
+    // Reduce resources by cost
+    for i in 0..NUM_COST_RESOURCES {
+        node.resources[i] -= bp.bots[bot_type][i];
+    }
+    // Update bot count; for geodes, just apply the score immediately
+    if bot_type == GEODE {
+        let val = num_ticks - node.tick;
+        node.geodes += val;
+    } else {
+        node.bots[bot_type] += 1;
+    }
 }
 
 fn main() -> DynResult<()> {
@@ -184,26 +212,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_max_geodes_blueprint1() -> DynResult<()> {
-        let bp = parse_blueprint(
-            FileResource::new("input.test", 2022, 19)
-                .as_str_lines()?
-                .first()
-                .unwrap(),
-        )?;
+    fn test_max_geodes_test_bp1() -> DynResult<()> {
+        let bp = parse_blueprint("Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.")?;
         assert_eq!(max_geodes(&bp, 24), 9);
         Ok(())
     }
 
     #[test]
-    fn test_max_geodes_blueprint2() -> DynResult<()> {
-        let bp = parse_blueprint(
-            FileResource::new("input.test", 2022, 19)
-                .as_str_lines()?
-                .last()
-                .unwrap(),
-        )?;
+    fn test_max_geodes_test_bp2() -> DynResult<()> {
+        let bp = parse_blueprint("Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.")?;
         assert_eq!(max_geodes(&bp, 24), 12);
+        Ok(())
+    }
+
+    #[test]
+    fn test_max_geodes_bp24() -> DynResult<()> {
+        // This one was off in my initial part 1 attempts...
+        let bp = parse_blueprint("Blueprint 24: Each ore robot costs 2 ore. Each clay robot costs 2 ore. Each obsidian robot costs 2 ore and 10 clay. Each geode robot costs 2 ore and 11 obsidian.")?;
+        assert_eq!(max_geodes(&bp, 24), 14);
         Ok(())
     }
 
@@ -214,6 +240,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Day19, SolutionPart::Two), 0);
+        assert_eq!(test_solution(&Day19, SolutionPart::Two), 56 * 62);
     }
 }
