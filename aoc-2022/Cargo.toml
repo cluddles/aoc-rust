@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 aoc-lib = { path = "../aoc-lib" }
 itertools = "0.10.5"
+regex = "1.7.0"
