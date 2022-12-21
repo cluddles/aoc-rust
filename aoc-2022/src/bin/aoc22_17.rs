@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
 
@@ -84,7 +84,7 @@ impl Solution<Input, Output> for Day17 {
         Ok(run_sim(input, 2022))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, _input: &Input) -> SolutionResult<Output> {
         // Could do this programmatically
         // tbh I just looked at the floor heights in excel, and did some maths
 
@@ -105,7 +105,7 @@ fn run_sim(input: &Input, num_rocks: u64) -> u64 {
     let mut jet_index = 0;
     let mut rock_index = 0;
     let mut settled = HashSet::new();
-    for i in 0..num_rocks {
+    for _ in 0..num_rocks {
         // Setup rock
         let rock = &input.rocks[rock_index];
         rock_index += 1;
