@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use aoc_lib::data::{Grid, GridChar, Point2};
+use aoc_lib::data::{Grid, GridChar, GridPos};
 use aoc_lib::harness::*;
 
 pub struct Day14;
@@ -40,7 +40,7 @@ impl Solution<Input, Output> for Day14 {
         let size = max - min;
         //println!("Size: {:?}", size);
         let mut cave = Cave {
-            grid: Grid::new_default(size.x, size.y),
+            grid: Grid::new_default(size.x as usize, size.y as usize),
             entry_point: ENTRY_POINT - min,
         };
         // Add the lines
@@ -60,7 +60,7 @@ impl Solution<Input, Output> for Day14 {
 
 const ENTRY_POINT: CavePos = CavePos::new(500, 0);
 
-type CavePos = Point2<usize>;
+type CavePos = GridPos;
 type CaveLine = Vec<CavePos>;
 
 #[derive(Clone)]
@@ -123,7 +123,7 @@ fn simulate(cave_in: &Cave, floor: bool) -> usize {
     let mut ticks = 0;
     // Improvement: Track path taken by sand. Next sand can start at penultimate position.
     // This makes part 2 about 10 times quicker...
-    let mut path: Vec<CavePos> = Vec::with_capacity(cave.grid.dim().y);
+    let mut path: Vec<CavePos> = Vec::with_capacity(cave.grid.dim().y as usize);
     loop {
         // println!("\n{}", cave.grid);
         if floor && cave.grid.get(cave.entry_point.x, cave.entry_point.y) == &CaveCell::Sand {

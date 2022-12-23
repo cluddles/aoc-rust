@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use aoc_lib::data::{Grid, Point2};
+use aoc_lib::data::{GridOld, Point2};
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet};
 
@@ -34,7 +34,7 @@ type GridPos = Point2<usize>;
 
 /// Track the grid and related start/end points
 pub struct Area {
-    grid: Grid<u8>,
+    grid: GridOld<u8>,
     start: GridPos,
     end: GridPos,
 }
@@ -43,7 +43,7 @@ impl Area {
     const START: u8 = b'S';
     const END: u8 = b'E';
 
-    fn new(grid: Grid<u8>) -> DynResult<Area> {
+    fn new(grid: GridOld<u8>) -> DynResult<Area> {
         let start = grid
             .find_pos(&Area::START)
             .ok_or_else(|| SimpleError::new_dyn("Could not find start"))?;

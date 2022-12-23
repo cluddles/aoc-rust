@@ -1,9 +1,9 @@
 extern crate aoc_lib;
 
-use aoc_lib::data::{Point2, Grid, Dir4};
+use aoc_lib::data::{Point2, GridOld, Dir4};
 use aoc_lib::harness::*;
 
-type Treemap = Grid<u8>;
+type Treemap = GridOld<u8>;
 
 pub struct Day08;
 type Input = Treemap;
@@ -19,7 +19,7 @@ impl Solution<Input, Output> for Day08 {
 
     fn solve_part1(&self, treemap: &Input) -> SolutionResult<Output> {
         let (w, h) = treemap.dim().to_tuple();
-        let mut vis: Grid<bool> = Grid::new_default(w, h);
+        let mut vis: GridOld<bool> = GridOld::new_default(w, h);
         for y in 0..h {
             scan_vis(treemap, &mut vis, &Point2::new(0, y), &Dir4::Right);
             scan_vis(treemap, &mut vis, &Point2::new(w - 1, y), &Dir4::Left);
@@ -54,7 +54,7 @@ fn move_in_dir4(p: &mut Point2<usize>, dir: &Dir4) {
 }
 
 /// Scan row/column and update visibility map
-fn scan_vis(treemap: &Treemap, vis: &mut Grid<bool>, start: &Point2<usize>, dir: &Dir4) {
+fn scan_vis(treemap: &Treemap, vis: &mut GridOld<bool>, start: &Point2<usize>, dir: &Dir4) {
     let mut max: Option<u8> = None;
     let mut pos = start.to_owned();
     while treemap.is_in_bounds(pos.x, pos.y) && max != Some(9) {

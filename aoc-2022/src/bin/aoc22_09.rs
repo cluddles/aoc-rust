@@ -64,7 +64,7 @@ fn rope_step(rope_pos: &mut RopePos, dir: &Dir4) {
 
 /// Apply all motions to rope of specified length.
 fn simulate_rope(motions: &MotionList, rope_length: usize) -> usize {
-    let mut rope_pos: RopePos = vec![Point2::default(); rope_length];
+    let mut rope_pos: RopePos = vec![Point2::new_default(); rope_length];
     let mut result: HashSet<Pos> = HashSet::new();
     for motion in motions {
         for _ in 0..motion.1 {

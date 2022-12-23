@@ -1,5 +1,5 @@
 use crate::common::*;
-use crate::data::Grid;
+use crate::data::GridOld;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::{Path, PathBuf};
@@ -141,7 +141,7 @@ pub trait Resource {
     }
 
     /// Read grid of u8 from resource
-    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> DynResult<Grid<u8>> {
+    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> DynResult<GridOld<u8>> {
         let input = self.as_u8()?;
         let w = input
             .iter()
@@ -154,7 +154,7 @@ pub trait Resource {
             .filter(|&&x| x >= 32)
             .map(|&x| converter(x))
             .collect();
-        Ok(Grid::from_1d(grid_raw, w))
+        Ok(GridOld::from_1d(grid_raw, w))
     }
 }
 

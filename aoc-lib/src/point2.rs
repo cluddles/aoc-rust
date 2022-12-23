@@ -21,7 +21,7 @@ impl<T: Copy> Point2<T> {
 }
 
 impl<T: Copy> Point2<T> {
-    pub fn default() -> Self where T: Default {
+    pub fn new_default() -> Self where T: Default {
         Self::new(T::default(), T::default())
     }
 
