@@ -17,10 +17,7 @@ impl<T> Grid<T> {
     where
         T: Clone,
     {
-        Grid {
-            dim: GridDim::new(w as i32, h as i32),
-            vals: vec![val; w * h],
-        }
+        Grid { dim: GridDim::new(w as i32, h as i32), vals: vec![val; w * h] }
     }
 
     /// Create grid filled with default
@@ -73,7 +70,7 @@ impl<T> Grid<T> {
 
     /// True if given position is in bounds
     pub fn is_in_bounds(&self, x: i32, y: i32) -> bool {
-        x >= 0 && y >=0 && x < self.dim.x && y < self.dim.y
+        x >= 0 && y >= 0 && x < self.dim.x && y < self.dim.y
     }
 
     /// Provides immutable access to the underlying vector, mostly for iteration

@@ -1,11 +1,11 @@
 extern crate aoc_lib;
 
-use aoc_lib::data::GridOld;
+use aoc_lib::data::Grid;
 use aoc_lib::harness::*;
 
 pub struct Day11;
 
-type Input = GridOld<u8>;
+type Input = Grid<u8>;
 type Output = u32;
 
 impl Solution<Input, Output> for Day11 {
@@ -14,7 +14,7 @@ impl Solution<Input, Output> for Day11 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        resource.as_u8_grid(|y| y as u8 - b'0')
+        resource.as_u8_grid(|y| y - b'0')
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
@@ -40,11 +40,11 @@ const ADJACENTS: &[(i8, i8); 8] = &[
 
 /// Increment the value of a single cell.
 /// On flash, apply increment to all (valid) neighbours.
-fn inc_one(grid: &mut GridOld<u8>, ix: i8, iy: i8) {
+fn inc_one(grid: &mut Grid<u8>, ix: i8, iy: i8) {
     if ix < 0 || iy < 0 {
         return;
     }
-    let (x, y) = (ix as usize, iy as usize);
+    let (x, y) = (ix as i32, iy as i32);
     if x >= grid.dim().x || y >= grid.dim().y {
         return;
     }
@@ -58,7 +58,7 @@ fn inc_one(grid: &mut GridOld<u8>, ix: i8, iy: i8) {
 }
 
 /// Run a single step of the simulation. Returns number of flashes that occurred.
-fn step(grid: &mut GridOld<u8>) -> u32 {
+fn step(grid: &mut Grid<u8>) -> u32 {
     // Increment all cells; flashes will modify neighbours
     for i in 0..grid.dim().x {
         for j in 0..grid.dim().y {
@@ -79,13 +79,13 @@ fn step(grid: &mut GridOld<u8>) -> u32 {
 }
 
 /// Run 100 iterations, count flashes
-fn part1(input: &GridOld<u8>) -> u32 {
+fn part1(input: &Grid<u8>) -> u32 {
     let mut grid = input.to_owned();
     (0..100).map(|_| step(&mut grid)).sum()
 }
 
 /// Iterate until ALL cells flash
-fn part2(input: &GridOld<u8>) -> u32 {
+fn part2(input: &Grid<u8>) -> u32 {
     let mut grid = input.to_owned();
     let mut tick = 0;
     loop {

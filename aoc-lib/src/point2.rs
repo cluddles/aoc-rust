@@ -5,7 +5,7 @@ use std::str::FromStr;
 use crate::harness::{DynError, DynResult, SimpleError};
 
 /// Basic 2d point.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Default)]
 pub struct Point2<T: Copy> {
     pub x: T,
     pub y: T,
@@ -21,10 +21,6 @@ impl<T: Copy> Point2<T> {
 }
 
 impl<T: Copy> Point2<T> {
-    pub fn new_default() -> Self where T: Default {
-        Self::new(T::default(), T::default())
-    }
-
     /// Manhattan distance of 0,0 to this point
     pub fn manhattan(&self) -> T where T: Num + Signed {
         self.x.abs() + self.y.abs()

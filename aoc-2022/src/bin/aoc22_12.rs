@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use aoc_lib::data::{GridOld, Point2};
+use aoc_lib::data::{Grid, GridPos, Point2};
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet};
 
@@ -30,11 +30,9 @@ impl Solution<Input, Output> for Day12 {
     }
 }
 
-type GridPos = Point2<usize>;
-
 /// Track the grid and related start/end points
 pub struct Area {
-    grid: GridOld<u8>,
+    grid: Grid<u8>,
     start: GridPos,
     end: GridPos,
 }
@@ -43,17 +41,17 @@ impl Area {
     const START: u8 = b'S';
     const END: u8 = b'E';
 
-    fn new(grid: GridOld<u8>) -> DynResult<Area> {
-        let start = grid
-            .find_pos(&Area::START)
+    fn new(grid: Grid<u8>) -> DynResult<Area> {
+        let (start, _) = grid
+            .find(|x| x == &Area::START)
             .ok_or_else(|| SimpleError::new_dyn("Could not find start"))?;
-        let end = grid
-            .find_pos(&Area::END)
+        let (end, _) = grid
+            .find(|x| x == &Area::END)
             .ok_or_else(|| SimpleError::new_dyn("Could not find end"))?;
         Ok(Area { grid, start, end })
     }
 
-    fn dim(&self) -> &Point2<usize> {
+    fn dim(&self) -> &GridPos {
         self.grid.dim()
     }
 
@@ -93,7 +91,7 @@ fn neighbours(area: &Area, p: &GridPos) -> Vec<GridPos> {
     result
 }
 
-fn neighbour_one(result: &mut Vec<GridPos>, area: &Area, p: &Point2<usize>, n: Point2<usize>) {
+fn neighbour_one(result: &mut Vec<GridPos>, area: &Area, p: &GridPos, n: GridPos) {
     // Remember that we're traversing from end to start, so the rules are backwards
     let (h1, h2) = (area.height_at(&n), area.height_at(p));
     if h2 < h1 || h2 - h1 <= 1 {
