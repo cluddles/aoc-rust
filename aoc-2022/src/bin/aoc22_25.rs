@@ -21,7 +21,7 @@ impl Solution<Input, Output> for Day25 {
         Ok(dec_to_snafu(input.iter().map(|x| snafu_to_dec(x)).sum()))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, _: &Input) -> SolutionResult<Output> {
         // There is no part 2
         Ok("YAY".to_string())
     }
