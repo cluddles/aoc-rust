@@ -47,36 +47,35 @@ pub fn bfs<'a, N: Eq + Hash, ItN: Iterator<Item = &'a N>, Ctx>(
 }
 
 /// Track A* node data
-struct AStarNodeData<'a, N, C: Num> {
-    f: C,
-    g: C,
-    came_from: &'a N,
+struct AStarNodeData<'a, Node, Cost: Num> {
+    f: Cost,
+    g: Cost,
+    came_from: &'a Node,
 }
 
 /// Find shortest path using A*
-/// TODO multiple ends - success by function
 pub fn a_star<
     'a,
-    N: Eq + Hash,
-    ItNC: Iterator<Item = (&'a N, C)>,
+    Node: Eq + Hash,
+    ItNC: Iterator<Item = (&'a Node, Cost)>,
     Ctx,
-    C: Num + Bounded + Copy + Ord,
+    Cost: Num + Bounded + Copy + Ord,
 >(
     context: &Ctx,
-    start_node: &'a N,
-    neighbours: fn(&Ctx, &N) -> ItNC,
-    heuristic: fn(&Ctx, &N) -> C,
-    is_end: fn(&Ctx, &N) -> bool,
-) -> Option<Vec<&'a N>> {
+    start_node: &'a Node,
+    neighbours: fn(&Ctx, &Node) -> ItNC,
+    heuristic: fn(&Ctx, &Node) -> Cost,
+    is_end: fn(&Ctx, &Node) -> bool,
+) -> Option<Vec<&'a Node>> {
     let mut open = HashSet::new();
     open.insert(start_node);
 
-    let mut nodes: HashMap<&N, AStarNodeData<'a, N, C>> = HashMap::new();
+    let mut nodes: HashMap<&Node, AStarNodeData<'a, Node, Cost>> = HashMap::new();
     nodes.insert(
         start_node,
         AStarNodeData {
             f: heuristic(context, start_node),
-            g: C::zero(),
+            g: Cost::zero(),
             came_from: start_node,
         },
     );
@@ -88,7 +87,7 @@ pub fn a_star<
             .map(|n| {
                 (
                     n,
-                    nodes.get(n).map(|x| x.f).unwrap_or_else(|| C::max_value()),
+                    nodes.get(n).map(|x| x.f).unwrap_or_else(|| Cost::max_value()),
                 )
             })
             .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
@@ -111,11 +110,11 @@ pub fn a_star<
         open.remove(&current);
         // Check neighbours
         let node = nodes.get(&current);
-        let current_g = node.map(|x| x.g).unwrap_or_else(|| C::max_value());
+        let current_g = node.map(|x| x.g).unwrap_or_else(|| Cost::max_value());
         for (n, c) in neighbours(context, current) {
             let tentative_g = current_g + c;
             let neighbour = nodes.get(&n);
-            if tentative_g < neighbour.map(|x| x.g).unwrap_or_else(|| C::max_value()) {
+            if tentative_g < neighbour.map(|x| x.g).unwrap_or_else(|| Cost::max_value()) {
                 nodes.insert(
                     n,
                     AStarNodeData {
