@@ -2,9 +2,9 @@ extern crate aoc_lib;
 
 use aoc_lib::common;
 use aoc_lib::data::Point2;
+use aoc_lib::harness::*;
 use std::collections::HashSet;
 use std::fmt::Formatter;
-use aoc_lib::harness::*;
 
 pub struct Day13;
 
@@ -58,18 +58,12 @@ impl Paper {
             Fold::X(val) => self.apply_fold_inner(
                 *val,
                 |p: Point2<usize>, v| p.x > v,
-                |p: Point2<usize>, v| Point2 {
-                    x: v - (p.x - v),
-                    y: p.y,
-                },
+                |p: Point2<usize>, v| Point2 { x: v - (p.x - v), y: p.y },
             ),
             Fold::Y(val) => self.apply_fold_inner(
                 *val,
                 |p: Point2<usize>, v| p.y > v,
-                |p: Point2<usize>, v| Point2 {
-                    x: p.x,
-                    y: v - (p.y - v),
-                },
+                |p: Point2<usize>, v| Point2 { x: p.x, y: v - (p.y - v) },
             ),
         }
     }
@@ -85,11 +79,7 @@ impl std::fmt::Display for Paper {
         // Render state (could use a Grid; probably not required)
         for y in 0..h {
             for x in 0..w {
-                write!(f, "{}", if self.points.contains(&Point2 { x, y }) {
-                    "#"
-                } else {
-                    "."
-                })?
+                write!(f, "{}", if self.points.contains(&Point2 { x, y }) { "#" } else { "." })?
             }
             writeln!(f)?
         }
@@ -114,26 +104,17 @@ impl Input {
     fn parse(text: &str) -> Input {
         let parts: Vec<&str> = text.split("\n\n").collect();
         // Before the cut - paper points, comma delim
-        let mut paper = Paper {
-            ..Default::default()
-        };
+        let mut paper = Paper::default();
         common::split_lines(parts[0]).iter().for_each(|x| {
             let tokens = common::tokenize(x, ',').unwrap();
-            paper.points.insert(Point2 {
-                x: tokens[0],
-                y: tokens[1],
-            });
+            paper.points.insert(Point2 { x: tokens[0], y: tokens[1] });
         });
         // After the cut - folds; axis and position, equals delim
         let mut folds = Vec::new();
         common::split_lines(parts[1]).iter().for_each(|x| {
             let tokens: Vec<&str> = x.split('=').collect();
             let num = tokens[1].parse::<usize>().unwrap();
-            folds.push(if tokens[0].ends_with('x') {
-                Fold::X(num)
-            } else {
-                Fold::Y(num)
-            });
+            folds.push(if tokens[0].ends_with('x') { Fold::X(num) } else { Fold::Y(num) });
         });
         Input { paper, folds }
     }
@@ -145,10 +126,7 @@ fn part1(input: &Input) -> usize {
 }
 
 fn part2(input: &Input) -> usize {
-    let paper = input
-        .folds
-        .iter()
-        .fold(input.paper.clone(), |p, f| p.apply_fold(f));
+    let paper = input.folds.iter().fold(input.paper.clone(), |p, f| p.apply_fold(f));
     println!("{}", paper);
     paper.points.len()
 }

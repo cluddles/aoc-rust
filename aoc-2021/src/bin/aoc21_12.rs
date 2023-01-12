@@ -18,9 +18,7 @@ impl CaveSystem {
 
     /// Parse input text as CaveSystem object
     fn parse(input: &str) -> CaveSystem {
-        let mut result = CaveSystem {
-            ..Default::default()
-        };
+        let mut result = CaveSystem::default();
         result.get_or_create_cave("start");
         result.get_or_create_cave("end");
         let lines = common::split_lines(input);

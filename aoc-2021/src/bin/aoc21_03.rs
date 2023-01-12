@@ -30,10 +30,7 @@ impl Solution<Input, Output> for Day03 {
 
 /// Find most/least common bit value at given position
 fn common_bit(lines: &Vec<String>, pos: usize, most_common: bool) -> char {
-    let count = lines
-        .iter()
-        .filter(|l| l.chars().nth(pos).unwrap() == '1')
-        .count();
+    let count = lines.iter().filter(|l| l.chars().nth(pos).unwrap() == '1').count();
     if (count >= ((lines.len() + 1) / 2)) == most_common {
         '1'
     } else {
@@ -45,7 +42,10 @@ fn common_bit(lines: &Vec<String>, pos: usize, most_common: bool) -> char {
 fn inv_binary(s: &str) -> String {
     let mut result = String::new();
     for c in s.chars() {
-        result.push(if c == '0' { '1' } else { '0' });
+        result.push(match c {
+            '0' => '1',
+            _ => '0',
+        });
     }
     result
 }
@@ -89,7 +89,6 @@ fn main() -> DynResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn test_part1() {
