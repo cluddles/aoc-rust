@@ -47,36 +47,35 @@ pub fn bfs<'a, N: Eq + Hash, ItN: Iterator<Item = &'a N>, Ctx>(
 }
 
 /// Track A* node data
-struct AStarNodeData<'a, Node, Cost: Num> {
+struct AStarNodeData<Node, Cost: Num> {
     f: Cost,
     g: Cost,
-    came_from: &'a Node,
+    came_from: Node,
 }
 
 /// Find shortest path using A*
 pub fn a_star<
-    'a,
-    Node: Eq + Hash,
-    ItNC: Iterator<Item = (&'a Node, Cost)>,
+    Node: Eq + Hash + Copy + Clone,
+    ItNC: IntoIterator<Item = (Node, Cost)>,
     Ctx,
     Cost: Num + Bounded + Copy + Ord,
 >(
     context: &Ctx,
-    start_node: &'a Node,
+    start_node: &Node,
     neighbours: fn(&Ctx, &Node) -> ItNC,
     heuristic: fn(&Ctx, &Node) -> Cost,
     is_end: fn(&Ctx, &Node) -> bool,
-) -> Option<Vec<&'a Node>> {
+) -> Option<Vec<Node>> {
     let mut open = HashSet::new();
-    open.insert(start_node);
+    open.insert(*start_node);
 
-    let mut nodes: HashMap<&Node, AStarNodeData<'a, Node, Cost>> = HashMap::new();
+    let mut nodes: HashMap<Node, AStarNodeData<Node, Cost>> = HashMap::new();
     nodes.insert(
-        start_node,
+        *start_node,
         AStarNodeData {
             f: heuristic(context, start_node),
             g: Cost::zero(),
-            came_from: start_node,
+            came_from: *start_node,
         },
     );
 
@@ -92,13 +91,16 @@ pub fn a_star<
             })
             .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
             .map(|(x, _)| *x)?;
-        if is_end(context, current) {
+        if is_end(context, &current) {
             // reconstruct path
+            // includes start and end nodes
             let mut p = current;
             let mut result = Vec::new();
+            result.push(p);
             loop {
                 let v = nodes[&p].came_from;
                 if v == p {
+                    result.reverse();
                     return Some(result);
                 } else {
                     // println!("{:?}", v);
@@ -111,7 +113,7 @@ pub fn a_star<
         // Check neighbours
         let node = nodes.get(&current);
         let current_g = node.map(|x| x.g).unwrap_or_else(|| Cost::max_value());
-        for (n, c) in neighbours(context, current) {
+        for (n, c) in neighbours(context, &current) {
             let tentative_g = current_g + c;
             let neighbour = nodes.get(&n);
             if tentative_g < neighbour.map(|x| x.g).unwrap_or_else(|| Cost::max_value()) {

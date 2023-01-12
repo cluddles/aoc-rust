@@ -31,11 +31,11 @@ impl Solution<Input, u64> for Day14 {
     }
 
     fn solve_part1(&self, input: &Input) -> SolutionResult<u64> {
-        Ok(solve(input, 10))
+        solve(input, 10)
     }
 
     fn solve_part2(&self, input: &Input) -> SolutionResult<u64> {
-        Ok(solve(input, 40))
+        solve(input, 40)
     }
 }
 
@@ -45,18 +45,22 @@ fn parse(lines: &[String]) -> DynResult<Input> {
     let rules = lines
         .iter()
         .skip(1)
-        .map(|line| {
+        .map(|line| -> DynResult<(Pair, Vec<Pair>)> {
             let parts: Vec<&str> = line.split(" -> ").collect();
-            let from: Pair = parts[0].chars().collect_tuple().unwrap();
-            let to_char = parts[1].chars().next().unwrap();
-            (from, vec![(from.0, to_char), (to_char, from.1)])
+            let from: Pair = parts[0]
+                .chars()
+                .collect_tuple()
+                .ok_or_else(|| SimpleError::new_dyn("Cannot create pair"))?;
+            let to_char =
+                parts[1].chars().next().ok_or_else(|| SimpleError::new_dyn("Char missing"))?;
+            Ok((from, vec![(from.0, to_char), (to_char, from.1)]))
         })
-        .collect();
+        .collect::<Result<_, _>>()?;
     Ok(Input { template, rules })
 }
 
 /// Run simulation for the required number of steps and then score it
-fn solve(input: &Input, steps: usize) -> u64 {
+fn solve(input: &Input, steps: usize) -> DynResult<u64> {
     let start = to_pairs(&input.template);
     let pair_counts = sim(&start, &input.rules, steps);
     score(&input.template, &pair_counts)
@@ -88,7 +92,7 @@ fn sim(start: &PairCount, rules: &Rules, steps: usize) -> PairCount {
 }
 
 /// Score the simulation state
-fn score(start_polymer: &str, pair_count: &PairCount) -> u64 {
+fn score(start_polymer: &str, pair_count: &PairCount) -> DynResult<u64> {
     // Add the first of each pair
     let mut char_count = pair_count.iter().fold(HashMap::new(), |mut acc, (pair, count)| {
         *acc.entry(pair.0).or_insert(0) += count;
@@ -97,7 +101,9 @@ fn score(start_polymer: &str, pair_count: &PairCount) -> u64 {
     // Add the last character of the input polymer
     *char_count.entry(start_polymer.chars().last().unwrap()).or_insert(0) += 1;
     // Max - min scoring
-    char_count.values().max().unwrap() - char_count.values().min().unwrap()
+    let max = char_count.values().max().ok_or_else(|| SimpleError::new_dyn("No max"))?;
+    let min = char_count.values().min().ok_or_else(|| SimpleError::new_dyn("No min"))?;
+    Ok(max - min)
 }
 
 fn main() -> DynResult<()> {
