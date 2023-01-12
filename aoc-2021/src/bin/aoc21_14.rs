@@ -1,20 +1,27 @@
 extern crate aoc_lib;
 
-use std::collections::HashMap;
-use itertools::Itertools;
 use aoc_lib::harness::*;
+use itertools::Itertools;
+use std::collections::HashMap;
 
 pub struct Day14;
 
-type Output = u64;
+type Pair = (char, char);
+
+// The trick is to count pairs, instead of simulating every pair individually.
+// Order doesn't matter - just count pairs.
+type PairCount = HashMap<Pair, u64>;
+
+// Technically a map of Pair to (Pair, Pair), but easier to iterate over Vec...
+type Rules = HashMap<Pair, Vec<Pair>>;
 
 #[derive(Debug)]
 struct Input {
     template: String,
-    rules: HashMap<String, char>,
+    rules: Rules,
 }
 
-impl Solution<Input, Output> for Day14 {
+impl Solution<Input, u64> for Day14 {
     fn info(&self) -> SolutionInfo {
         SolutionInfo::new("Extended Polymerization", 2021, 14)
     }
@@ -23,60 +30,74 @@ impl Solution<Input, Output> for Day14 {
         parse(&resource.as_str_lines()?)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        solve(input, 10)
+    fn solve_part1(&self, input: &Input) -> SolutionResult<u64> {
+        Ok(solve(input, 10))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        // The current implementation is totally inappropriate for 40 iterations
-        todo!()
+    fn solve_part2(&self, input: &Input) -> SolutionResult<u64> {
+        Ok(solve(input, 40))
     }
 }
 
 fn parse(lines: &[String]) -> DynResult<Input> {
     let template = lines[0].to_string();
     // Remember that resource.as_str_lines() will strip out the empty line
-    let rules = lines.iter().skip(1).map(|line| {
-        let parts: Vec<&str> = line.split(" -> ").collect();
-        return (parts[0].to_string(), parts[1].chars().collect::<Vec<char>>()[0]);
-    }).collect();
-    //println!("{:?}", rules);
+    let rules = lines
+        .iter()
+        .skip(1)
+        .map(|line| {
+            let parts: Vec<&str> = line.split(" -> ").collect();
+            let from: Pair = parts[0].chars().collect_tuple().unwrap();
+            let to_char = parts[1].chars().next().unwrap();
+            (from, vec![(from.0, to_char), (to_char, from.1)])
+        })
+        .collect();
     Ok(Input { template, rules })
 }
 
-fn solve(input: &Input, steps: usize) -> DynResult<u64> {
-    let mut current = input.template.to_string();
-    for i in 0..steps {
-        println!("{}", i);
-        current = expand_polymer(input, &current);
-    }
-    let char_counts = char_counts(&current);
-    //println!("{:?}", char_counts);
-    let (_, min) = char_counts.iter().min_by(|(_, a), (_, b)| a.cmp(b)).ok_or_else(|| SimpleError::new_dyn("Min required"))?;
-    let (_, max) = char_counts.iter().max_by(|(_, a), (_, b)| a.cmp(b)).ok_or_else(|| SimpleError::new_dyn("Max required"))?;
-    Ok(max - min)
+/// Run simulation for the required number of steps and then score it
+fn solve(input: &Input, steps: usize) -> u64 {
+    let start = to_pairs(&input.template);
+    let pair_counts = sim(&start, &input.rules, steps);
+    score(&input.template, &pair_counts)
 }
 
-fn expand_polymer(input: &Input, polymer: &str) -> String {
-    let chars: Vec<char> = polymer.chars().collect();
-    let mut result = String::new();
-    result.push(chars[0]);
-    for i in 1..chars.len() {
-        let mut str = String::from(chars[i-1]);
-        str.push(chars[i]);
-        if let Some(rule) = input.rules.get(&str) {
-            result.push(*rule);
-        }
-        result.push(chars[i]);
-    }
-    println!("{:?}", char_counts(&result).iter().sorted());
-    result
+/// Convert a line of text into a count of pairs of chars
+fn to_pairs(line: &str) -> PairCount {
+    line.chars().collect::<Vec<char>>().windows(2).fold(PairCount::new(), |mut acc, x| {
+        *acc.entry((x[0], x[1])).or_insert(0) += 1;
+        acc
+    })
 }
 
-fn char_counts(text: &str) -> HashMap<char, u64> {
-    let mut result = HashMap::new();
-    text.chars().for_each(|c| { let entry = result.entry(c).or_insert(0); *entry += 1; });
-    result
+/// Run the simulation for the given number of steps
+fn sim(start: &PairCount, rules: &Rules, steps: usize) -> PairCount {
+    let mut current = start.clone();
+    for _ in 0..steps {
+        current = current.into_iter().fold(PairCount::new(), |mut acc, (pair, count)| {
+            // I don't think a rule is ever *not* present for given input...
+            if let Some(sub) = rules.get(&pair) {
+                sub.iter().for_each(|&target| *acc.entry(target).or_insert(0) += count);
+            } else {
+                *acc.entry(pair).or_insert(0) += count;
+            }
+            acc
+        })
+    }
+    current
+}
+
+/// Score the simulation state
+fn score(start_polymer: &str, pair_count: &PairCount) -> u64 {
+    // Add the first of each pair
+    let mut char_count = pair_count.iter().fold(HashMap::new(), |mut acc, (pair, count)| {
+        *acc.entry(pair.0).or_insert(0) += count;
+        acc
+    });
+    // Add the last character of the input polymer
+    *char_count.entry(start_polymer.chars().last().unwrap()).or_insert(0) += 1;
+    // Max - min scoring
+    char_count.values().max().unwrap() - char_count.values().min().unwrap()
 }
 
 fn main() -> DynResult<()> {
@@ -88,22 +109,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_step() {
-        let input = Day14.parse_input(&FileResource::new("input.test", 2021, 14)).unwrap();
-        assert_eq!(expand_polymer(&input, "NNCB"), "NCNBCHB");
-        assert_eq!(expand_polymer(&input, "NCNBCHB"), "NBCCNBBBCBHCB");
-        assert_eq!(expand_polymer(&input, "NBCCNBBBCBHCB"), "NBBBCNCCNBBNBNBBCHBHHBCHB");
-        assert_eq!(expand_polymer(&input, "NBBBCNCCNBBNBNBBCHBHHBCHB"), "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB");
-    }
-
-    #[test]
     fn test_part1() {
         assert_eq!(test_solution(&Day14, SolutionPart::One), 1588);
     }
 
     #[test]
     fn test_part2() {
-        //assert_eq!(test_solution(&Day14, SolutionPart::Two), 2188189693529);
+        assert_eq!(test_solution(&Day14, SolutionPart::Two), 2188189693529);
     }
-
 }
