@@ -1,8 +1,8 @@
 use crate::common;
+use anyhow::{anyhow, Error, Result};
 use num_traits::{Num, NumAssign, Signed};
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 use std::str::FromStr;
-use crate::harness::{DynError, DynResult, SimpleError};
 
 /// Basic 3d point.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Default)]
@@ -59,14 +59,14 @@ impl<T: Copy + NumAssign> SubAssign for Point3<T> {
 }
 
 impl<T: Copy + FromStr> FromStr for Point3<T> {
-    type Err = DynError;
-    fn from_str(s: &str) -> DynResult<Self> {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Self> {
         let p: Vec<T> = common::tokenize(s, ',')?;
         let mut i = p.into_iter();
         Ok(Point3 {
-            x: i.next().ok_or_else(|| SimpleError::new_dyn("No x"))?,
-            y: i.next().ok_or_else(|| SimpleError::new_dyn("No y"))?,
-            z: i.next().ok_or_else(|| SimpleError::new_dyn("No z"))?,
+            x: i.next().ok_or_else(|| anyhow!("No x"))?,
+            y: i.next().ok_or_else(|| anyhow!("No y"))?,
+            z: i.next().ok_or_else(|| anyhow!("No z"))?,
         })
     }
 }

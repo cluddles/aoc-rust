@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use std::collections::HashMap;
 use aoc_lib::harness::*;
 
@@ -22,15 +23,15 @@ impl Solution<Input, Output> for Day21 {
         SolutionInfo::new("Monkey Math", 2022, 21)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         Ok(parse_monkeys(resource.as_str_lines()?))
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(eval(input, ROOT) as Output)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let mut input = input.clone();
         let root = match &input[ROOT] {
             Op::Math(_, l, r) => [l.to_string(), r.to_string()],
@@ -142,7 +143,7 @@ fn eval_with_humn(input: &mut Input, node: &str, humn: i64) -> (i64, f64) {
     (humn, eval(input, node))
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day21)
 }
 

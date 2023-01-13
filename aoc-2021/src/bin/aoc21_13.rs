@@ -1,10 +1,13 @@
 extern crate aoc_lib;
 
+use std::collections::HashSet;
+use std::fmt::Formatter;
+
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
-use std::collections::HashSet;
-use std::fmt::Formatter;
 
 pub struct Day13;
 
@@ -15,15 +18,15 @@ impl Solution<Input, Output> for Day13 {
         SolutionInfo::new("Transparent Origami", 2021, 13)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         Ok(Input::parse(&resource.as_str()?))
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -131,7 +134,7 @@ fn part2(input: &Input) -> usize {
     paper.points.len()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day13)
 }
 

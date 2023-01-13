@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::{Grid, GridChar, GridPos};
 use aoc_lib::harness::*;
 use std::collections::HashSet;
@@ -74,7 +75,7 @@ impl Solution<Input, Output> for Day24 {
         SolutionInfo::new("Blizzard Basin", 2022, 24)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let source = resource.as_u8_grid(std::convert::identity)?;
         // Lowest common multiple is the number of valley layers we need
         let w = source.dim().x;
@@ -134,12 +135,12 @@ impl Solution<Input, Output> for Day24 {
         Ok(Valley { w, h, layers })
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(part1(input).ok_or_else(|| SimpleError::new_dyn("No result"))?)
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
+        Ok(part1(input).ok_or_else(|| anyhow!("No result"))?)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(part2(input).ok_or_else(|| SimpleError::new_dyn("No result"))?)
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
+        Ok(part2(input).ok_or_else(|| anyhow!("No result"))?)
     }
 }
 
@@ -229,7 +230,7 @@ impl PosTime {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day24)
 }
 

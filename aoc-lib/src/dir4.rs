@@ -1,4 +1,4 @@
-use crate::harness::SimpleError;
+use anyhow::{bail, Error, Result};
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -14,14 +14,14 @@ impl Dir4 {
 }
 
 impl FromStr for Dir4 {
-    type Err = SimpleError<String>;
+    type Err = Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let result = match s {
             "U" => Dir4::Up,
             "D" => Dir4::Down,
             "L" => Dir4::Left,
             "R" => Dir4::Right,
-            _ => return Err(SimpleError::new(format!("Unrecognised dir4: {}", s))),
+            _ => bail!("Unrecognised dir4: {}", s),
         };
         Ok(result)
     }

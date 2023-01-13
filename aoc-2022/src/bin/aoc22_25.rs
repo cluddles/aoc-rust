@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 
 pub struct Day25;
@@ -12,16 +13,16 @@ impl Solution<Input, Output> for Day25 {
         SolutionInfo::new("Full of Hot Air", 2022, 25)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_str_lines()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         // Looks like you could also do the addition directly in SNAFU if you so desired
         Ok(dec_to_snafu(input.iter().map(|x| snafu_to_dec(x)).sum()))
     }
 
-    fn solve_part2(&self, _: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, _: &Input) -> Result<Output> {
         // There is no part 2
         Ok("YAY".to_string())
     }
@@ -61,7 +62,7 @@ fn dec_to_snafu(val: i64) -> String {
     result.iter().rev().collect()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day25)
 }
 

@@ -1,5 +1,5 @@
+use anyhow::{anyhow, bail, Result};
 use std::str::FromStr;
-use crate::harness::{DynResult, SimpleError};
 
 /// Convert string to Vec of u8
 pub fn str_to_u8(text: &str) -> Vec<u8> {
@@ -13,10 +13,7 @@ pub fn u8_to_str(input: &[u8]) -> String {
 
 /// Split string on newlines, optionally keeping empty lines.
 fn split_lines_ext(content: &str, keep_empty: bool) -> Vec<&str> {
-    content
-        .split('\n')
-        .filter(|x| keep_empty || !x.is_empty())
-        .collect()
+    content.split('\n').filter(|x| keep_empty || !x.is_empty()).collect()
 }
 
 /// Split string on newlines, discarding empty lines.
@@ -29,37 +26,22 @@ pub fn split_lines_keep_empty(content: &str) -> Vec<&str> {
     split_lines_ext(content, true)
 }
 
-/// Parse a value, standardising into DynResult
-pub fn parse_str<T: FromStr>(val: &str) -> DynResult<T> {
+/// Parse a value, standardising into Result
+pub fn parse_str<T: FromStr>(val: &str) -> Result<T> {
     match val.trim().parse::<T>() {
         Ok(v) => Ok(v),
-        Err(_) => Err(SimpleError::new_dyn(format!("Could not parse '{}'", val))),
+        Err(_) => bail!("Could not parse '{}'", val),
     }
 }
 
 /// Split text on given delim, converting tokens with parse()
 ///
 /// Empty tokens will be ignored.
-pub fn tokenize<T: FromStr>(text: &str, delim: char) -> DynResult<Vec<T>>
-// where
-//     <T as FromStr>::Err: Error,
-{
-    text
-        .split(delim)
-        .filter(|x| !x.is_empty())
-        .map(|x| parse_str(x))
-        .collect()
+pub fn tokenize<T: FromStr>(text: &str, delim: char) -> Result<Vec<T>> {
+    text.split(delim).filter(|x| !x.is_empty()).map(|x| parse_str(x)).collect()
 }
 
 /// Split the first line of given text, converting tokens with parse()
-pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> DynResult<Vec<T>>
-    // where
-    //     <T as FromStr>::Err: Error,
-{
-    tokenize(
-        split_lines(content)
-            .first()
-            .ok_or_else(|| SimpleError::new_dyn("No data"))?,
-        delim,
-    )
+pub fn tokenize_first_line<T: FromStr>(content: &str, delim: char) -> Result<Vec<T>> {
+    tokenize(split_lines(content).first().ok_or_else(|| anyhow!("No data"))?, delim)
 }

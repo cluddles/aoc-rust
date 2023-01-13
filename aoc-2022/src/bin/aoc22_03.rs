@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 
 /// Split each line into 2 compartments
@@ -45,20 +46,20 @@ impl Solution<Input, Output> for Day03 {
         SolutionInfo::new("Rucksack Reorganization", 2022, 3)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_str_lines()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(sum_priority(&parse_compartments(input)))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(sum_priority(&parse_elf_groups(input)))
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day03)
 }
 

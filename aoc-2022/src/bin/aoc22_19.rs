@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 use std::collections::VecDeque;
 
@@ -13,7 +14,7 @@ impl Solution<Input, Output> for Day19 {
         SolutionInfo::new("Not Enough Minerals", 2022, 19)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource
             .as_str_lines()?
             .iter()
@@ -21,11 +22,11 @@ impl Solution<Input, Output> for Day19 {
             .collect()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(input.iter().map(|bp| bp.id * max_geodes(bp, 24)).sum())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(input.iter().take(3).map(|bp| max_geodes(bp, 32)).product())
     }
 }
@@ -50,7 +51,7 @@ struct Blueprint {
     max: BotCost,
 }
 
-fn parse_blueprint(line: &str) -> DynResult<Blueprint> {
+fn parse_blueprint(line: &str) -> Result<Blueprint> {
     use regex::Regex;
     let re = Regex::new(
         r"Blueprint (\d+): .*costs (\d+) ore.*costs (\d+) ore.* costs (\d+) ore and (\d+) clay.* costs (\d+) ore and (\d+) obsidian",
@@ -74,7 +75,7 @@ fn parse_blueprint(line: &str) -> DynResult<Blueprint> {
             max,
         });
     }
-    Err(SimpleError::new_dyn("Nothing to parse"))
+    Err(anyhow!("Nothing to parse"))
 }
 
 /// A single node in the decision process
@@ -204,7 +205,7 @@ fn buy_bot(node: &mut Node, bp: &Blueprint, bot_type: usize, num_ticks: u32) {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day19)
 }
 
@@ -213,21 +214,21 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_max_geodes_test_bp1() -> DynResult<()> {
+    fn test_max_geodes_test_bp1() -> Result<()> {
         let bp = parse_blueprint("Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.")?;
         assert_eq!(max_geodes(&bp, 24), 9);
         Ok(())
     }
 
     #[test]
-    fn test_max_geodes_test_bp2() -> DynResult<()> {
+    fn test_max_geodes_test_bp2() -> Result<()> {
         let bp = parse_blueprint("Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.")?;
         assert_eq!(max_geodes(&bp, 24), 12);
         Ok(())
     }
 
     #[test]
-    fn test_max_geodes_bp24() -> DynResult<()> {
+    fn test_max_geodes_bp24() -> Result<()> {
         // This one was off in my initial part 1 attempts...
         let bp = parse_blueprint("Blueprint 24: Each ore robot costs 2 ore. Each clay robot costs 2 ore. Each obsidian robot costs 2 ore and 10 clay. Each geode robot costs 2 ore and 11 obsidian.")?;
         assert_eq!(max_geodes(&bp, 24), 14);

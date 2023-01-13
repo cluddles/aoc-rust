@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -13,15 +15,15 @@ impl Solution<Input, Output> for Day07 {
         SolutionInfo::new("The Treachery of Whales", 2021, 7)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         common::tokenize_first_line(&resource.as_str()?, ',')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(score_linear(input, median(input)))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(score_tri(input, mean(input).round() as u32))
     }
 }
@@ -58,7 +60,7 @@ fn mean(input: &[u32]) -> f64 {
     input.iter().sum::<u32>() as f64 / input.len() as f64
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day07)
 }
 
@@ -76,4 +78,3 @@ mod tests {
         assert_eq!(test_solution(&Day07, SolutionPart::Two), 168);
     }
 }
-

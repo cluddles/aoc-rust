@@ -1,8 +1,11 @@
 extern crate aoc_lib;
 
-use aoc_lib::harness::*;
-use itertools::Itertools;
 use std::collections::HashMap;
+
+use anyhow::{anyhow, Result};
+use itertools::Itertools;
+
+use aoc_lib::harness::*;
 
 pub struct Day14;
 
@@ -26,33 +29,33 @@ impl Solution<Input, u64> for Day14 {
         SolutionInfo::new("Extended Polymerization", 2021, 14)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         parse(&resource.as_str_lines()?)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<u64> {
+    fn solve_part1(&self, input: &Input) -> Result<u64> {
         solve(input, 10)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<u64> {
+    fn solve_part2(&self, input: &Input) -> Result<u64> {
         solve(input, 40)
     }
 }
 
-fn parse(lines: &[String]) -> DynResult<Input> {
+fn parse(lines: &[String]) -> Result<Input> {
     let template = lines[0].to_string();
     // Remember that resource.as_str_lines() will strip out the empty line
     let rules = lines
         .iter()
         .skip(1)
-        .map(|line| -> DynResult<(Pair, Vec<Pair>)> {
+        .map(|line| -> Result<(Pair, Vec<Pair>)> {
             let parts: Vec<&str> = line.split(" -> ").collect();
             let from: Pair = parts[0]
                 .chars()
                 .collect_tuple()
-                .ok_or_else(|| SimpleError::new_dyn("Cannot create pair"))?;
+                .ok_or_else(|| anyhow!("Cannot create pair"))?;
             let to_char =
-                parts[1].chars().next().ok_or_else(|| SimpleError::new_dyn("Char missing"))?;
+                parts[1].chars().next().ok_or_else(|| anyhow!("Char missing"))?;
             Ok((from, vec![(from.0, to_char), (to_char, from.1)]))
         })
         .collect::<Result<_, _>>()?;
@@ -60,7 +63,7 @@ fn parse(lines: &[String]) -> DynResult<Input> {
 }
 
 /// Run simulation for the required number of steps and then score it
-fn solve(input: &Input, steps: usize) -> DynResult<u64> {
+fn solve(input: &Input, steps: usize) -> Result<u64> {
     let start = to_pairs(&input.template);
     let pair_counts = sim(&start, &input.rules, steps);
     score(&input.template, &pair_counts)
@@ -92,7 +95,7 @@ fn sim(start: &PairCount, rules: &Rules, steps: usize) -> PairCount {
 }
 
 /// Score the simulation state
-fn score(start_polymer: &str, pair_count: &PairCount) -> DynResult<u64> {
+fn score(start_polymer: &str, pair_count: &PairCount) -> Result<u64> {
     // Add the first of each pair
     let mut char_count = pair_count.iter().fold(HashMap::new(), |mut acc, (pair, count)| {
         *acc.entry(pair.0).or_insert(0) += count;
@@ -101,12 +104,12 @@ fn score(start_polymer: &str, pair_count: &PairCount) -> DynResult<u64> {
     // Add the last character of the input polymer
     *char_count.entry(start_polymer.chars().last().unwrap()).or_insert(0) += 1;
     // Max - min scoring
-    let max = char_count.values().max().ok_or_else(|| SimpleError::new_dyn("No max"))?;
-    let min = char_count.values().min().ok_or_else(|| SimpleError::new_dyn("No min"))?;
+    let max = char_count.values().max().ok_or_else(|| anyhow!("No max"))?;
+    let min = char_count.values().min().ok_or_else(|| anyhow!("No min"))?;
     Ok(max - min)
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day14)
 }
 

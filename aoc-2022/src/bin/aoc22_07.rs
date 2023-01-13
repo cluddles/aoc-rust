@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 use std::borrow::BorrowMut;
 use std::cell::RefCell;
@@ -13,11 +14,11 @@ impl Solution<Input, Output> for Day07 {
         SolutionInfo::new("No Space Left On Device", 2022, 7)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         build_fs(&resource.as_str_lines()?)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(Dir::flatten(input)
             .iter()
             .map(|n| n.size())
@@ -25,13 +26,13 @@ impl Solution<Input, Output> for Day07 {
             .sum())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let used = input.size();
         // Total 70000000, req 30000000: max usage=40000000
         let min_required = used - 40000000;
         let mut sorted: Vec<u32> = Dir::flatten(input).iter().map(|n| n.size()).collect();
         sorted.sort_unstable();
-        Ok(*sorted.iter().find(|&&x| x >= min_required).ok_or_else(|| SimpleError::new_dyn("No result"))?)
+        Ok(*sorted.iter().find(|&&x| x >= min_required).ok_or_else(|| anyhow!("No result"))?)
     }
 }
 
@@ -68,7 +69,7 @@ pub struct File {
 }
 
 /// Parse input into a meaningful filesystem
-fn build_fs(lines: &Vec<String>) -> DynResult<Rc<Dir>> {
+fn build_fs(lines: &Vec<String>) -> Result<Rc<Dir>> {
     let root = Rc::new(Dir {
         name: "".to_string(),
         ..Default::default()
@@ -82,7 +83,7 @@ fn build_fs(lines: &Vec<String>) -> DynResult<Rc<Dir>> {
             ("$", "ls") => { /* no-op */ }
             ("$", "cd") => match cmd[2] {
                 ".." => {
-                    current = Rc::clone(&parents.pop().ok_or_else(|| SimpleError::new_dyn("Cannot traverse up"))?);
+                    current = Rc::clone(&parents.pop().ok_or_else(|| anyhow!("Cannot traverse up"))?);
                 }
                 "/" => {
                     current = Rc::clone(&root);
@@ -97,7 +98,7 @@ fn build_fs(lines: &Vec<String>) -> DynResult<Rc<Dir>> {
                             .borrow_mut()
                             .iter()
                             .find(|x| x.name == dir)
-                            .ok_or_else(|| SimpleError::new_dyn("Dir not found"))?,
+                            .ok_or_else(|| anyhow!("Dir not found"))?,
                     );
                     current = new_current;
                 }
@@ -117,7 +118,7 @@ fn build_fs(lines: &Vec<String>) -> DynResult<Rc<Dir>> {
     Ok(root)
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day07)
 }
 

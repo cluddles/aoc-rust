@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -11,18 +12,18 @@ impl Solution<Input, Output> for Day04 {
         SolutionInfo::new("Camp Cleanup", 2022, 4)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         parse_sec_range_pairs(&resource.as_str()?)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(input
             .iter()
             .filter(|(a, b)| contains(a, b) || contains(b, a))
             .count() as u32)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(input.iter().filter(|(a, b)| overlaps(a, b)).count() as u32)
     }
 }
@@ -35,7 +36,7 @@ pub struct SecRange {
 }
 
 /// Convert "xxx-yyy" into SecRange
-fn parse_sec_range(sec: &str) -> DynResult<SecRange> {
+fn parse_sec_range(sec: &str) -> Result<SecRange> {
     let parts: Vec<&str> = sec.split('-').collect();
     Ok(SecRange {
         from: parts[0].parse()?,
@@ -44,7 +45,7 @@ fn parse_sec_range(sec: &str) -> DynResult<SecRange> {
 }
 
 /// Convert "a-b,c-d" into a pair of SecRanges
-fn parse_sec_range_pairs(content: &str) -> DynResult<Vec<(SecRange, SecRange)>> {
+fn parse_sec_range_pairs(content: &str) -> Result<Vec<(SecRange, SecRange)>> {
     let lines = common::split_lines(content);
     let mut result = Vec::new();
     for line in lines {
@@ -64,7 +65,7 @@ fn overlaps(a: &SecRange, b: &SecRange) -> bool {
     a.from <= b.to && b.from <= a.to
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day04)
 }
 

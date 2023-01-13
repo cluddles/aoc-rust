@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::{Grid, GridChar, GridPos};
 use aoc_lib::harness::*;
 
@@ -11,7 +12,7 @@ impl Solution<Input, Output> for Day14 {
         SolutionInfo::new("Regolith Reservoir", 2022, 14)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let lines = resource.as_str_lines()?;
         // Read input into line segments
         let data: Vec<CaveLine> = lines
@@ -49,11 +50,11 @@ impl Solution<Input, Output> for Day14 {
         Ok(cave)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(simulate(input, false))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(simulate(input, true))
     }
 }
@@ -113,7 +114,7 @@ impl GridChar for CaveCell {
     }
 }
 
-fn parse_line(text: &str) -> DynResult<CaveLine> {
+fn parse_line(text: &str) -> Result<CaveLine> {
     text.split(" -> ").map(|y| y.parse()).collect()
 }
 
@@ -166,7 +167,7 @@ fn tick(cave: &mut Cave, path: &mut Vec<CavePos>, start: CavePos, floor: bool) -
     false
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day14)
 }
 

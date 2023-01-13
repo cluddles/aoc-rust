@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -14,20 +15,20 @@ impl Solution<Input, Output> for Day20 {
         SolutionInfo::new("Grove Positioning System", 2022, 20)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         Ok(convert_to_input(&common::tokenize(
             &resource.as_str()?,
             '\n',
         )?))
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         let mut to_mix = input.clone();
         mix(&mut to_mix);
         Ok(score(&to_mix))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let mut to_mix = input
             .iter()
             .map(|n| Number {
@@ -96,7 +97,7 @@ fn score(vals: &Vec<Number>) -> i64 {
 /// Part 2 decryption key value
 const DECRYPTION_KEY: i64 = 811589153;
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day20)
 }
 

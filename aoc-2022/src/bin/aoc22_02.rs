@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -11,15 +12,15 @@ impl Solution<Input, Output> for Day02 {
         SolutionInfo::new("Rock Paper Scissors", 2022, 2)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         parse_strategy_guide(&resource.as_str_lines()?)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(input.iter().map(score_part1).sum())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(input.iter().map(score_part2).sum())
     }
 }
@@ -108,7 +109,7 @@ fn parse_outcome(outcome: char) -> Outcome {
 }
 
 /// Parse strategy for a round from a line of text
-fn parse_strategy(line: &str) -> DynResult<Strategy> {
+fn parse_strategy(line: &str) -> Result<Strategy> {
     let parts: Vec<char> = common::tokenize(line, ' ')?;
     Ok(Strategy {
         opp: parts[0],
@@ -117,7 +118,7 @@ fn parse_strategy(line: &str) -> DynResult<Strategy> {
 }
 
 /// Parse complete strategy guide
-fn parse_strategy_guide(lines: &[String]) -> DynResult<Vec<Strategy>> {
+fn parse_strategy_guide(lines: &[String]) -> Result<Vec<Strategy>> {
     lines.iter().map(|x| parse_strategy(x)).collect()
 }
 
@@ -154,7 +155,7 @@ fn score_part2(round: &Strategy) -> u32 {
     outcome(&opp, &mine).score() + mine.score()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day02)
 }
 

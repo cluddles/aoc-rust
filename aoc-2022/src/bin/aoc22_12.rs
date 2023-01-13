@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::{Grid, GridPos, Point2};
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet};
@@ -12,20 +13,20 @@ impl Solution<Input, Output> for Day12 {
         SolutionInfo::new("Hill Climbing Algorithm", 2022, 12)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let grid = resource.as_u8_grid(std::convert::identity)?;
         Area::new(grid)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(path_find(input)
-            .ok_or_else(|| SimpleError::new_dyn("No path found"))?
+            .ok_or_else(|| anyhow!("No path found"))?
             .len())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(path_find_var(input)
-            .ok_or_else(|| SimpleError::new_dyn("No path found"))?
+            .ok_or_else(|| anyhow!("No path found"))?
             .len())
     }
 }
@@ -41,13 +42,13 @@ impl Area {
     const START: u8 = b'S';
     const END: u8 = b'E';
 
-    fn new(grid: Grid<u8>) -> DynResult<Area> {
+    fn new(grid: Grid<u8>) -> Result<Area> {
         let (start, _) = grid
             .find(|x| x == &Area::START)
-            .ok_or_else(|| SimpleError::new_dyn("Could not find start"))?;
+            .ok_or_else(|| anyhow!("Could not find start"))?;
         let (end, _) = grid
             .find(|x| x == &Area::END)
-            .ok_or_else(|| SimpleError::new_dyn("Could not find end"))?;
+            .ok_or_else(|| anyhow!("Could not find end"))?;
         Ok(Area { grid, start, end })
     }
 
@@ -167,7 +168,7 @@ fn path_find_var(area: &Area) -> Option<Vec<GridPos>> {
     path_find_inner(area, area.end, starts)
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day12)
 }
 

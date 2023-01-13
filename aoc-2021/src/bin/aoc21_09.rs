@@ -1,6 +1,8 @@
 extern crate aoc_lib;
 
-use aoc_lib::data::{Point2, Grid, GridPos};
+use anyhow::{anyhow, Result};
+
+use aoc_lib::data::{Grid, GridPos, Point2};
 use aoc_lib::harness::*;
 
 pub struct Day09;
@@ -13,15 +15,15 @@ impl Solution<Input, Output> for Day09 {
         SolutionInfo::new("Smoke Basin", 2021, 9)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_u8_grid(|c| c - b'0')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -85,7 +87,7 @@ fn part2(heights: &Grid<u8>) -> u32 {
     basin_sizes.iter().rev().take(3).product()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day09)
 }
 

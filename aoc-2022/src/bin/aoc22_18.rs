@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::Point3;
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -31,7 +32,7 @@ impl Solution<Input, Output> for Day18 {
         SolutionInfo::new("Boiling Boulders", 2022, 18)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource
             .as_str_lines()?
             .iter()
@@ -39,11 +40,11 @@ impl Solution<Input, Output> for Day18 {
             .collect::<Result<_, _>>()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(input.iter().map(|x| count_edges(input, *x)).sum())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let mut map = HashMap::new();
         for p in input {
             map.insert(*p, MapCell::Solid);
@@ -115,7 +116,7 @@ fn count_exterior_edges(map: &HashMap<Pos, MapCell>, pos: Pos) -> u32 {
         .count() as u32
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day18)
 }
 

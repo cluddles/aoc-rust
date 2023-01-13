@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::harness::*;
 
 pub struct Day03;
@@ -12,16 +14,16 @@ impl Solution<Input, Output> for Day03 {
         SolutionInfo::new("Binary Diagnostic", 2021, 3)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_str_lines()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         let gamma = common_binary(input, true);
         Ok(binary_to_int(&gamma) * binary_to_int(&inv_binary(&gamma)))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let oxy_bin = filter_binary(input, true);
         let co2_bin = filter_binary(input, false);
         Ok(binary_to_int(&oxy_bin) * binary_to_int(&co2_bin))
@@ -82,7 +84,7 @@ fn filter_binary(lines: &Vec<String>, most_common: bool) -> String {
     working.first().unwrap().to_string()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day03)
 }
 

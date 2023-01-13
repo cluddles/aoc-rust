@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use std::collections::HashSet;
 use aoc_lib::common::*;
 use aoc_lib::data::Point2;
@@ -14,7 +15,7 @@ impl Solution<Input, Output> for Day15 {
         SolutionInfo::new("Beacon Exclusion Zone", 2022, 15)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let lines = resource.as_str_lines()?;
         lines
             .iter()
@@ -29,11 +30,11 @@ impl Solution<Input, Output> for Day15 {
             .collect()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         scan_y(input, 2_000_000)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         scan_xy(input, 4_000_000)
     }
 }
@@ -53,13 +54,13 @@ pub struct Span {
 }
 
 /// Given a string slice, chops off start and end and parses to i32
-fn chop<T: FromStr> (text: &str, drop_start: usize, drop_end: usize) -> DynResult<T> {
+fn chop<T: FromStr> (text: &str, drop_start: usize, drop_end: usize) -> Result<T> {
     parse_str(&text[drop_start..text.len() - drop_end])
     // Ok(text[drop_start..text.len() - drop_end].parse::<T>()?)
 }
 
 /// Calculates all covered spans
-fn calc_spans(input: &Input, y: i32) -> DynResult<Vec<Span>> {
+fn calc_spans(input: &Input, y: i32) -> Result<Vec<Span>> {
     // (from, to-inclusive) ranges of coverage
     let mut spans: Vec<Span> = Vec::with_capacity(input.len());
     for s in input {
@@ -79,7 +80,7 @@ fn calc_spans(input: &Input, y: i32) -> DynResult<Vec<Span>> {
 }
 
 /// Combines spans that overlap
-fn combine_spans(spans: &Vec<Span>) -> DynResult<Vec<Span>> {
+fn combine_spans(spans: &Vec<Span>) -> Result<Vec<Span>> {
     // Sort the covered spans
     let mut spans = spans.to_owned();
     spans.sort_unstable_by(|a, b| a.from.cmp(&b.from));
@@ -98,7 +99,7 @@ fn combine_spans(spans: &Vec<Span>) -> DynResult<Vec<Span>> {
 }
 
 /// Total horizontal beacon-free coverage on a row
-fn scan_y(input: &Input, y: i32) -> DynResult<i64> {
+fn scan_y(input: &Input, y: i32) -> Result<i64> {
     let spans = calc_spans(input, y)?;
     // We should subtract any beacons on the row.
     // It works without, but only because doing to-from is 1 off (because "to" is inclusive),
@@ -110,7 +111,7 @@ fn scan_y(input: &Input, y: i32) -> DynResult<i64> {
 }
 
 /// Find the first uncovered point in (0..=max_xy) along each axis
-fn scan_xy(input: &Input, max_xy: i32) -> DynResult<i64> {
+fn scan_xy(input: &Input, max_xy: i32) -> Result<i64> {
     // Perhaps there is a cleverer way than just checking every row, but it still runs in <1s
     for i in (0..max_xy).rev() {
         let spans = calc_spans(input, i)?;
@@ -120,10 +121,10 @@ fn scan_xy(input: &Input, max_xy: i32) -> DynResult<i64> {
             }
         }
     }
-    Err(SimpleError::new_dyn("No result"))
+    Err(anyhow!("No result"))
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day15)
 }
 

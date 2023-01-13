@@ -1,9 +1,12 @@
 extern crate aoc_lib;
 
+use std::collections::HashMap;
+
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
-use std::collections::HashMap;
 
 pub struct Day05;
 
@@ -15,19 +18,15 @@ impl Solution<Input, Output> for Day05 {
         SolutionInfo::new("Hydrothermal Venture", 2021, 5)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        resource
-            .as_str_lines()?
-            .iter()
-            .map(|x| parse_line(x))
-            .collect::<Result<_,_>>()
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
+        resource.as_str_lines()?.iter().map(|x| parse_line(x)).collect::<Result<_, _>>()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(draw_all(input, false))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(draw_all(input, true))
     }
 }
@@ -46,20 +45,14 @@ pub struct Grid {
     map: HashMap<Pos, i32>,
 }
 
-fn parse_pos(pos: &str) -> DynResult<Pos> {
+fn parse_pos(pos: &str) -> Result<Pos> {
     let coords: Vec<i32> = common::tokenize(pos, ',')?;
-    Ok(Pos {
-        x: coords[0],
-        y: coords[1],
-    })
+    Ok(Pos { x: coords[0], y: coords[1] })
 }
 
-fn parse_line(line: &str) -> DynResult<Line> {
+fn parse_line(line: &str) -> Result<Line> {
     let points: Vec<&str> = line.split(" -> ").collect();
-    Ok(Line {
-        start: parse_pos(points[0])?,
-        end: parse_pos(points[1])?,
-    })
+    Ok(Line { start: parse_pos(points[0])?, end: parse_pos(points[1])? })
 }
 
 /// Yield all points along line
@@ -91,9 +84,7 @@ fn draw_line(grid: &mut Grid, line: &Line) {
 }
 
 fn draw_all(lines: &[Line], inc_diagonals: bool) -> u32 {
-    let mut grid = Grid {
-        map: HashMap::new(),
-    };
+    let mut grid = Grid { map: HashMap::new() };
     for line in lines.iter() {
         if !is_diagonal(line) || inc_diagonals {
             draw_line(&mut grid, line);
@@ -102,7 +93,7 @@ fn draw_all(lines: &[Line], inc_diagonals: bool) -> u32 {
     grid.map.values().filter(|x| **x > 1).count() as u32
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day05)
 }
 

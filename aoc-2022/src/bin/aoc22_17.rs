@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use std::collections::HashSet;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
@@ -32,7 +33,7 @@ impl Solution<Input, Output> for Day17 {
         SolutionInfo::new("Pyroclastic Flow", 2022, 17)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let rocks = vec![
             Rock {
                 size: Pos::new(4, 1),
@@ -69,22 +70,22 @@ impl Solution<Input, Output> for Day17 {
             .as_str()?
             .chars()
             .filter(|&c| c as u8 >= 32)
-            .map(|c| -> Result<Jet, DynError> {
+            .map(|c| -> Result<Jet> {
                 match c {
                     '<' => Ok(Jet::Left),
                     '>' => Ok(Jet::Right),
-                    _ => Err(SimpleError::new_dyn("not a valid jet")),
+                    _ => Err(anyhow!("not a valid jet")),
                 }
             })
             .collect::<Result<_, _>>()?;
         Ok(Input { jets, rocks })
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(run_sim(input, 2022))
     }
 
-    fn solve_part2(&self, _input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, _input: &Input) -> Result<Output> {
         // Could do this programmatically
         // tbh I just looked at the floor heights in excel, and did some maths
 
@@ -169,7 +170,7 @@ fn settle(pos: Pos, rock: &Rock, settled: &mut HashSet<Pos>) {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day17)
 }
 

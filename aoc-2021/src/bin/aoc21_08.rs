@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::harness::*;
 
 pub struct Day08;
@@ -12,15 +14,15 @@ impl Solution<Input, Output> for Day08 {
         SolutionInfo::new("Seven Segment Search", 2021, 8)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_str_lines()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -139,7 +141,7 @@ fn part2(input: &Input) -> u32 {
     result
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day08)
 }
 

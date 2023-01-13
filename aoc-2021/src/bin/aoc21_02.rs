@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::harness::*;
 
 pub struct Day02;
@@ -12,19 +14,15 @@ impl Solution<Input, Output> for Day02 {
         SolutionInfo::new("Dive!", 2021, 2)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
-        resource
-            .as_str_lines()?
-            .iter()
-            .map(|x| parse_instruction(x))
-            .collect::<Result<_,_>>()
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
+        resource.as_str_lines()?.iter().map(|x| parse_instruction(x)).collect::<Result<_, _>>()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -35,12 +33,9 @@ pub struct Instruction {
 }
 
 /// Parse a single instruction from a line of text
-fn parse_instruction(line: &str) -> DynResult<Instruction> {
+fn parse_instruction(line: &str) -> Result<Instruction> {
     let parts: Vec<&str> = line.trim().split(' ').collect();
-    Ok(Instruction {
-        name: parts[0].to_string(),
-        amount: parts[1].parse()?,
-    })
+    Ok(Instruction { name: parts[0].to_string(), amount: parts[1].parse()? })
 }
 
 /// Horizontal * depth after running instructions
@@ -77,7 +72,7 @@ fn part2(instructions: &Vec<Instruction>) -> u32 {
     horiz * depth
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day02)
 }
 

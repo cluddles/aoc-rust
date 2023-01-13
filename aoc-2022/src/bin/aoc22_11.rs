@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 
 pub struct Day11;
@@ -10,15 +11,15 @@ impl Solution<Input, Output> for Day11 {
         SolutionInfo::new("Monkey in the Middle", 2022, 11)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_str()?.split("\n\n").map(Monkey::parse).collect()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(run_sim(input, true, 20))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(run_sim(input, false, 10000))
     }
 }
@@ -32,13 +33,13 @@ enum Op {
 }
 
 impl Op {
-    fn parse(op: &str, val: &str) -> DynResult<Op> {
+    fn parse(op: &str, val: &str) -> Result<Op> {
         Ok(match (op, val) {
             ("*", "old") => Op::Sq(),
             ("*", v) => Op::Mult(v.parse::<u64>()?),
             ("+", v) => Op::Add(v.parse::<u64>()?),
             (op, v) => {
-                return Err(SimpleError::new_dyn(format!(
+                return Err(anyhow!(format!(
                     "could not parse op: '{}' '{}'",
                     op, v
                 )))
@@ -57,7 +58,7 @@ pub struct Monkey {
 }
 
 impl Monkey {
-    fn parse(text: &str) -> DynResult<Monkey> {
+    fn parse(text: &str) -> Result<Monkey> {
         let lines: Vec<&str> = text.split('\n').collect();
         let items: &str = lines[1].split(':').collect::<Vec<&str>>()[1];
         let items = items
@@ -132,7 +133,7 @@ fn run_sim_once(state: &mut [MonkeyState], input: &Input, common_multiple: Optio
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day11)
 }
 

@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::{Grid, GridPos};
 use aoc_lib::harness::*;
 use std::collections::{HashMap, VecDeque};
@@ -41,17 +42,17 @@ impl Solution<Input, Output> for Day22 {
         SolutionInfo::new("Monkey Map", 2022, 22)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let mut lines = resource.as_str_lines()?;
         let instr = lines.pop().expect("instruction line must be present");
         Ok(Input { map: parse_map(&lines), instructions: parse_instructions(&instr) })
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -319,7 +320,7 @@ fn part2(input: &Input) -> u32 {
     calc_result(&pos, dir)
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day22)
 }
 

@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::data::Grid;
 use aoc_lib::harness::*;
 
@@ -13,15 +15,15 @@ impl Solution<Input, Output> for Day11 {
         SolutionInfo::new("Dumbo Octopus", 2021, 11)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_u8_grid(|y| y - b'0')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -96,7 +98,7 @@ fn part2(input: &Grid<u8>) -> u32 {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day11)
 }
 

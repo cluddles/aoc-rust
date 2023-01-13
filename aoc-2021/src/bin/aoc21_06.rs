@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -13,15 +15,15 @@ impl Solution<Input, Output> for Day06 {
         SolutionInfo::new("Lanternfish", 2021, 6)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         common::tokenize_first_line(&resource.as_str()?, ',')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(run_ticks(input, 80))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(run_ticks(input, 256))
     }
 }
@@ -44,9 +46,7 @@ fn tick(state: &mut State, tick: usize) {
 /// Run the given number of ticks on the supplied input, returning the number of fish in play
 fn run_ticks(input: &[u32], ticks: usize) -> u64 {
     // Pre-fill the state vec to be big enough to hold all the ticks we need
-    let mut state = State {
-        ticks: vec![0; ticks + 9],
-    };
+    let mut state = State { ticks: vec![0; ticks + 9] };
     for i in input {
         state.ticks[*i as usize] += 1;
     }
@@ -58,7 +58,7 @@ fn run_ticks(input: &[u32], ticks: usize) -> u64 {
     (ticks..ticks + 9).map(|x| state.ticks[x]).sum()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day06)
 }
 

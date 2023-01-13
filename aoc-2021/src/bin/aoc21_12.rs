@@ -1,9 +1,11 @@
 extern crate aoc_lib;
 
+use std::collections::HashMap;
+
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::harness::*;
-
-use std::collections::HashMap;
 
 /// All cave data
 #[derive(Default, Debug)]
@@ -117,20 +119,20 @@ impl Solution<CaveSystem, usize> for Day12 {
         SolutionInfo::new("Passage Pathing", 2021, 12)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<CaveSystem> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<CaveSystem> {
         Ok(CaveSystem::parse(&resource.as_str()?))
     }
 
-    fn solve_part1(&self, input: &CaveSystem) -> SolutionResult<usize> {
+    fn solve_part1(&self, input: &CaveSystem) -> Result<usize> {
         Ok(input.traverse(&[], CaveSystem::START, 0).len())
     }
 
-    fn solve_part2(&self, input: &CaveSystem) -> SolutionResult<usize> {
+    fn solve_part2(&self, input: &CaveSystem) -> Result<usize> {
         Ok(input.traverse(&[], CaveSystem::START, 1).len())
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day12)
 }
 

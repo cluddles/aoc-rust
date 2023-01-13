@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet};
@@ -16,7 +17,7 @@ impl Solution<Input, Output> for Day23 {
         SolutionInfo::new("Unstable Diffusion", 2022, 23)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let lines = resource.as_str_lines()?;
         let mut elves = HashSet::new();
         for (y, l) in lines.iter().enumerate() {
@@ -29,11 +30,11 @@ impl Solution<Input, Output> for Day23 {
         Ok(elves)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(score(&simulate(input, 10)))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let mut elves = input.clone();
         let mut i = 0;
         loop {
@@ -136,7 +137,7 @@ fn score(elves: &HashSet<Pos>) -> u32 {
     ((max.x - min.x + 1) * (max.y - min.y + 1)) as u32 - elves.len() as u32
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day23)
 }
 

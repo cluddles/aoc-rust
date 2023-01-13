@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::{Grid, Dir4, GridPos};
 use aoc_lib::harness::*;
 
@@ -13,11 +14,11 @@ impl Solution<Input, Output> for Day08 {
         SolutionInfo::new("Treetop Tree House", 2022, 8)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_u8_grid(|c| c - b'0')
     }
 
-    fn solve_part1(&self, treemap: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, treemap: &Input) -> Result<Output> {
         let (w, h) = treemap.dim().to_tuple();
         let mut vis: Grid<bool> = Grid::new_default(w as usize, h as usize);
         for y in 0..h {
@@ -31,7 +32,7 @@ impl Solution<Input, Output> for Day08 {
         Ok(vis.vec().iter().filter(|&&x| x).count() as u32)
     }
 
-    fn solve_part2(&self, treemap: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, treemap: &Input) -> Result<Output> {
         let mut best = 0;
         for x in 0..treemap.dim().x {
             for y in 0..treemap.dim().y {
@@ -90,7 +91,7 @@ fn scenic_score(treemap: &Treemap, x: i32, y: i32) -> u32 {
     Dir4::VALUES.iter().map(|x| scan_scenic(treemap, &p, x)).product()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day08)
 }
 

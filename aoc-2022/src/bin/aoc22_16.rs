@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 use std::collections::{HashMap, VecDeque};
 
@@ -13,7 +14,7 @@ impl Solution<Input, Output> for Day16 {
         SolutionInfo::new("Proboscidea Volcanium", 2022, 16)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let lines = resource.as_str_lines()?;
         // Get all the valves, make a graph
         let valves: HashMap<String, Valve> = lines
@@ -33,16 +34,16 @@ impl Solution<Input, Output> for Day16 {
         Ok(Network { valves, graph })
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
 
-fn parse_valve(line: &str) -> DynResult<Valve> {
+fn parse_valve(line: &str) -> Result<Valve> {
     // "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB"
     let parts: Vec<&str> = line.split(';').collect();
     let name = &(parts[0])[6..=7];
@@ -246,7 +247,7 @@ pub struct Node {
     links: Vec<(String, u32)>,
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day16)
 }
 

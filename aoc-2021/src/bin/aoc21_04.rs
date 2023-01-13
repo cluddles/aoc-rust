@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -13,15 +15,15 @@ impl Solution<Input, Output> for Day04 {
         SolutionInfo::new("Giant Squid", 2021, 4)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         Ok(parse_input(&resource.as_str_lines()?))
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(part1(input))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(part2(input))
     }
 }
@@ -51,19 +53,13 @@ fn parse_board_row(line: &str) -> Vec<i32> {
 
 /// Parse 5 lines
 fn parse_board(lines: &[String]) -> Board {
-    Board {
-        grid: (0..5).map(|i| parse_board_row(&lines[i])).collect(),
-    }
+    Board { grid: (0..5).map(|i| parse_board_row(&lines[i])).collect() }
 }
 
 /// Parse input from text. First line is call list, then some number of boards
 fn parse_input(lines: &Vec<String>) -> State {
     // Calls - reverse so we can pop from the end
-    let calls = lines[0]
-        .split(',')
-        .rev()
-        .map(|x| x.parse::<u32>().unwrap())
-        .collect();
+    let calls = lines[0].split(',').rev().map(|x| x.parse::<u32>().unwrap()).collect();
     let mut boards = Vec::new();
     let mut i = 1;
     while i < lines.len() {
@@ -105,23 +101,12 @@ fn is_winner(board: &Board) -> bool {
 
 /// Indexes of all boards that have won
 fn find_winners(state: &State) -> Vec<usize> {
-    state
-        .boards
-        .iter()
-        .enumerate()
-        .filter(|(_, val)| is_winner(val))
-        .map(|(i, _)| i)
-        .collect()
+    state.boards.iter().enumerate().filter(|(_, val)| is_winner(val)).map(|(i, _)| i).collect()
 }
 
 /// Calculate board score, the sum of all unmarked numbers time the last call.
 fn calculate_score(call: u32, board: &Board) -> u32 {
-    board
-        .grid
-        .iter()
-        .flat_map(|i| i.iter())
-        .filter(|i| **i != -1)
-        .sum::<i32>() as u32 * call
+    board.grid.iter().flat_map(|i| i.iter()).filter(|i| **i != -1).sum::<i32>() as u32 * call
 }
 
 /// Pop the next number to call from the end of the list
@@ -140,7 +125,7 @@ fn part1(input: &State) -> u32 {
         apply_call(call, &mut state);
         // Same as matching on find_winners(&state).first()
         if let Some(&v) = find_winners(&state).first() {
-            return calculate_score(call, &state.boards[v])
+            return calculate_score(call, &state.boards[v]);
         }
     }
 }
@@ -162,7 +147,7 @@ fn part2(input: &State) -> u32 {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day04)
 }
 

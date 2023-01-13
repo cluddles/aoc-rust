@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::data::{Grid, GridPos};
 use aoc_lib::harness::*;
 use aoc_lib::path;
@@ -17,15 +19,15 @@ impl Solution<Input, Output> for Day15 {
         SolutionInfo::new("Chiton", 2021, 15)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_u8_grid(|x| x - b'0')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         path_cost(input)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let (w, h) = input.dim().to_tuple();
         let mut grid = Grid::new_default((w * 5) as usize, (h * 5) as usize);
         for x in 0..grid.dim().x {
@@ -41,13 +43,13 @@ impl Solution<Input, Output> for Day15 {
     }
 }
 
-fn path_cost(input: &Input) -> DynResult<u64> {
+fn path_cost(input: &Input) -> Result<u64> {
     // A* from top-left (0, 0) to bottom right
     let start = GridPos::new(0, 0);
     let end = *input.dim() - GridPos::new(1, 1);
 
     let path = path::a_star(&(input, start, end), &start, neighbours, heuristic, is_end)
-        .ok_or_else(|| SimpleError::new_dyn("No path"))?;
+        .ok_or_else(|| anyhow!("No path"))?;
     // println!("{:?}", path);
     Ok(path.into_iter().skip(1).map(|pos| *input.get(pos.x, pos.y) as u64).sum())
 }
@@ -72,7 +74,7 @@ fn is_end(ctx: &(&Input, GridPos, GridPos), n: &GridPos) -> bool {
     n == end
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day15)
 }
 

@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::harness::*;
 
 #[derive(Default)]
@@ -15,7 +16,7 @@ impl State {
     fn new() -> State { State { x: 1, ..Default::default() } }
 }
 
-fn cpu_tick(state: &mut State, program: &Input) -> DynResult<()> {
+fn cpu_tick(state: &mut State, program: &Input) -> Result<()> {
     state.cycle += 1;
     let cycle = state.cycle as isize;
     if (cycle - 20) % 40 == 0 {
@@ -40,7 +41,7 @@ fn cpu_tick(state: &mut State, program: &Input) -> DynResult<()> {
     Ok(())
 }
 
-fn run_program(program: &Input) -> DynResult<isize> {
+fn run_program(program: &Input) -> Result<isize> {
     let mut state = State::new();
     loop {
         cpu_tick(&mut state, program)?;
@@ -54,7 +55,7 @@ fn render_tick(state: &mut State, output: &mut [char]) {
     if (state.x - col).abs() <= 1 { output[tick] = '#' }
 }
 
-fn run_and_render(program: &Input) -> DynResult<String> {
+fn run_and_render(program: &Input) -> Result<String> {
     let mut state = State::new();
     let mut result = vec!['.'; 240];
     loop {
@@ -75,20 +76,20 @@ impl Solution<Input, Output> for Day10 {
         SolutionInfo::new("Cathode-Ray Tube", 2022, 10)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource.as_str_lines()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(run_program(input)?.to_string())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         run_and_render(input)
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day10)
 }
 

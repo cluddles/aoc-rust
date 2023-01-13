@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -17,7 +18,7 @@ impl Solution<Input, Output> for Day01 {
         SolutionInfo::new("Calorie Counting", 2022, 1)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let text = resource.as_str()?;
         let lines = common::split_lines_keep_empty(&text);
         let mut result: Vec<Elf> = Vec::new();
@@ -41,18 +42,18 @@ impl Solution<Input, Output> for Day01 {
         Ok(result)
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(input.iter().map(|x| x.total).max().ok_or_else(|| SimpleError::new_dyn("No max"))?)
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
+        Ok(input.iter().map(|x| x.total).max().ok_or_else(|| anyhow!("No max"))?)
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let mut max_first = input.to_vec();
         max_first.sort_by(|a, b| b.total.cmp(&a.total));
         Ok(max_first.iter().take(3).map(|x| x.total).sum())
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day01)
 }
 

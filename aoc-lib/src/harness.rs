@@ -1,52 +1,24 @@
 use crate::common::*;
 use crate::data::Grid;
-use std::error::Error;
-use std::fmt::{Debug, Display, Formatter};
+use anyhow::Result;
+use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
-
-// TODO these errors should probably live in common or something
-
-pub type DynError = Box<dyn Error>;
-pub type DynResult<O> = Result<O, DynError>;
-pub type SolutionResult<O> = DynResult<O>;
-
-/// Error that displays "something"
-#[derive(Debug, Clone)]
-pub struct SimpleError<T: Debug + Display + Clone> {
-    to_display: T,
-}
-impl<T: Debug + Display + Clone> SimpleError<T> {
-    pub fn new(v: T) -> SimpleError<T> {
-        SimpleError { to_display: v }
-    }
-    pub fn new_dyn(v: T) -> Box<SimpleError<T>> {
-        Self::new(v).into()
-    }
-}
-
-impl<T: Debug + Display + Clone> Error for SimpleError<T> {}
-
-impl<T: Debug + Display + Clone> Display for SimpleError<T> {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}", &self.to_display)
-    }
-}
 
 /// Solution for a day's puzzle
 pub trait Solution<I, O> {
     /// Solution metadata
     fn info(&self) -> SolutionInfo;
     /// Get puzzle input from given resource
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<I>;
+    fn parse_input(&self, resource: &dyn Resource) -> Result<I>;
     /// Solution to puzzle part 1
-    fn solve_part1(&self, input: &I) -> SolutionResult<O>;
+    fn solve_part1(&self, input: &I) -> Result<O>;
     /// Solution to puzzle part 2
-    fn solve_part2(&self, input: &I) -> SolutionResult<O>;
+    fn solve_part2(&self, input: &I) -> Result<O>;
 }
 
 /// Run the solution for a day and output part 1 and 2 results
-pub fn run_solution<S: Solution<I, O>, I, O: Display>(solution: &S) -> DynResult<()> {
+pub fn run_solution<S: Solution<I, O>, I, O: Display>(solution: &S) -> Result<()> {
     // Get info from solution
     let info = solution.info();
     println!("\n--- [{}] Day {}: {} ---", info.year, info.day, info.title);
@@ -79,11 +51,7 @@ pub enum SolutionPart {
 /// Test-run solution on default test input
 pub fn test_solution<S: Solution<I, O>, I, O>(solution: &S, part: SolutionPart) -> O {
     let info = solution.info();
-    test_solution_inner(
-        solution,
-        part,
-        &FileResource::new("input.test", info.year, info.day),
-    )
+    test_solution_inner(solution, part, &FileResource::new("input.test", info.year, info.day))
 }
 
 /// Test-run solution on specific (presumably non-default) test input
@@ -93,11 +61,7 @@ pub fn test_solution_ext<S: Solution<I, O>, I, O>(
     filename: &'static str,
 ) -> O {
     let info = solution.info();
-    test_solution_inner(
-        solution,
-        part,
-        &FileResource::new(filename, info.year, info.day),
-    )
+    test_solution_inner(solution, part, &FileResource::new(filename, info.year, info.day))
 }
 
 /// Test-run solution on inline input text
@@ -125,35 +89,22 @@ fn test_solution_inner<S: Solution<I, O>, I, O>(
 /// Resource to pull solution input from
 pub trait Resource {
     /// Read string from resource
-    fn as_str(&self) -> DynResult<String>;
+    fn as_str(&self) -> Result<String>;
 
     /// Read u8 vec from resource
-    fn as_u8(&self) -> DynResult<Vec<u8>>;
+    fn as_u8(&self) -> Result<Vec<u8>>;
 
     /// Read string lines from resource. Filters out empty lines.
-    fn as_str_lines(&self) -> DynResult<Vec<String>> {
+    fn as_str_lines(&self) -> Result<Vec<String>> {
         let lines = self.as_str()?;
-        Ok(lines
-            .split('\n')
-            .filter(|x| !x.is_empty())
-            .map(|x| x.to_owned())
-            .collect())
+        Ok(lines.split('\n').filter(|x| !x.is_empty()).map(|x| x.to_owned()).collect())
     }
 
     /// Read grid of u8 from resource
-    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> DynResult<Grid<u8>> {
+    fn as_u8_grid(&self, converter: fn(u8) -> u8) -> Result<Grid<u8>> {
         let input = self.as_u8()?;
-        let w = input
-            .iter()
-            .enumerate()
-            .find(|(_, &x)| x < 32)
-            .unwrap_or((input.len(), &0))
-            .0;
-        let grid_raw = input
-            .iter()
-            .filter(|&&x| x >= 32)
-            .map(|&x| converter(x))
-            .collect();
+        let w = input.iter().enumerate().find(|(_, &x)| x < 32).unwrap_or((input.len(), &0)).0;
+        let grid_raw = input.iter().filter(|&&x| x >= 32).map(|&x| converter(x)).collect();
         Ok(Grid::from_1d(grid_raw, w))
     }
 }
@@ -169,11 +120,11 @@ pub fn resource_path(filename: &str, year: u32, day: u8) -> PathBuf {
         .join(filename)
 }
 
-fn file_res_as_str(filename: &str, year: u32, day: u8) -> DynResult<String> {
+fn file_res_as_str(filename: &str, year: u32, day: u8) -> Result<String> {
     Ok(std::fs::read_to_string(resource_path(filename, year, day))?)
 }
 
-fn file_res_as_u8(filename: &str, year: u32, day: u8) -> DynResult<Vec<u8>> {
+fn file_res_as_u8(filename: &str, year: u32, day: u8) -> Result<Vec<u8>> {
     Ok(std::fs::read(resource_path(filename, year, day))?)
 }
 
@@ -186,20 +137,16 @@ pub struct FileResource {
 
 impl FileResource {
     pub fn new(filename: &'static str, year: u32, day: u8) -> Self {
-        Self {
-            filename,
-            year,
-            day,
-        }
+        Self { filename, year, day }
     }
 }
 
 impl Resource for FileResource {
-    fn as_str(&self) -> DynResult<String> {
+    fn as_str(&self) -> Result<String> {
         file_res_as_str(self.filename, self.year, self.day)
     }
 
-    fn as_u8(&self) -> DynResult<Vec<u8>> {
+    fn as_u8(&self) -> Result<Vec<u8>> {
         file_res_as_u8(self.filename, self.year, self.day)
     }
 }
@@ -216,11 +163,11 @@ impl InlineResource {
 }
 
 impl Resource for InlineResource {
-    fn as_str(&self) -> DynResult<String> {
+    fn as_str(&self) -> Result<String> {
         Ok(self.text.to_string())
     }
 
-    fn as_u8(&self) -> DynResult<Vec<u8>> {
+    fn as_u8(&self) -> Result<Vec<u8>> {
         Ok(str_to_u8(self.text))
     }
 }

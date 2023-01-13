@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, bail, Error, Result};
 use aoc_lib::harness::*;
 use std::cmp::Ordering;
 use std::str::FromStr;
@@ -12,7 +13,7 @@ impl Solution<Input, Output> for Day13 {
         SolutionInfo::new("Distress Signal", 2022, 13)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource
             .as_str_lines()?
             .iter()
@@ -20,7 +21,7 @@ impl Solution<Input, Output> for Day13 {
             .collect::<Result<_, _>>()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         // Work on pairs of packets
         Ok((0..input.len())
             .step_by(2)
@@ -29,7 +30,7 @@ impl Solution<Input, Output> for Day13 {
             .sum())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let dividers = vec![
             Packet(vec![El::List(vec![El::Int(2)])]),
             Packet(vec![El::List(vec![El::Int(6)])]),
@@ -58,17 +59,17 @@ enum El {
 pub struct Packet(Vec<El>);
 
 impl FromStr for Packet {
-    type Err = DynError;
-    fn from_str(s: &str) -> DynResult<Self> {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Self> {
         let mut chars = s.chars();
         if chars.next() != Some('[') {
-            Err("Doesn't start with '['")?;
+            bail!("Doesn't start with '['");
         }
         Ok(Packet(parse_list(&mut chars)?))
     }
 }
 
-fn parse_list(chars: &mut dyn Iterator<Item = char>) -> DynResult<Vec<El>> {
+fn parse_list(chars: &mut dyn Iterator<Item = char>) -> Result<Vec<El>> {
     let mut elements: Vec<El> = Vec::new();
     let mut val = None;
     while let Some(c) = chars.next() {
@@ -91,7 +92,7 @@ fn parse_list(chars: &mut dyn Iterator<Item = char>) -> DynResult<Vec<El>> {
             x => val = Some(val.unwrap_or(0) * 10 + (x as u8 - b'0') as u32),
         }
     }
-    Err("Invalid input")?
+    bail!("Invalid input")
 }
 
 fn cmp_lists(left: &[El], right: &[El]) -> Ordering {
@@ -120,7 +121,7 @@ fn cmp_lists(left: &[El], right: &[El]) -> Ordering {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day13)
 }
 

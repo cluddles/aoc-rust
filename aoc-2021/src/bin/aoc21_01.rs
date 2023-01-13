@@ -1,5 +1,7 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
+
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -13,20 +15,15 @@ impl Solution<Input, Output> for Day01 {
         SolutionInfo::new("Sonar Sweep", 2021, 1)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         common::tokenize(&resource.as_str()?, '\n')
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
-        Ok(input
-            .iter()
-            .enumerate()
-            .skip(1)
-            .filter(|(i, &x)| x > input[i - 1])
-            .count())
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
+        Ok(input.iter().enumerate().skip(1).filter(|(i, &x)| x > input[i - 1]).count())
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         let mut prev = 0;
         let mut count = 0;
         for i in 0..input.len() - 2 {
@@ -40,7 +37,7 @@ impl Solution<Input, Output> for Day01 {
     }
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day01)
 }
 

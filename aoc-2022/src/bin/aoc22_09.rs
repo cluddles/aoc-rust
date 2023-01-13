@@ -1,5 +1,6 @@
 extern crate aoc_lib;
 
+use anyhow::{anyhow, Result};
 use aoc_lib::data::{Dir4, Point2};
 use aoc_lib::harness::*;
 use std::collections::HashSet;
@@ -17,7 +18,7 @@ impl Solution<Input, Output> for Day09 {
         SolutionInfo::new("Rope Bridge", 2022, 9)
     }
 
-    fn parse_input(&self, resource: &dyn Resource) -> DynResult<Input> {
+    fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         resource
             .as_str_lines()?
             .iter()
@@ -25,16 +26,16 @@ impl Solution<Input, Output> for Day09 {
             .collect()
     }
 
-    fn solve_part1(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part1(&self, input: &Input) -> Result<Output> {
         Ok(simulate_rope(input, 2))
     }
 
-    fn solve_part2(&self, input: &Input) -> SolutionResult<Output> {
+    fn solve_part2(&self, input: &Input) -> Result<Output> {
         Ok(simulate_rope(input, 10))
     }
 }
 
-fn parse_motion(s: &str) -> DynResult<Motion> {
+fn parse_motion(s: &str) -> Result<Motion> {
     let parts: Vec<&str> = s.split_whitespace().collect();
     Ok((parts[0].parse::<Dir4>()?, parts[1].parse::<u8>()?))
 }
@@ -75,7 +76,7 @@ fn simulate_rope(motions: &MotionList, rope_length: usize) -> usize {
     result.len()
 }
 
-fn main() -> DynResult<()> {
+fn main() -> Result<()> {
     run_solution(&Day09)
 }
 
