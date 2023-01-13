@@ -13,7 +13,7 @@ pub struct Point3<T: Copy> {
 }
 
 impl<T: Copy> Point3<T> {
-    pub const fn new(x: T, y: T, z: T ) -> Self {
+    pub const fn new(x: T, y: T, z: T) -> Self {
         Point3 { x, y, z }
     }
     pub fn to_tuple(&self) -> (T, T, T) {
@@ -23,7 +23,10 @@ impl<T: Copy> Point3<T> {
 
 impl<T: Copy> Point3<T> {
     /// Manhattan distance of 0,0 to this point
-    pub fn manhattan(&self) -> T where T: Num + Signed {
+    pub fn manhattan(&self) -> T
+    where
+        T: Num + Signed,
+    {
         self.x.abs() + self.y.abs() + self.z.abs()
     }
 }

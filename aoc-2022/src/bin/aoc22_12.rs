@@ -19,15 +19,11 @@ impl Solution<Input, Output> for Day12 {
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
-        Ok(path_find(input)
-            .ok_or_else(|| anyhow!("No path found"))?
-            .len())
+        Ok(path_find(input).ok_or_else(|| anyhow!("No path found"))?.len())
     }
 
     fn solve_part2(&self, input: &Input) -> Result<Output> {
-        Ok(path_find_var(input)
-            .ok_or_else(|| anyhow!("No path found"))?
-            .len())
+        Ok(path_find_var(input).ok_or_else(|| anyhow!("No path found"))?.len())
     }
 }
 
@@ -43,12 +39,10 @@ impl Area {
     const END: u8 = b'E';
 
     fn new(grid: Grid<u8>) -> Result<Area> {
-        let (start, _) = grid
-            .find(|x| x == &Area::START)
-            .ok_or_else(|| anyhow!("Could not find start"))?;
-        let (end, _) = grid
-            .find(|x| x == &Area::END)
-            .ok_or_else(|| anyhow!("Could not find end"))?;
+        let (start, _) =
+            grid.find(|x| x == &Area::START).ok_or_else(|| anyhow!("Could not find start"))?;
+        let (end, _) =
+            grid.find(|x| x == &Area::END).ok_or_else(|| anyhow!("Could not find end"))?;
         Ok(Area { grid, start, end })
     }
 
@@ -66,7 +60,10 @@ impl Area {
 }
 
 /// Node in open set with the lowest F
-fn select_best_from_open(open: &mut HashSet<GridPos>, nodes: &HashMap<GridPos, NodeData>) -> Option<GridPos> {
+fn select_best_from_open(
+    open: &mut HashSet<GridPos>,
+    nodes: &HashMap<GridPos, NodeData>,
+) -> Option<GridPos> {
     open.iter()
         .map(|x| (x, nodes.get(x).map(|x| x.f).unwrap_or(9999)))
         .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
@@ -85,10 +82,18 @@ fn h(_area: &Area, _pos: &GridPos) -> usize {
 /// All (valid) neighbours for given position
 fn neighbours(area: &Area, p: &GridPos) -> Vec<GridPos> {
     let mut result = Vec::with_capacity(4);
-    if p.x > 0 { neighbour_one(&mut result, area, p, GridPos::new(p.x - 1, p.y)); }
-    if p.y > 0 { neighbour_one(&mut result, area, p, GridPos::new(p.x, p.y - 1)); }
-    if p.x < area.dim().x - 1 { neighbour_one(&mut result, area, p, GridPos::new(p.x + 1, p.y)); }
-    if p.y < area.dim().y - 1 { neighbour_one(&mut result, area, p, GridPos::new(p.x, p.y + 1)); }
+    if p.x > 0 {
+        neighbour_one(&mut result, area, p, GridPos::new(p.x - 1, p.y));
+    }
+    if p.y > 0 {
+        neighbour_one(&mut result, area, p, GridPos::new(p.x, p.y - 1));
+    }
+    if p.x < area.dim().x - 1 {
+        neighbour_one(&mut result, area, p, GridPos::new(p.x + 1, p.y));
+    }
+    if p.y < area.dim().y - 1 {
+        neighbour_one(&mut result, area, p, GridPos::new(p.x, p.y + 1));
+    }
     result
 }
 
@@ -123,7 +128,9 @@ fn path_find_inner(area: &Area, start: GridPos, ends: Vec<GridPos>) -> Option<Ve
             let mut result = Vec::new();
             loop {
                 if let Some(v) = nodes.get(&p).map(|x| x.came_from) {
-                    if v == p { return Some(result); } else {
+                    if v == p {
+                        return Some(result);
+                    } else {
                         // println!("{:?}", v);
                         result.push(v);
                         p = v;
@@ -139,7 +146,10 @@ fn path_find_inner(area: &Area, start: GridPos, ends: Vec<GridPos>) -> Option<Ve
             let tentative_g = current_g + 1;
             let neighbour = nodes.get(&n);
             if tentative_g < neighbour.map(|x| x.g).unwrap_or(9999) {
-                nodes.insert(n, NodeData { f: tentative_g + h(area, &n), g: tentative_g, came_from: current });
+                nodes.insert(
+                    n,
+                    NodeData { f: tentative_g + h(area, &n), g: tentative_g, came_from: current },
+                );
                 open.insert(n);
             }
         }

@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -111,10 +111,7 @@ fn parse_outcome(outcome: char) -> Outcome {
 /// Parse strategy for a round from a line of text
 fn parse_strategy(line: &str) -> Result<Strategy> {
     let parts: Vec<char> = common::tokenize(line, ' ')?;
-    Ok(Strategy {
-        opp: parts[0],
-        strat: parts[1],
-    })
+    Ok(Strategy { opp: parts[0], strat: parts[1] })
 }
 
 /// Parse complete strategy guide

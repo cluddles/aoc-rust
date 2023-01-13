@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::data::{Grid, GridChar, GridPos};
 use aoc_lib::harness::*;
 
@@ -15,10 +15,7 @@ impl Solution<Input, Output> for Day14 {
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let lines = resource.as_str_lines()?;
         // Read input into line segments
-        let data: Vec<CaveLine> = lines
-            .iter()
-            .map(|x| parse_line(x))
-            .collect::<Result<_, _>>()?;
+        let data: Vec<CaveLine> = lines.iter().map(|x| parse_line(x)).collect::<Result<_, _>>()?;
         // Work out the cave bounds we care about
         // (remember that sand enters at 500, 0 - so stretch out from there)
         let mut min: CavePos = ENTRY_POINT;
@@ -88,10 +85,7 @@ impl Cave {
                 self.grid.set(p1.x - offset.x, y - offset.y, CaveCell::Rock);
             }
         } else {
-            panic!(
-                "Only horizontal/vertical lines supported! {:?}->{:?}",
-                p1, p2
-            );
+            panic!("Only horizontal/vertical lines supported! {:?}->{:?}", p1, p2);
         }
     }
 }

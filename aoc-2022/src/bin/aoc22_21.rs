@@ -1,8 +1,8 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
-use std::collections::HashMap;
+use anyhow::Result;
 use aoc_lib::harness::*;
+use std::collections::HashMap;
 
 pub struct Day21;
 
@@ -45,7 +45,10 @@ impl Solution<Input, Output> for Day21 {
 
         // Work out which side of the equation is changing
         let min = i64::MIN / 65536;
-        let test_result = [eval_with_humn(&mut input, &root[0], min).1, eval_with_humn(&mut input, &root[1], min).1];
+        let test_result = [
+            eval_with_humn(&mut input, &root[0], min).1,
+            eval_with_humn(&mut input, &root[1], min).1,
+        ];
         let eval_pos = usize::from(test_result[0] == init_result[0]);
         let const_pos = 1 - eval_pos;
 
@@ -71,14 +74,17 @@ impl Solution<Input, Output> for Day21 {
         let mut d1 = r1.1 - init_result[const_pos];
         let mut d2 = r2.1 - init_result[const_pos];
         loop {
-            if d1 == 0.0 { return Ok(r1.0); }
-            if d2 == 0.0 { return Ok(r2.0); }
+            if d1 == 0.0 {
+                return Ok(r1.0);
+            }
+            if d2 == 0.0 {
+                return Ok(r2.0);
+            }
             if d1.signum() != d2.signum() {
                 // Result lies between previous test positions
                 between = (r1.0, r2.0);
                 r2 = eval_with_humn(&mut input, &root[eval_pos], r1.0 + (r2.0 - r1.0) / 2);
                 d2 = r2.1 - init_result[const_pos];
-
             } else {
                 // Result lies outside the previous test range
                 between = (r2.0, between.1);
@@ -123,15 +129,13 @@ fn parse_op(parts: &[&str]) -> Op {
 fn eval(input: &Input, node: &str) -> f64 {
     match &input[node] {
         Op::Val(x) => *x as f64,
-        Op::Math(op, l, r) => {
-            match op {
-                '+' => eval(input, l) + eval(input, r),
-                '-' => eval(input, l) - eval(input, r),
-                '*' => eval(input, l) * eval(input, r),
-                '/' => eval(input, l) / eval(input, r),
-                _ => panic!("Unrecognised operator: {}", op),
-            }
-        }
+        Op::Math(op, l, r) => match op {
+            '+' => eval(input, l) + eval(input, r),
+            '-' => eval(input, l) - eval(input, r),
+            '*' => eval(input, l) * eval(input, r),
+            '/' => eval(input, l) / eval(input, r),
+            _ => panic!("Unrecognised operator: {}", op),
+        },
     }
 }
 

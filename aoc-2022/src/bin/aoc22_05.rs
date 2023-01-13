@@ -23,9 +23,7 @@ impl Solution<Input, Output> for Day05 {
         let mut state = crates.to_owned();
         for m in moves {
             for _ in 0..m.quantity {
-                let popped = state[m.from - 1]
-                    .pop()
-                    .ok_or_else(|| anyhow!("Nothing to pop"))?;
+                let popped = state[m.from - 1].pop().ok_or_else(|| anyhow!("Nothing to pop"))?;
                 state[m.to - 1].push(popped);
             }
         }
@@ -55,11 +53,8 @@ pub struct Move {
 fn parse_crates(content: &str) -> Result<Vec<Vec<u8>>> {
     let lines = common::split_lines(content);
     // Get number of columns from the last line
-    let cols = lines
-        .last()
-        .ok_or_else(|| anyhow!("Unable to find columns"))?
-        .split_whitespace()
-        .count();
+    let cols =
+        lines.last().ok_or_else(|| anyhow!("Unable to find columns"))?.split_whitespace().count();
     let mut result = vec![Vec::new(); cols];
     // Iterate backwards over lines (except the last)
     for line in lines.iter().rev().skip(1) {
@@ -76,27 +71,17 @@ fn parse_crates(content: &str) -> Result<Vec<Vec<u8>>> {
 /// Parse a single move: "move 1 from 1 to 2"
 fn parse_move(line: &str) -> Result<Move> {
     let parts: Vec<&str> = line.split_whitespace().collect();
-    Ok(Move {
-        quantity: parts[1].parse()?,
-        from: parts[3].parse()?,
-        to: parts[5].parse()?,
-    })
+    Ok(Move { quantity: parts[1].parse()?, from: parts[3].parse()?, to: parts[5].parse()? })
 }
 
 /// Parse the move block of the input
 fn parse_moves(content: &str) -> Result<Vec<Move>> {
-    common::split_lines(content)
-        .iter()
-        .map(|x| parse_move(x))
-        .collect()
+    common::split_lines(content).iter().map(|x| parse_move(x)).collect()
 }
 
 /// Summarise the result, by taking the top crate from each stack
 fn summarise(crates: &[Vec<u8>]) -> Result<String> {
-    crates
-        .iter()
-        .map(|x| Ok(*x.last().ok_or(anyhow!("No crate data"))? as char))
-        .collect()
+    crates.iter().map(|x| Ok(*x.last().ok_or(anyhow!("No crate data"))? as char)).collect()
 }
 
 fn main() -> Result<()> {

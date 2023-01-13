@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use aoc_lib::data::{Grid, GridPos, Point2};
 use aoc_lib::harness::*;
@@ -48,15 +48,14 @@ fn lowpoints(heights: &Grid<u8>) -> Vec<GridPos> {
 
 /// "Risk" for all lowpoints
 fn part1(heights: &Grid<u8>) -> u32 {
-    lowpoints(heights)
-        .iter()
-        .map(|x| (heights.get(x.x, x.y) + 1) as u32)
-        .sum()
+    lowpoints(heights).iter().map(|x| (heights.get(x.x, x.y) + 1) as u32).sum()
 }
 
 /// Calculate basin size, using mutable grid to track visited cells
 fn basin_iter(heights: &Grid<u8>, basins: &mut Grid<u8>, x: i32, y: i32) -> u32 {
-    if basins.get(x, y) == &1 || heights.get(x, y) == &9 { return 0; }
+    if basins.get(x, y) == &1 || heights.get(x, y) == &9 {
+        return 0;
+    }
 
     basins.set(x, y, 1);
 
@@ -71,7 +70,7 @@ fn basin_iter(heights: &Grid<u8>, basins: &mut Grid<u8>, x: i32, y: i32) -> u32 
         result += basin_iter(heights, basins, x, y - 1);
     }
     if y != basins.dim().y - 1 {
-        result +=  basin_iter(heights, basins, x, y + 1);
+        result += basin_iter(heights, basins, x, y + 1);
     }
     result
 }
@@ -79,10 +78,8 @@ fn basin_iter(heights: &Grid<u8>, basins: &mut Grid<u8>, x: i32, y: i32) -> u32 
 /// Product of largest three basin sizes
 fn part2(heights: &Grid<u8>) -> u32 {
     let mut basins = Grid::new_default(heights.dim().x as usize, heights.dim().y as usize);
-    let mut basin_sizes: Vec<u32> = lowpoints(heights)
-        .iter()
-        .map(|x| basin_iter(heights, &mut basins, x.x, x.y))
-        .collect();
+    let mut basin_sizes: Vec<u32> =
+        lowpoints(heights).iter().map(|x| basin_iter(heights, &mut basins, x.x, x.y)).collect();
     basin_sizes.sort_unstable();
     basin_sizes.iter().rev().take(3).product()
 }

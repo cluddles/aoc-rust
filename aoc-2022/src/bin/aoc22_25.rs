@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::harness::*;
 
 pub struct Day25;
@@ -52,8 +52,14 @@ fn dec_to_snafu(val: i64) -> String {
             0 => '0',
             1 => '1',
             2 => '2',
-            3 => { wip += 2; '=' },
-            4 => { wip += 1; '-' },
+            3 => {
+                wip += 2;
+                '='
+            }
+            4 => {
+                wip += 1;
+                '-'
+            }
             _ => panic!("Impossible"),
         };
         result.push(digit);
@@ -74,10 +80,10 @@ mod tests {
     fn test_from_snafu() {
         assert_eq!(snafu_to_dec("1=-0-2"), 1747);
         assert_eq!(snafu_to_dec("12111"), 906);
-        assert_eq!(snafu_to_dec("2=0="), 198 );
+        assert_eq!(snafu_to_dec("2=0="), 198);
         assert_eq!(snafu_to_dec("21"), 11);
-        assert_eq!(snafu_to_dec("2=01"), 201 );
-        assert_eq!(snafu_to_dec("111"), 31  );
+        assert_eq!(snafu_to_dec("2=01"), 201);
+        assert_eq!(snafu_to_dec("111"), 31);
         assert_eq!(snafu_to_dec("20012"), 1257);
         assert_eq!(snafu_to_dec("112"), 32);
         assert_eq!(snafu_to_dec("1=-1="), 353);
@@ -117,5 +123,4 @@ mod tests {
     fn test_part1() {
         assert_eq!(test_solution(&Day25, SolutionPart::One), "2=-1=0");
     }
-
 }

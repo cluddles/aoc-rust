@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::data::{Dir4, Point2};
 use aoc_lib::harness::*;
 use std::collections::HashSet;
@@ -19,11 +19,7 @@ impl Solution<Input, Output> for Day09 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
-        resource
-            .as_str_lines()?
-            .iter()
-            .map(|x| parse_motion(x))
-            .collect()
+        resource.as_str_lines()?.iter().map(|x| parse_motion(x)).collect()
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
@@ -86,24 +82,15 @@ mod tests {
 
     #[test]
     fn test_part1_1() {
-        assert_eq!(
-            test_solution_ext(&Day09, SolutionPart::One, "input.test.1"),
-            13
-        );
+        assert_eq!(test_solution_ext(&Day09, SolutionPart::One, "input.test.1"), 13);
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(
-            test_solution_ext(&Day09, SolutionPart::Two, "input.test.1"),
-            1
-        );
+        assert_eq!(test_solution_ext(&Day09, SolutionPart::Two, "input.test.1"), 1);
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(
-            test_solution_ext(&Day09, SolutionPart::Two, "input.test.2"),
-            36
-        );
+        assert_eq!(test_solution_ext(&Day09, SolutionPart::Two, "input.test.2"), 36);
     }
 }

@@ -22,7 +22,10 @@ impl<T: Copy> Point2<T> {
 
 impl<T: Copy> Point2<T> {
     /// Manhattan distance of 0,0 to this point
-    pub fn manhattan(&self) -> T where T: Num + Signed {
+    pub fn manhattan(&self) -> T
+    where
+        T: Num + Signed,
+    {
         self.x.abs() + self.y.abs()
     }
 }

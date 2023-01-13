@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use aoc_lib::common;
 use aoc_lib::harness::*;

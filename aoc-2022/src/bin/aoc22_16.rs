@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::harness::*;
 use std::collections::{HashMap, VecDeque};
 
@@ -26,10 +26,8 @@ impl Solution<Input, Output> for Day16 {
             .collect();
         let graph = build_graph(&valves);
         // Create graph of direct links between non-zero flow rate valves
-        let valves: HashMap<String, Valve> = valves
-            .into_iter()
-            .filter(|(n, x)| n == "AA" || x.flow_rate > 0)
-            .collect();
+        let valves: HashMap<String, Valve> =
+            valves.into_iter().filter(|(n, x)| n == "AA" || x.flow_rate > 0).collect();
         let graph = reduce_graph(&graph, valves.values().map(|x| &x.name).collect());
         Ok(Network { valves, graph })
     }
@@ -50,11 +48,7 @@ fn parse_valve(line: &str) -> Result<Valve> {
     let flow_rate = parts[0].split('=').collect::<Vec<&str>>()[1].parse()?;
     let parts: Vec<&str> = parts[1].split(' ').collect();
     let tunnels: Vec<String> = parts[5..].iter().map(|x| x[0..2].to_string()).collect();
-    Ok(Valve {
-        name: name.to_string(),
-        flow_rate,
-        tunnels,
-    })
+    Ok(Valve { name: name.to_string(), flow_rate, tunnels })
 }
 
 fn build_graph(valves: &HashMap<String, Valve>) -> Graph {
@@ -149,17 +143,16 @@ fn part2(network: &Network) -> u32 {
     for i in 0..count {
         let mut split1 = Vec::new();
         for j in 0..all.len() {
-            if i & (1<<j) >= 1 {
+            if i & (1 << j) >= 1 {
                 split1.push(all[j]);
             }
         }
         let mut split2 = all.to_vec();
         split2.retain(|x| !split1.contains(x));
         // println!("({}): s1 {:?}, s2 {:?}", num_evals, split1, split2);
-        best = (
-            eval(network, &String::from("AA"), &split1, 0, 26, 0, 0, num_evals) +
-            eval(network, &String::from("AA"), &split2, 0, 26, 0, 0, num_evals)
-        ).max(best);
+        best = (eval(network, &String::from("AA"), &split1, 0, 26, 0, 0, num_evals)
+            + eval(network, &String::from("AA"), &split2, 0, 26, 0, 0, num_evals))
+        .max(best);
     }
     best
 }

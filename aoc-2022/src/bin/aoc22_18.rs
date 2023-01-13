@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::data::Point3;
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -33,11 +33,7 @@ impl Solution<Input, Output> for Day18 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
-        resource
-            .as_str_lines()?
-            .iter()
-            .map(|i| i.parse())
-            .collect::<Result<_, _>>()
+        resource.as_str_lines()?.iter().map(|i| i.parse()).collect::<Result<_, _>>()
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
@@ -57,20 +53,15 @@ impl Solution<Input, Output> for Day18 {
 
 /// Part one - count adjacents that are empty
 fn count_edges(input: &Input, pos: Pos) -> u32 {
-    ADJACENTS
-        .iter()
-        .filter(|&&i| !input.contains(&(pos + i)))
-        .count() as u32
+    ADJACENTS.iter().filter(|&&i| !input.contains(&(pos + i))).count() as u32
 }
 
 /// Fill exterior volume with suitable cells
 fn fill_exterior(input: &Input, map: &mut HashMap<Pos, MapCell>) {
     // Work out min and max bounds; assume cuboid
     use std::iter::once;
-    let vals: Vec<i32> = input
-        .iter()
-        .flat_map(|i| once(i.x).chain(once(i.y).chain(once(i.z))))
-        .collect();
+    let vals: Vec<i32> =
+        input.iter().flat_map(|i| once(i.x).chain(once(i.y).chain(once(i.z)))).collect();
     // Pad min and max by one so that we can fill around shape
     let min = vals.iter().min().expect("must have min") - 1;
     let max = vals.iter().max().expect("must have max") + 1;
@@ -110,10 +101,8 @@ fn check_fill(
 
 /// Part two - count adjacents that are tagged as exterior
 fn count_exterior_edges(map: &HashMap<Pos, MapCell>, pos: Pos) -> u32 {
-    ADJACENTS
-        .iter()
-        .filter(|&&i| matches!(map.get(&(pos + i)), Some(MapCell::Exterior)))
-        .count() as u32
+    ADJACENTS.iter().filter(|&&i| matches!(map.get(&(pos + i)), Some(MapCell::Exterior))).count()
+        as u32
 }
 
 fn main() -> Result<()> {
@@ -126,10 +115,7 @@ mod tests {
 
     #[test]
     fn test_part1_min() {
-        assert_eq!(
-            test_solution_inline(&Day18, SolutionPart::One, "1,1,1\n2,1,1"),
-            10
-        );
+        assert_eq!(test_solution_inline(&Day18, SolutionPart::One, "1,1,1\n2,1,1"), 10);
     }
 
     #[test]

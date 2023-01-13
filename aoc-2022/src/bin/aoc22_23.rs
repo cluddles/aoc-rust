@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
 use std::collections::{HashMap, HashSet};

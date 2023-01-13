@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use aoc_lib::data::Grid;
 use aoc_lib::harness::*;
@@ -29,16 +29,8 @@ impl Solution<Input, Output> for Day11 {
 }
 
 /// x, y deltas representing adjacent positions
-const ADJACENTS: &[(i8, i8); 8] = &[
-    (-1, -1),
-    (0, -1),
-    (1, -1),
-    (-1, 0),
-    (1, 0),
-    (-1, 1),
-    (0, 1),
-    (1, 1),
-];
+const ADJACENTS: &[(i8, i8); 8] =
+    &[(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)];
 
 /// Increment the value of a single cell.
 /// On flash, apply increment to all (valid) neighbours.
@@ -53,9 +45,7 @@ fn inc_one(grid: &mut Grid<u8>, ix: i8, iy: i8) {
     let prev = *grid.get(x, y);
     grid.set(x, y, prev + 1);
     if prev == 9 {
-        ADJACENTS
-            .iter()
-            .for_each(|d| inc_one(grid, ix + d.0, iy + d.1));
+        ADJACENTS.iter().for_each(|d| inc_one(grid, ix + d.0, iy + d.1));
     }
 }
 

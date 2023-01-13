@@ -19,11 +19,7 @@ impl Solution<Input, Output> for Day07 {
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
-        Ok(Dir::flatten(input)
-            .iter()
-            .map(|n| n.size())
-            .filter(|x| x <= &100000)
-            .sum())
+        Ok(Dir::flatten(input).iter().map(|n| n.size()).filter(|x| x <= &100000).sum())
     }
 
     fn solve_part2(&self, input: &Input) -> Result<Output> {
@@ -70,10 +66,7 @@ pub struct File {
 
 /// Parse input into a meaningful filesystem
 fn build_fs(lines: &Vec<String>) -> Result<Rc<Dir>> {
-    let root = Rc::new(Dir {
-        name: "".to_string(),
-        ..Default::default()
-    });
+    let root = Rc::new(Dir { name: "".to_string(), ..Default::default() });
     let mut parents: Vec<Rc<Dir>> = vec![];
     let mut current = Rc::clone(&root);
 
@@ -83,7 +76,8 @@ fn build_fs(lines: &Vec<String>) -> Result<Rc<Dir>> {
             ("$", "ls") => { /* no-op */ }
             ("$", "cd") => match cmd[2] {
                 ".." => {
-                    current = Rc::clone(&parents.pop().ok_or_else(|| anyhow!("Cannot traverse up"))?);
+                    current =
+                        Rc::clone(&parents.pop().ok_or_else(|| anyhow!("Cannot traverse up"))?);
                 }
                 "/" => {
                     current = Rc::clone(&root);
@@ -104,10 +98,10 @@ fn build_fs(lines: &Vec<String>) -> Result<Rc<Dir>> {
                 }
             },
             ("dir", dir) => {
-                current.dirs.borrow_mut().push(Rc::new(Dir {
-                    name: dir.to_string(),
-                    ..Default::default()
-                }));
+                current
+                    .dirs
+                    .borrow_mut()
+                    .push(Rc::new(Dir { name: dir.to_string(), ..Default::default() }));
             }
             (size, _) => current.files.borrow_mut().push(File {
                 // name: file.to_string(),

@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -17,10 +17,7 @@ impl Solution<Input, Output> for Day04 {
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
-        Ok(input
-            .iter()
-            .filter(|(a, b)| contains(a, b) || contains(b, a))
-            .count() as u32)
+        Ok(input.iter().filter(|(a, b)| contains(a, b) || contains(b, a)).count() as u32)
     }
 
     fn solve_part2(&self, input: &Input) -> Result<Output> {
@@ -38,10 +35,7 @@ pub struct SecRange {
 /// Convert "xxx-yyy" into SecRange
 fn parse_sec_range(sec: &str) -> Result<SecRange> {
     let parts: Vec<&str> = sec.split('-').collect();
-    Ok(SecRange {
-        from: parts[0].parse()?,
-        to: parts[1].parse()?,
-    })
+    Ok(SecRange { from: parts[0].parse()?, to: parts[1].parse()? })
 }
 
 /// Convert "a-b,c-d" into a pair of SecRanges

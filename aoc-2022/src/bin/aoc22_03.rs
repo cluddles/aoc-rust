@@ -1,14 +1,11 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::harness::*;
 
 /// Split each line into 2 compartments
 fn parse_compartments(lines: &[String]) -> Vec<Vec<&str>> {
-    lines.iter()
-        .map(|x| x.split_at(x.len() / 2))
-        .map(|x| vec![x.0, x.1])
-        .collect()
+    lines.iter().map(|x| x.split_at(x.len() / 2)).map(|x| vec![x.0, x.1]).collect()
 }
 
 /// Split by groups of 3 lines
@@ -18,10 +15,7 @@ fn parse_elf_groups(lines: &[String]) -> Vec<Vec<&str>> {
 
 /// Find duplicates in the given strings
 fn dup(val: &Vec<&str>) -> u8 {
-    val[0]
-        .chars()
-        .find(|&x| (1..val.len()).all(|y| val[y].contains(x)))
-        .unwrap() as u8
+    val[0].chars().find(|&x| (1..val.len()).all(|y| val[y].contains(x))).unwrap() as u8
 }
 
 /// Convert char to priority value

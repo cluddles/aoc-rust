@@ -83,12 +83,7 @@ pub fn a_star<
         // Select "best" node from open set. This is a bit of a mess.
         let current = open
             .iter()
-            .map(|n| {
-                (
-                    n,
-                    nodes.get(n).map(|x| x.f).unwrap_or_else(|| Cost::max_value()),
-                )
-            })
+            .map(|n| (n, nodes.get(n).map(|x| x.f).unwrap_or_else(|| Cost::max_value())))
             .min_by(|(_, s1), (_, s2)| s1.cmp(s2))
             .map(|(x, _)| *x)?;
         if is_end(context, &current) {

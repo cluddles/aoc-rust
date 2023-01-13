@@ -1,7 +1,7 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
-use aoc_lib::data::{Grid, Dir4, GridPos};
+use anyhow::Result;
+use aoc_lib::data::{Dir4, Grid, GridPos};
 use aoc_lib::harness::*;
 
 type Treemap = Grid<u8>;
@@ -37,7 +37,9 @@ impl Solution<Input, Output> for Day08 {
         for x in 0..treemap.dim().x {
             for y in 0..treemap.dim().y {
                 let score = scenic_score(treemap, x, y);
-                if score > best { best = score; }
+                if score > best {
+                    best = score;
+                }
             }
         }
         Ok(best)
@@ -79,7 +81,9 @@ fn scan_scenic(treemap: &Treemap, start: &GridPos, dir: &Dir4) -> u32 {
     move_in_dir4(&mut pos, dir);
     while treemap.is_in_bounds(pos.x, pos.y) {
         score += 1;
-        if treemap.get(pos.x, pos.y) >= start_tree { break; }
+        if treemap.get(pos.x, pos.y) >= start_tree {
+            break;
+        }
         move_in_dir4(&mut pos, dir);
     }
     score

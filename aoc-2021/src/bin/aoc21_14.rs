@@ -50,12 +50,9 @@ fn parse(lines: &[String]) -> Result<Input> {
         .skip(1)
         .map(|line| -> Result<(Pair, Vec<Pair>)> {
             let parts: Vec<&str> = line.split(" -> ").collect();
-            let from: Pair = parts[0]
-                .chars()
-                .collect_tuple()
-                .ok_or_else(|| anyhow!("Cannot create pair"))?;
-            let to_char =
-                parts[1].chars().next().ok_or_else(|| anyhow!("Char missing"))?;
+            let from: Pair =
+                parts[0].chars().collect_tuple().ok_or_else(|| anyhow!("Cannot create pair"))?;
+            let to_char = parts[1].chars().next().ok_or_else(|| anyhow!("Char missing"))?;
             Ok((from, vec![(from.0, to_char), (to_char, from.1)]))
         })
         .collect::<Result<_, _>>()?;

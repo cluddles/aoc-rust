@@ -15,11 +15,7 @@ impl Solution<Input, Output> for Day19 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
-        resource
-            .as_str_lines()?
-            .iter()
-            .map(|i| parse_blueprint(i))
-            .collect()
+        resource.as_str_lines()?.iter().map(|i| parse_blueprint(i)).collect()
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
@@ -69,11 +65,7 @@ fn parse_blueprint(line: &str) -> Result<Blueprint> {
             }
             s
         });
-        return Ok(Blueprint {
-            id: cap[1].parse()?,
-            bots: bot_costs,
-            max,
-        });
+        return Ok(Blueprint { id: cap[1].parse()?, bots: bot_costs, max });
     }
     Err(anyhow!("Nothing to parse"))
 }
@@ -104,9 +96,7 @@ fn max_geodes(bp: &Blueprint, num_ticks: u32) -> u32 {
         _iterations += 1;
         let next = open.pop_front().expect("open cannot be empty");
         best = best.max(next.geodes);
-        expand_node(bp, num_ticks, &next, best)
-            .into_iter()
-            .for_each(|i| open.push_back(i));
+        expand_node(bp, num_ticks, &next, best).into_iter().for_each(|i| open.push_back(i));
     }
     // println!("Done in {} iterations", _iterations);
     best
@@ -121,7 +111,9 @@ fn expand_node(bp: &Blueprint, num_ticks: u32, node: &Node, best: u32) -> Vec<No
     // decision space by a considerable amount.
     let rem = num_ticks - node.tick - 1;
     let max_geodes = node.geodes + (rem * (rem + 1) / 2);
-    if max_geodes <= best { return vec![]; }
+    if max_geodes <= best {
+        return vec![];
+    }
 
     // 4 potential bots we can build
     // (We could also do nothing, but I don't think that's ever desired)

@@ -1,9 +1,9 @@
 extern crate aoc_lib;
 
 use anyhow::{anyhow, Result};
-use std::collections::HashSet;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
+use std::collections::HashSet;
 
 pub struct Day17;
 
@@ -35,10 +35,7 @@ impl Solution<Input, Output> for Day17 {
 
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
         let rocks = vec![
-            Rock {
-                size: Pos::new(4, 1),
-                open_cells: HashSet::new(),
-            },
+            Rock { size: Pos::new(4, 1), open_cells: HashSet::new() },
             Rock {
                 size: Pos::new(3, 3),
                 open_cells: HashSet::from([
@@ -57,14 +54,8 @@ impl Solution<Input, Output> for Day17 {
                     Pos::new(1, 2),
                 ]),
             },
-            Rock {
-                size: Pos::new(1, 4),
-                open_cells: HashSet::new(),
-            },
-            Rock {
-                size: Pos::new(2, 2),
-                open_cells: HashSet::new(),
-            },
+            Rock { size: Pos::new(1, 4), open_cells: HashSet::new() },
+            Rock { size: Pos::new(2, 2), open_cells: HashSet::new() },
         ];
         let jets = resource
             .as_str()?
@@ -110,19 +101,31 @@ fn run_sim(input: &Input, num_rocks: u64) -> u64 {
         // Setup rock
         let rock = &input.rocks[rock_index];
         rock_index += 1;
-        if rock_index >= input.rocks.len() { rock_index = 0; }
+        if rock_index >= input.rocks.len() {
+            rock_index = 0;
+        }
         let mut pos = Pos::new(2, floor + 3);
 
         loop {
             // Get next jet
             let jet = &input.jets[jet_index];
             jet_index += 1;
-            if jet_index >= input.jets.len() { jet_index = 0; }
+            if jet_index >= input.jets.len() {
+                jet_index = 0;
+            }
             // Apply jet
             let old_pos = pos;
             match jet {
-                Jet::Left => if pos.x > 0 { pos.x -= 1; },
-                Jet::Right => if pos.x + rock.size.x < 7 { pos.x += 1; },
+                Jet::Left => {
+                    if pos.x > 0 {
+                        pos.x -= 1;
+                    }
+                }
+                Jet::Right => {
+                    if pos.x + rock.size.x < 7 {
+                        pos.x += 1;
+                    }
+                }
             }
             // Check collision
             if old_pos != pos && is_colliding(pos, rock, &settled) {
@@ -130,7 +133,9 @@ fn run_sim(input: &Input, num_rocks: u64) -> u64 {
             }
             // Apply gravity
             let old_pos = pos;
-            if pos.y > 0 { pos.y -= 1; }
+            if pos.y > 0 {
+                pos.y -= 1;
+            }
             // Check collision
             if old_pos.y == 0 || is_colliding(pos, rock, &settled) {
                 pos = old_pos;

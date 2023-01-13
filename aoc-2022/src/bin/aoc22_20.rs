@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::common;
 use aoc_lib::harness::*;
 
@@ -16,10 +16,7 @@ impl Solution<Input, Output> for Day20 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
-        Ok(convert_to_input(&common::tokenize(
-            &resource.as_str()?,
-            '\n',
-        )?))
+        Ok(convert_to_input(&common::tokenize(&resource.as_str()?, '\n')?))
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
@@ -29,13 +26,8 @@ impl Solution<Input, Output> for Day20 {
     }
 
     fn solve_part2(&self, input: &Input) -> Result<Output> {
-        let mut to_mix = input
-            .iter()
-            .map(|n| Number {
-                start: n.start,
-                val: n.val * DECRYPTION_KEY,
-            })
-            .collect();
+        let mut to_mix =
+            input.iter().map(|n| Number { start: n.start, val: n.val * DECRYPTION_KEY }).collect();
         for _ in 0..10 {
             mix(&mut to_mix);
         }
@@ -52,10 +44,7 @@ struct Number {
 
 /// Munge vec of ints into our input
 fn convert_to_input(vals: &[i64]) -> Input {
-    vals.iter()
-        .enumerate()
-        .map(|(i, v)| Number { val: *v, start: i })
-        .collect()
+    vals.iter().enumerate().map(|(i, v)| Number { val: *v, start: i }).collect()
 }
 
 /// Do a single mix pass on the given vec
@@ -68,11 +57,8 @@ fn mix(vals: &mut Vec<Number>) {
 /// Mix a single value, based on the given start position
 fn mix_one(start: usize, to_mix: &mut Vec<Number>) {
     // Find the number we're moving
-    let (from, n) = to_mix
-        .iter()
-        .enumerate()
-        .find(|(_, v)| v.start == start)
-        .expect("value must be present");
+    let (from, n) =
+        to_mix.iter().enumerate().find(|(_, v)| v.start == start).expect("value must be present");
     // Moving 0 is a no-op
     if n.val == 0 {
         return;
@@ -85,10 +71,7 @@ fn mix_one(start: usize, to_mix: &mut Vec<Number>) {
 
 /// Find "0", then sum values at offset 1000, 2000 and 3000 from it.
 fn score(vals: &Vec<Number>) -> i64 {
-    let p = vals
-        .iter()
-        .position(|n| n.val == 0)
-        .expect("0 must be present");
+    let p = vals.iter().position(|n| n.val == 0).expect("0 must be present");
     vals[(p + 1000) % vals.len()].val
         + vals[(p + 2000) % vals.len()].val
         + vals[(p + 3000) % vals.len()].val
@@ -112,10 +95,7 @@ mod tests {
 
     // Apply a single mix
     fn do_mix_one(val: i64, mix: &[i64]) -> Vec<i64> {
-        let pos = mix
-            .iter()
-            .position(|v| *v == val)
-            .expect("value must be present");
+        let pos = mix.iter().position(|v| *v == val).expect("value must be present");
         do_mix_one_from(pos, mix)
     }
     // Apply a single mix, taking the element from given position
@@ -138,98 +118,59 @@ mod tests {
 
     #[test]
     fn test_p1_ex1() {
-        rotate_eq(
-            &do_mix_one(1, &[4, 5, 6, 1, 7, 8, 9]),
-            &mut [4, 5, 6, 7, 1, 8, 9],
-        );
+        rotate_eq(&do_mix_one(1, &[4, 5, 6, 1, 7, 8, 9]), &mut [4, 5, 6, 7, 1, 8, 9]);
     }
     #[test]
     fn test_p1_ex2() {
-        rotate_eq(
-            &do_mix_one(-2, &[4, -2, 5, 6, 7, 8, 9]),
-            &mut [4, 5, 6, 7, 8, -2, 9],
-        );
+        rotate_eq(&do_mix_one(-2, &[4, -2, 5, 6, 7, 8, 9]), &mut [4, 5, 6, 7, 8, -2, 9]);
     }
 
     #[test]
     fn test_p1_mix_1() {
-        rotate_eq(
-            &do_mix_one(1, &[1, 2, -3, 3, -2, 0, 4]),
-            &mut [2, 1, -3, 3, -2, 0, 4],
-        );
+        rotate_eq(&do_mix_one(1, &[1, 2, -3, 3, -2, 0, 4]), &mut [2, 1, -3, 3, -2, 0, 4]);
     }
     #[test]
     fn test_p1_mix_2() {
-        rotate_eq(
-            &do_mix_one(2, &[2, 1, -3, 3, -2, 0, 4]),
-            &mut [1, -3, 2, 3, -2, 0, 4],
-        );
+        rotate_eq(&do_mix_one(2, &[2, 1, -3, 3, -2, 0, 4]), &mut [1, -3, 2, 3, -2, 0, 4]);
     }
     #[test]
     fn test_p1_mix_minus_3() {
-        rotate_eq(
-            &do_mix_one(-3, &[1, -3, 2, 3, -2, 0, 4]),
-            &mut [1, 2, 3, -2, -3, 0, 4],
-        );
+        rotate_eq(&do_mix_one(-3, &[1, -3, 2, 3, -2, 0, 4]), &mut [1, 2, 3, -2, -3, 0, 4]);
     }
     #[test]
     fn test_p1_mix_3() {
-        rotate_eq(
-            &do_mix_one(3, &[1, 2, 3, -2, -3, 0, 4]),
-            &mut [1, 2, -2, -3, 0, 3, 4],
-        );
+        rotate_eq(&do_mix_one(3, &[1, 2, 3, -2, -3, 0, 4]), &mut [1, 2, -2, -3, 0, 3, 4]);
     }
     #[test]
     fn test_p1_mix_minus_2() {
-        rotate_eq(
-            &do_mix_one(-2, &[1, 2, -2, -3, 0, 3, 4]),
-            &mut [1, 2, -3, 0, 3, 4, -2],
-        );
+        rotate_eq(&do_mix_one(-2, &[1, 2, -2, -3, 0, 3, 4]), &mut [1, 2, -3, 0, 3, 4, -2]);
     }
     #[test]
     fn test_p1_mix_0() {
-        rotate_eq(
-            &do_mix_one(0, &[1, 2, -3, 0, 3, 4, -2]),
-            &mut [1, 2, -3, 0, 3, 4, -2],
-        );
+        rotate_eq(&do_mix_one(0, &[1, 2, -3, 0, 3, 4, -2]), &mut [1, 2, -3, 0, 3, 4, -2]);
     }
     #[test]
     fn test_p1_mix_4() {
-        rotate_eq(
-            &do_mix_one(4, &[1, 2, -3, 0, 3, 4, -2]),
-            &mut [1, 2, -3, 4, 0, 3, -2],
-        );
+        rotate_eq(&do_mix_one(4, &[1, 2, -3, 0, 3, 4, -2]), &mut [1, 2, -3, 4, 0, 3, -2]);
     }
 
     // Wrapping behaviour was totally breaking my first implementation, so here's some extra tests
     // to make sure I'm not doing anything insane.
     #[test]
     fn test_mix_big() {
-        rotate_eq(
-            &do_mix_one(8, &[1, 2, 3, 4, 5, 8, 6]),
-            &mut [1, 8, 2, 3, 4, 5, 6],
-        );
+        rotate_eq(&do_mix_one(8, &[1, 2, 3, 4, 5, 8, 6]), &mut [1, 8, 2, 3, 4, 5, 6]);
     }
     #[test]
     fn test_mix_bigger() {
-        rotate_eq(
-            &do_mix_one(11, &[1, 2, 3, 4, 5, 11, 6]),
-            &mut [1, 2, 3, 4, 11, 5, 6],
-        );
+        rotate_eq(&do_mix_one(11, &[1, 2, 3, 4, 5, 11, 6]), &mut [1, 2, 3, 4, 11, 5, 6]);
     }
     #[test]
     fn test_mix_big_minus() {
-        rotate_eq(
-            &do_mix_one(-8, &[1, 2, 3, 4, 5, -8, 6]),
-            &mut [1, 2, 3, -8, 4, 5, 6],
-        );
+        rotate_eq(&do_mix_one(-8, &[1, 2, 3, 4, 5, -8, 6]), &mut [1, 2, 3, -8, 4, 5, 6]);
     }
     #[test]
     fn test_mix_bigger_minus() {
-        rotate_eq(
-            &do_mix_one(-11, &[1, 2, 3, 4, 5, -11, 6]),
-            &mut [-11, 1, 2, 3, 4, 5, 6],
-        );
+        rotate_eq(&do_mix_one(-11, &[1, 2, 3, 4, 5, -11, 6]), &mut [-11, 1, 2, 3, 4, 5, 6]);
     }
 
     #[test]

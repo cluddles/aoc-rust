@@ -2,7 +2,7 @@ extern crate aoc_lib;
 
 use std::collections::HashMap;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use aoc_lib::common;
 use aoc_lib::harness::*;
@@ -40,10 +40,7 @@ impl CaveSystem {
         if let Some(&x) = self.cave_lookup.get(name) {
             return x;
         }
-        self.caves.push(Cave {
-            name: name.to_string(),
-            ..Default::default()
-        });
+        self.caves.push(Cave { name: name.to_string(), ..Default::default() });
         let index = self.caves.len() - 1;
         self.cave_lookup.insert(name.to_string(), self.caves.len() - 1);
         index
@@ -77,14 +74,8 @@ impl CaveSystem {
         for &node in nodes {
             // Big caves can be revisited; everything else cannot
             if let Visit::Allowed(dupe) = self.can_visit(&path, node, dupes_allowed) {
-                let d = if dupe {
-                    dupes_allowed - 1
-                } else {
-                    dupes_allowed
-                };
-                self.traverse(&path, node, d)
-                    .into_iter()
-                    .for_each(|path| result.push(path));
+                let d = if dupe { dupes_allowed - 1 } else { dupes_allowed };
+                self.traverse(&path, node, d).into_iter().for_each(|path| result.push(path));
             }
         }
         result
@@ -165,5 +156,4 @@ mod tests {
     fn test_part2_3() {
         assert_eq!(test_solution_ext(&Day12, SolutionPart::Two, "input.test.3"), 3509);
     }
-
 }

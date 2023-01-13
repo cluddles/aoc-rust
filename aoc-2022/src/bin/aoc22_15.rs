@@ -1,10 +1,10 @@
 extern crate aoc_lib;
 
 use anyhow::{anyhow, Result};
-use std::collections::HashSet;
 use aoc_lib::common::*;
 use aoc_lib::data::Point2;
 use aoc_lib::harness::*;
+use std::collections::HashSet;
 use std::str::FromStr;
 
 pub struct Day15;
@@ -54,7 +54,7 @@ pub struct Span {
 }
 
 /// Given a string slice, chops off start and end and parses to i32
-fn chop<T: FromStr> (text: &str, drop_start: usize, drop_end: usize) -> Result<T> {
+fn chop<T: FromStr>(text: &str, drop_start: usize, drop_end: usize) -> Result<T> {
     parse_str(&text[drop_start..text.len() - drop_end])
     // Ok(text[drop_start..text.len() - drop_end].parse::<T>()?)
 }
@@ -105,7 +105,11 @@ fn scan_y(input: &Input, y: i32) -> Result<i64> {
     // It works without, but only because doing to-from is 1 off (because "to" is inclusive),
     // and both test and real input have exactly one beacon on the scan row :)
     let mut bxs: HashSet<i32> = HashSet::new();
-    input.iter().for_each(|x| if x.beacon.y == y { bxs.insert(x.beacon.x); });
+    input.iter().for_each(|x| {
+        if x.beacon.y == y {
+            bxs.insert(x.beacon.x);
+        }
+    });
     let area: i32 = spans.iter().map(|x| x.to + 1 - x.from).sum();
     Ok((area as usize - bxs.len()) as i64)
 }
@@ -139,28 +143,18 @@ mod tests {
                 "Sensor at x=2, y=18: closest beacon is at x=-2, y=15",
             ))
             .unwrap();
-        assert_eq!(
-            input,
-            vec![Sensor {
-                pos: Pos::new(2, 18),
-                beacon: Pos::new(-2, 15)
-            }]
-        );
+        assert_eq!(input, vec![Sensor { pos: Pos::new(2, 18), beacon: Pos::new(-2, 15) }]);
     }
 
     #[test]
     fn test_part1() {
-        let input = Day15
-            .parse_input(&FileResource::new("input.test", 2022, 15))
-            .unwrap();
+        let input = Day15.parse_input(&FileResource::new("input.test", 2022, 15)).unwrap();
         assert_eq!(scan_y(&input, 10).unwrap(), 26);
     }
 
     #[test]
     fn test_part2() {
-        let input = Day15
-            .parse_input(&FileResource::new("input.test", 2022, 15))
-            .unwrap();
+        let input = Day15.parse_input(&FileResource::new("input.test", 2022, 15)).unwrap();
         assert_eq!(scan_xy(&input, 20).unwrap(), 56000011);
     }
 }

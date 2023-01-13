@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use aoc_lib::harness::*;
 
@@ -88,10 +88,9 @@ fn score_syntax_error_line(line: &str) -> u64 {
 /// Score line for autocomplete
 fn score_autocomplete_line(line: &str) -> u64 {
     match find_error(line) {
-        (None, stack) => stack
-            .iter()
-            .rev()
-            .fold(0, |x, &y| x * 5 + score_autocomplete_closer(closer_for(y))),
+        (None, stack) => {
+            stack.iter().rev().fold(0, |x, &y| x * 5 + score_autocomplete_closer(closer_for(y)))
+        }
         _ => 0,
     }
 }
@@ -101,11 +100,8 @@ fn part1(input: &[String]) -> u64 {
 }
 
 fn part2(input: &[String]) -> u64 {
-    let mut scores: Vec<u64> = input
-        .iter()
-        .map(|x| score_autocomplete_line(x))
-        .filter(|&x| x != 0)
-        .collect();
+    let mut scores: Vec<u64> =
+        input.iter().map(|x| score_autocomplete_line(x)).filter(|&x| x != 0).collect();
     scores.sort_unstable();
     scores[scores.len() / 2]
 }

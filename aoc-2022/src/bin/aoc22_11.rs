@@ -38,12 +38,7 @@ impl Op {
             ("*", "old") => Op::Sq(),
             ("*", v) => Op::Mult(v.parse::<u64>()?),
             ("+", v) => Op::Add(v.parse::<u64>()?),
-            (op, v) => {
-                return Err(anyhow!(format!(
-                    "could not parse op: '{}' '{}'",
-                    op, v
-                )))
-            }
+            (op, v) => return Err(anyhow!(format!("could not parse op: '{}' '{}'", op, v))),
         })
     }
 }
@@ -61,10 +56,7 @@ impl Monkey {
     fn parse(text: &str) -> Result<Monkey> {
         let lines: Vec<&str> = text.split('\n').collect();
         let items: &str = lines[1].split(':').collect::<Vec<&str>>()[1];
-        let items = items
-            .split(',')
-            .map(|x| x.trim().parse::<u64>())
-            .collect::<Result<_, _>>()?;
+        let items = items.split(',').map(|x| x.trim().parse::<u64>()).collect::<Result<_, _>>()?;
         let op: Vec<&str> = lines[2].split_whitespace().collect();
         let op = Op::parse(op[4], op[5])?;
         let last_num = |x: &str| x.split_whitespace().last().unwrap_or("").parse();
@@ -87,18 +79,10 @@ pub struct MonkeyState {
 /// Run sim for given number of rounds
 fn run_sim(input: &Input, reduce_worry: bool, num_rounds: u32) -> u64 {
     // Manage "ridiculous" worry levels (part 2) using common multiple
-    let common_multiple: Option<u64> = if reduce_worry {
-        None
-    } else {
-        Some(input.iter().map(|x| x.div_by).product())
-    };
-    let mut state: Vec<MonkeyState> = input
-        .iter()
-        .map(|x| MonkeyState {
-            items: x.items.to_owned(),
-            inspections: 0,
-        })
-        .collect();
+    let common_multiple: Option<u64> =
+        if reduce_worry { None } else { Some(input.iter().map(|x| x.div_by).product()) };
+    let mut state: Vec<MonkeyState> =
+        input.iter().map(|x| MonkeyState { items: x.items.to_owned(), inspections: 0 }).collect();
     for _ in 0..num_rounds {
         run_sim_once(&mut state, input, common_multiple);
     }

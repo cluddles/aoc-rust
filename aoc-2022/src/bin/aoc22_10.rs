@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use aoc_lib::harness::*;
 
 #[derive(Default)]
@@ -13,7 +13,9 @@ pub struct State {
 }
 
 impl State {
-    fn new() -> State { State { x: 1, ..Default::default() } }
+    fn new() -> State {
+        State { x: 1, ..Default::default() }
+    }
 }
 
 fn cpu_tick(state: &mut State, program: &Input) -> Result<()> {
@@ -27,9 +29,9 @@ fn cpu_tick(state: &mut State, program: &Input) -> Result<()> {
     if let Some(v) = state.pending_add {
         state.x += v;
         state.pending_add = None;
-
     } else {
-        let line = if state.line_index < program.len() { &program[state.line_index] } else { "noop" };
+        let line =
+            if state.line_index < program.len() { &program[state.line_index] } else { "noop" };
         state.line_index += 1;
 
         // Start
@@ -45,14 +47,18 @@ fn run_program(program: &Input) -> Result<isize> {
     let mut state = State::new();
     loop {
         cpu_tick(&mut state, program)?;
-        if state.cycle == 220 { return Ok(state.signal_sum); }
+        if state.cycle == 220 {
+            return Ok(state.signal_sum);
+        }
     }
 }
 
 fn render_tick(state: &mut State, output: &mut [char]) {
     let tick = state.cycle;
     let col = (tick % 40) as isize;
-    if (state.x - col).abs() <= 1 { output[tick] = '#' }
+    if (state.x - col).abs() <= 1 {
+        output[tick] = '#'
+    }
 }
 
 fn run_and_render(program: &Input) -> Result<String> {
@@ -120,13 +126,17 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(test_solution(&Day10, SolutionPart::Two), vec![
-            "\n##..##..##..##..##..##..##..##..##..##..".to_string(),
-            "\n###...###...###...###...###...###...###.".to_string(),
-            "\n####....####....####....####....####....".to_string(),
-            "\n#####.....#####.....#####.....#####.....".to_string(),
-            "\n######......######......######......####".to_string(),
-            "\n#######.......#######.......#######.....".to_string(),
-        ].join(""));
+        assert_eq!(
+            test_solution(&Day10, SolutionPart::Two),
+            vec![
+                "\n##..##..##..##..##..##..##..##..##..##..".to_string(),
+                "\n###...###...###...###...###...###...###.".to_string(),
+                "\n####....####....####....####....####....".to_string(),
+                "\n#####.....#####.....#####.....#####.....".to_string(),
+                "\n######......######......######......####".to_string(),
+                "\n#######.......#######.......#######.....".to_string(),
+            ]
+            .join("")
+        );
     }
 }

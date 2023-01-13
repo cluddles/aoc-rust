@@ -1,6 +1,6 @@
 extern crate aoc_lib;
 
-use anyhow::{anyhow, bail, Error, Result};
+use anyhow::{bail, Error, Result};
 use aoc_lib::harness::*;
 use std::cmp::Ordering;
 use std::str::FromStr;
@@ -14,11 +14,7 @@ impl Solution<Input, Output> for Day13 {
     }
 
     fn parse_input(&self, resource: &dyn Resource) -> Result<Input> {
-        resource
-            .as_str_lines()?
-            .iter()
-            .map(|x| Packet::from_str(x))
-            .collect::<Result<_, _>>()
+        resource.as_str_lines()?.iter().map(|x| Packet::from_str(x)).collect::<Result<_, _>>()
     }
 
     fn solve_part1(&self, input: &Input) -> Result<Output> {
@@ -135,11 +131,7 @@ mod tests {
         assert_eq!(Packet::from_str("[1]").unwrap().0, vec![El::Int(1)]);
         assert_eq!(
             Packet::from_str("[1,[2,3],4]").unwrap().0,
-            vec![
-                El::Int(1),
-                El::List(vec![El::Int(2), El::Int(3)]),
-                El::Int(4),
-            ]
+            vec![El::Int(1), El::List(vec![El::Int(2), El::Int(3)]), El::Int(4),]
         );
         assert_eq!(
             Packet::from_str("[1,[2,[3,[4,[5,6,7]]]],8,9]").unwrap().0,

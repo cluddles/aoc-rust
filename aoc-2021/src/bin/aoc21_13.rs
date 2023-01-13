@@ -3,7 +3,7 @@ extern crate aoc_lib;
 use std::collections::HashSet;
 use std::fmt::Formatter;
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 
 use aoc_lib::common;
 use aoc_lib::data::Point2;
