@@ -1,6 +1,6 @@
 use crate::common::*;
 use crate::data::Grid;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
@@ -111,21 +111,25 @@ pub trait Resource {
 
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
-pub fn resource_path(filename: &str, year: u32, day: u8) -> PathBuf {
-    Path::new(MANIFEST_DIR)
+pub fn resource_path(filename: &str, year: u32, day: u8) -> Result<PathBuf> {
+    let path = Path::new(MANIFEST_DIR)
         .join("..")
         .join(format!("aoc-{}", year))
         .join("resource")
         .join(format!("{:02}", day))
-        .join(filename)
+        .join(filename);
+    path.canonicalize().with_context(|| format!("Failed to canonicalize path: {}", path.display()))
 }
 
 fn file_res_as_str(filename: &str, year: u32, day: u8) -> Result<String> {
-    Ok(std::fs::read_to_string(resource_path(filename, year, day))?)
+    let path = resource_path(filename, year, day)?;
+    std::fs::read_to_string(&path)
+        .with_context(|| format!("Failed to read from {}", path.display()))
 }
 
 fn file_res_as_u8(filename: &str, year: u32, day: u8) -> Result<Vec<u8>> {
-    Ok(std::fs::read(resource_path(filename, year, day))?)
+    let path = resource_path(filename, year, day)?;
+    std::fs::read(&path).with_context(|| format!("Failed to read from {}", path.display()))
 }
 
 /// Resource corresponding to a file on disk
