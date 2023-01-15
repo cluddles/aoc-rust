@@ -26,7 +26,7 @@ impl Solution<Input, Output> for Day16 {
     }
 
     fn solve_part2(&self, input: &Input) -> Result<Output> {
-        Ok(Bits::new(input).read_packet()?.eval())
+        Bits::new(input).read_packet()?.eval()
     }
 }
 
@@ -97,21 +97,40 @@ impl Packet {
     }
 
     /// Evaluate this packet's value
-    fn eval(&self) -> u64 {
-        // In an ideal world we wouldn't be panicking on error in here
+    fn eval(&self) -> Result<u64> {
         match self {
-            Packet::Literal(_, val) => *val,
+            Packet::Literal(_, val) => Ok(*val),
             Packet::Operator(header, sub) => match header.type_id {
                 PType::Sum => sub.iter().map(|x| x.eval()).sum(),
                 PType::Product => sub.iter().map(|x| x.eval()).product(),
-                PType::Min => sub.iter().map(|x| x.eval()).min().unwrap(),
-                PType::Max => sub.iter().map(|x| x.eval()).max().unwrap(),
-                PType::Literal => panic!("Packet::Operator cannot use PacketType::Literal"),
-                PType::GreaterThan => u64::from(sub[0].eval() > sub[1].eval()),
-                PType::LessThan => u64::from(sub[0].eval() < sub[1].eval()),
-                PType::EqualTo => u64::from(sub[0].eval() == sub[1].eval()),
+                PType::Min => sub
+                    .iter()
+                    .map(|x| x.eval())
+                    .try_fold(None, |acc: Option<u64>, x| {
+                        x.map(|ok| if let Some(v) = acc { Some(v.min(ok)) } else { Some(ok) })
+                    })?
+                    .ok_or_else(|| anyhow!("No min found")),
+                PType::Max => sub
+                    .iter()
+                    .map(|x| x.eval())
+                    .try_fold(None, |acc: Option<u64>, x| {
+                        x.map(|ok| if let Some(v) = acc { Some(v.max(ok)) } else { Some(ok) })
+                    })?
+                    .ok_or_else(|| anyhow!("No max found")),
+                PType::Literal => bail!("Packet::Operator cannot use PacketType::Literal"),
+                PType::GreaterThan => self.eval_op_sub_packet_pair(sub, u64::gt),
+                PType::LessThan => self.eval_op_sub_packet_pair(sub, u64::lt),
+                PType::EqualTo => self.eval_op_sub_packet_pair(sub, u64::eq),
             },
         }
+    }
+
+    /// Evaluate an operator packet where the operation expects exactly 2 sub-packets
+    fn eval_op_sub_packet_pair(&self, sub: &[Packet], f: fn(&u64, &u64) -> bool) -> Result<u64> {
+        if sub.len() != 2 {
+            bail!("Expected 2 sub-packets");
+        }
+        Ok(u64::from(f(&sub[0].eval()?, &sub[1].eval()?)))
     }
 }
 
