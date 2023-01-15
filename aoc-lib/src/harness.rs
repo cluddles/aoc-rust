@@ -55,7 +55,7 @@ pub fn test_solution<S: Solution<I, O>, I, O>(solution: &S, part: SolutionPart) 
 }
 
 /// Test-run solution on specific (presumably non-default) test input
-pub fn test_solution_ext<S: Solution<I, O>, I, O>(
+pub fn test_ext<S: Solution<I, O>, I, O>(
     solution: &S,
     part: SolutionPart,
     filename: &'static str,
@@ -65,7 +65,7 @@ pub fn test_solution_ext<S: Solution<I, O>, I, O>(
 }
 
 /// Test-run solution on inline input text
-pub fn test_solution_inline<S: Solution<I, O>, I, O>(
+pub fn test_inline<S: Solution<I, O>, I, O>(
     solution: &S,
     part: SolutionPart,
     text: &'static str,

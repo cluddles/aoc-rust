@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     fn test_part1_min() {
-        assert_eq!(test_solution_inline(&Day18, SolutionPart::One, "1,1,1\n2,1,1"), 10);
+        assert_eq!(test_inline(&Day18, SolutionPart::One, "1,1,1\n2,1,1"), 10);
     }
 
     #[test]

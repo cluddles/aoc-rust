@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn test_part1() {
         let solution = Day06;
-        let test = |x| test_solution_inline(&solution, SolutionPart::One, x);
+        let test = |x| test_inline(&solution, SolutionPart::One, x);
         assert_eq!(test("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 7);
         assert_eq!(test("bvwbjplbgvbhsrlpgdmjqwftvncz"), 5);
         assert_eq!(test("nppdvjthqldpwncqszvftbrmjlhg"), 6);
@@ -68,7 +68,7 @@ mod tests {
     #[test]
     fn test_part2() {
         let solution = Day06;
-        let test = |x| test_solution_inline(&solution, SolutionPart::Two, x);
+        let test = |x| test_inline(&solution, SolutionPart::Two, x);
         assert_eq!(test("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 19);
         assert_eq!(test("bvwbjplbgvbhsrlpgdmjqwftvncz"), 23);
         assert_eq!(test("nppdvjthqldpwncqszvftbrmjlhg"), 23);

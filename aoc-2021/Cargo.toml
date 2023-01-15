@@ -9,3 +9,5 @@ edition = "2021"
 aoc-lib = { path = "../aoc-lib" }
 anyhow = "1.0.68"
 itertools = "0.10.5"
+num-derive = "0.3.3"
+num-traits = "0.2.15"
