@@ -26,6 +26,7 @@ dependencies = [
  "itertools",
  "num-derive",
  "num-traits",
+ "regex",
 ]
 
 [[package]]
