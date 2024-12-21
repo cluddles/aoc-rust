@@ -133,27 +133,27 @@ mod tests {
 
     #[test]
     fn test_part1_1() {
-        assert_eq!(test_ext(&Day12, SolutionPart::One, "input.test.1"), 10);
+        assert_eq!(test_ext(&Day12, SolutionPart::One, "test.1"), 10);
     }
     #[test]
     fn test_part1_2() {
-        assert_eq!(test_ext(&Day12, SolutionPart::One, "input.test.2"), 19);
+        assert_eq!(test_ext(&Day12, SolutionPart::One, "test.2"), 19);
     }
     #[test]
     fn test_part1_3() {
-        assert_eq!(test_ext(&Day12, SolutionPart::One, "input.test.3"), 226);
+        assert_eq!(test_ext(&Day12, SolutionPart::One, "test.3"), 226);
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(test_ext(&Day12, SolutionPart::Two, "input.test.1"), 36);
+        assert_eq!(test_ext(&Day12, SolutionPart::Two, "test.1"), 36);
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(test_ext(&Day12, SolutionPart::Two, "input.test.2"), 103);
+        assert_eq!(test_ext(&Day12, SolutionPart::Two, "test.2"), 103);
     }
     #[test]
     fn test_part2_3() {
-        assert_eq!(test_ext(&Day12, SolutionPart::Two, "input.test.3"), 3509);
+        assert_eq!(test_ext(&Day12, SolutionPart::Two, "test.3"), 3509);
     }
 }

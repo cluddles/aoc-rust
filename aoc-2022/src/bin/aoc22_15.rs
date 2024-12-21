@@ -148,13 +148,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = Day15.parse_input(&FileResource::new("input.test", 2022, 15)).unwrap();
+        let input = Day15.parse_input(&FileResource::new("test", 2022, 15)).unwrap();
         assert_eq!(scan_y(&input, 10).unwrap(), 26);
     }
 
     #[test]
     fn test_part2() {
-        let input = Day15.parse_input(&FileResource::new("input.test", 2022, 15)).unwrap();
+        let input = Day15.parse_input(&FileResource::new("test", 2022, 15)).unwrap();
         assert_eq!(scan_xy(&input, 20).unwrap(), 56000011);
     }
 }

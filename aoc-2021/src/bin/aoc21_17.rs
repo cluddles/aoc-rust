@@ -119,7 +119,7 @@ mod tests {
 
     #[test]
     fn test_candidates() {
-        let area = Day17.parse_input(&FileResource::new("input.test", 2021, 17)).unwrap();
+        let area = Day17.parse_input(&FileResource::new("test", 2021, 17)).unwrap();
         assert!(sim(&Pos::new(7, 2), &area).is_some());
         assert!(sim(&Pos::new(6, 3), &area).is_some());
         assert!(sim(&Pos::new(9, 0), &area).is_some());

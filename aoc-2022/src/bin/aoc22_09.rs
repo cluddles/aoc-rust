@@ -82,15 +82,15 @@ mod tests {
 
     #[test]
     fn test_part1_1() {
-        assert_eq!(test_ext(&Day09, SolutionPart::One, "input.test.1"), 13);
+        assert_eq!(test_ext(&Day09, SolutionPart::One, "test.1"), 13);
     }
 
     #[test]
     fn test_part2_1() {
-        assert_eq!(test_ext(&Day09, SolutionPart::Two, "input.test.1"), 1);
+        assert_eq!(test_ext(&Day09, SolutionPart::Two, "test.1"), 1);
     }
     #[test]
     fn test_part2_2() {
-        assert_eq!(test_ext(&Day09, SolutionPart::Two, "input.test.2"), 36);
+        assert_eq!(test_ext(&Day09, SolutionPart::Two, "test.2"), 36);
     }
 }

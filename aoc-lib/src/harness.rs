@@ -23,7 +23,7 @@ pub fn run_solution<S: Solution<I, O>, I, O: Display>(solution: &S) -> Result<()
     let info = solution.info();
     println!("\n--- [{}] Day {}: {} ---", info.year, info.day, info.title);
     // Create resource using year/day from info
-    let resource = FileResource::new("input", info.year, info.day);
+    let resource = FileResource::new("", info.year, info.day);
     // Call proc on solution to parse input into relevant part1/2 input type
     let time = SystemTime::now();
     println!("\nParse input");
@@ -51,7 +51,7 @@ pub enum SolutionPart {
 /// Test-run solution on default test input
 pub fn test_solution<S: Solution<I, O>, I, O>(solution: &S, part: SolutionPart) -> O {
     let info = solution.info();
-    test_solution_inner(solution, part, &FileResource::new("input.test", info.year, info.day))
+    test_solution_inner(solution, part, &FileResource::new("test", info.year, info.day))
 }
 
 /// Test-run solution on specific (presumably non-default) test input
@@ -111,22 +111,20 @@ pub trait Resource {
 
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
-pub fn resource_path(filename: &str, year: u32, day: u8) -> Result<PathBuf> {
-    // Look in ../aoc-yyyy/resource/dd/filename
+pub fn resource_path(suffix: &str, year: u32, day: u8) -> Result<PathBuf> {
+    // Look in ../aoc-yyyy/resource/dayxx.suffix
     let mut path = Path::new(MANIFEST_DIR)
         .join("..")
         .join(format!("aoc-{}", year))
         .join("resource")
-        .join(format!("{:02}", day))
-        .join(filename);
+        .join(format!("day{:02}.{}", day, suffix));
     if !path.exists() {
-        // Look in ../aoc-secret/yyyy/dd/filename
+        // Look in ../aoc-secret/yyyy/dayxx.suffix
         path = Path::new(MANIFEST_DIR)
             .join("..")
             .join("aoc-secret")
             .join(format!("{}", year))
-            .join(format!("{:02}", day))
-            .join(filename);
+            .join(format!("day{:02}.{}", day, suffix));
     }
     path.canonicalize().with_context(|| format!("Failed to canonicalize path: {}", path.display()))
 }
@@ -143,25 +141,28 @@ fn file_res_as_u8(filename: &str, year: u32, day: u8) -> Result<Vec<u8>> {
 }
 
 /// Resource corresponding to a file on disk
+///
+/// Puzzle inputs are expected to be named according to the day. Suffix can be used to differentiate
+/// between real and test inputs, multiple test inputs, etc
 pub struct FileResource {
-    filename: &'static str,
+    suffix: &'static str,
     year: u32,
     day: u8,
 }
 
 impl FileResource {
-    pub fn new(filename: &'static str, year: u32, day: u8) -> Self {
-        Self { filename, year, day }
+    pub fn new(suffix: &'static str, year: u32, day: u8) -> Self {
+        Self { suffix, year, day }
     }
 }
 
 impl Resource for FileResource {
     fn as_str(&self) -> Result<String> {
-        file_res_as_str(self.filename, self.year, self.day)
+        file_res_as_str(self.suffix, self.year, self.day)
     }
 
     fn as_u8(&self) -> Result<Vec<u8>> {
-        file_res_as_u8(self.filename, self.year, self.day)
+        file_res_as_u8(self.suffix, self.year, self.day)
     }
 }
 

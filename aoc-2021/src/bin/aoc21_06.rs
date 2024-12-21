@@ -67,7 +67,7 @@ mod tests {
     use super::*;
 
     fn gen_input() -> Vec<u32> {
-        Day06.parse_input(&FileResource::new("input.test", 2021, 6)).unwrap()
+        Day06.parse_input(&FileResource::new("test", 2021, 6)).unwrap()
     }
 
     #[test]
